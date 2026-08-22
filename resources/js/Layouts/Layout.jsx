@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
+import { useTheme } from '../Contexts/ThemeProvider';
+import TopBar from '../Components/TopBar';
 import {
     GraduationCap,
     Globe,
@@ -24,11 +26,14 @@ import {
     Instagram,
     Linkedin,
     Youtube,
-    Send
+    Send,
+    Sun,
+    Moon
 } from 'lucide-react';
 
 export default function Layout({ children }) {
     const { url } = usePage();
+    const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAiSearchOpen, setIsAiSearchOpen] = useState(false);
     const [isBookCallOpen, setIsBookCallOpen] = useState(false);
@@ -63,7 +68,7 @@ export default function Layout({ children }) {
     ];
 
     const globalBranches = [
-        { country: 'Bangladesh', cities: 'Dhaka (Gulshan-2), Chattogram', flag: '🇧🇩', hotline: '+880 1700-000000', status: 'Open Now' },
+        { country: 'Bangladesh', cities: 'Dhaka (Gulshan-2), Chattogram', flag: '🇧🇩', hotline: '+880 1812713814', status: 'Open Now' },
         { country: 'United Kingdom', cities: 'London (HQ Oxford St.)', flag: '🇬🇧', hotline: '+44 20 7946 0912', status: 'Open Now' },
         { country: 'United States', cities: 'New York (Manhattan)', flag: '🇺🇸', hotline: '+1 212 555 0198', status: 'Open 9 AM EST' },
         { country: 'Canada', cities: 'Toronto (Financial Dist.)', flag: '🇨🇦', hotline: '+1 416 555 0147', status: 'Open 9 AM EST' },
@@ -80,39 +85,10 @@ export default function Layout({ children }) {
     ];
 
     return (
-        <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-800 antialiasedSelection">
-            {/* Top Bar - Global Consultancy Hotline & Announcements */}
-            <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 border-b border-slate-800">
-                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
-                    <div className="flex items-center gap-4 text-slate-300">
-                        <span className="inline-flex items-center gap-1.5 font-medium text-emerald-400">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                            </span>
-                            Fall 2026 Admissions Open
-                        </span>
-                        <span className="hidden md:inline text-slate-600">|</span>
-                        <span className="hidden md:inline text-slate-300">
-                            🎓 Over 500+ Partner Universities Worldwide
-                        </span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <a href="tel:+8801700000000" className="inline-flex items-center gap-1.5 hover:text-white transition-colors">
-                            <Phone className="w-3.5 h-3.5 text-blue-400" />
-                            <span>Hotline: +880 1700-000000</span>
-                        </a>
-                        <span className="text-slate-600">|</span>
-                        <div className="flex items-center gap-2">
-                            <a href="#branches" className="hover:text-white transition-colors flex items-center gap-1">
-                                <Globe className="w-3.5 h-3.5 text-blue-400" />
-                                <span>Global Offices</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div className="min-h-screen flex flex-col font-sans bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 antialiased">
+            
+            {/* 1. GLOBAL TOP BAR WITH WIDE SEARCH & BECOME A PARTNER ACTION */}
+            <TopBar />
 
             {/* STICKY NAVBAR WITH TRANSLUCENT FROSTED GLASS EFFECT */}
             <header
@@ -124,7 +100,8 @@ export default function Layout({ children }) {
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between gap-4">
-                        {/* 1. Left Side: Brand Logo Placeholder */}
+                        
+                        {/* 1. Left Side: Brand Logo */}
                         <Link href="/" className="flex items-center gap-3 group focus:outline-none">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
                                 <GraduationCap className="w-6 h-6" />
@@ -176,8 +153,23 @@ export default function Layout({ children }) {
                             </button>
                         </nav>
 
-                        {/* 3. Right Side: Primary CTA "Book a Call" & Mobile Hamburger */}
-                        <div className="flex items-center gap-3">
+                        {/* 3. Right Side: Theme Toggle Button, Primary CTA "Book a Call", & Mobile Hamburger */}
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            
+                            {/* DARK / LIGHT MODE TOGGLE BUTTON */}
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2.5 rounded-full text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center justify-center border border-slate-200/60 dark:border-slate-700/60"
+                                aria-label="Toggle Dark/Light Mode"
+                                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                            >
+                                {theme === 'dark' ? (
+                                    <Sun className="w-4 h-4 text-amber-400" />
+                                ) : (
+                                    <Moon className="w-4 h-4 text-slate-700" />
+                                )}
+                            </button>
+
                             <button
                                 onClick={() => setIsAiSearchOpen(true)}
                                 className="lg:hidden p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
@@ -241,13 +233,13 @@ export default function Layout({ children }) {
                                 </span>
                             </button>
 
-                            <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800">
+                            <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
                                 <button
                                     onClick={() => {
                                         setIsMobileMenuOpen(false);
                                         setIsBookCallOpen(true);
                                     }}
-                                    className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold text-base shadow-md shadow-blue-600/30"
+                                    className="flex-1 flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold text-base shadow-md shadow-blue-600/30"
                                 >
                                     <PhoneCall className="w-5 h-5" />
                                     <span>Book a Free Call</span>
@@ -383,7 +375,7 @@ export default function Layout({ children }) {
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Phone className="w-5 h-5 text-emerald-400 shrink-0" />
-                                    <span>BD Hotline: +880 1700-000000</span>
+                                    <span>BD Hotline: +880 1812713814</span>
                                 </div>
                                 <div className="flex items-center gap-3">
                                     <Mail className="w-5 h-5 text-blue-400 shrink-0" />
@@ -530,7 +522,7 @@ export default function Layout({ children }) {
                                 <input
                                     type="tel"
                                     required
-                                    placeholder="+880 1700 000 000"
+                                    placeholder="+880 1812713814"
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 />
                             </div>
