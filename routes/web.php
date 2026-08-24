@@ -48,3 +48,23 @@ Route::get('/scholarships', function () {
 Route::get('/visa-guide', function () {
     return Inertia::render('VisaGuide'); 
 });
+
+Route::get('/privacy-policy', function () {
+    return Inertia::render('PrivacyPolicy'); 
+});
+
+Route::get('/terms-of-service', function () {
+    return Inertia::render('TermsOfService'); 
+});
+
+Route::get('/terms', function () {
+    return Inertia::render('TermsOfService'); 
+});
+
+Route::get('/cookie-preferences', function () {
+    return Inertia::render('CookiePreferences'); 
+});
+
+Route::get('/accreditation', function () {
+    return Inertia::render('Accreditation'); 
+});

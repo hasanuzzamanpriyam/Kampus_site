@@ -406,14 +406,14 @@ export default function Layout({ children }) {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-6">
-                            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-                            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-                            <a href="#" className="hover:text-white transition-colors">Cookie Preferences</a>
-                            <a href="#" className="hover:text-white transition-colors">Accreditation</a>
+                            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+                            <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
+                            <Link href="/cookie-preferences" className="hover:text-white transition-colors">Cookie Preferences</Link>
+                            <Link href="/accreditation" className="hover:text-white transition-colors">Accreditation</Link>
                             
                             <button
                                 onClick={scrollToTop}
-                                className="w-8 h-8 rounded-full bg-slate-900 hover:bg-blue-600 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all ml-2"
+                                className="w-8 h-8 rounded-full bg-slate-900 hover:bg-blue-600 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all ml-2 cursor-pointer"
                                 aria-label="Back to Top"
                             >
                                 <ArrowUp className="w-4 h-4" />
