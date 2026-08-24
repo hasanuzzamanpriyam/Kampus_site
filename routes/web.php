@@ -40,3 +40,7 @@ Route::get('/courses', function () {
 Route::get('/partner', function () {
     return Inertia::render('PartnerWithUs'); 
 });
+
+Route::get('/scholarships', function () {
+    return Inertia::render('Scholarships'); 
+});
