@@ -44,3 +44,7 @@ Route::get('/partner', function () {
 Route::get('/scholarships', function () {
     return Inertia::render('Scholarships'); 
 });
+
+Route::get('/visa-guide', function () {
+    return Inertia::render('VisaGuide'); 
+});
