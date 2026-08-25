@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CourseController;
+use App\Http\Controllers\Admin\BlogController;
 
 // Public Dynamic Home Route
 Route::get('/', HomeController::class)->name('home');
@@ -32,6 +33,12 @@ Route::get('/universities/{slug}', function ($slug) {
 
 Route::get('/blog', function () {
     return Inertia::render('Blog'); 
+});
+
+Route::get('/blog/{slug}', function ($slug) {
+    return Inertia::render('BlogPostDetails', [
+        'slug' => $slug
+    ]);
 });
 
 Route::get('/contact', function () {
@@ -114,6 +121,16 @@ Route::prefix('admin')->group(function () {
         'edit' => 'admin.courses.edit',
         'update' => 'admin.courses.update',
         'destroy' => 'admin.courses.destroy',
+    ]);
+
+    // Blog Posts CRUD Routes
+    Route::resource('blog', BlogController::class)->names([
+        'index' => 'admin.blog.index',
+        'create' => 'admin.blog.create',
+        'store' => 'admin.blog.store',
+        'edit' => 'admin.blog.edit',
+        'update' => 'admin.blog.update',
+        'destroy' => 'admin.blog.destroy',
     ]);
 });
 
