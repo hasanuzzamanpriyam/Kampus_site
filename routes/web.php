@@ -7,6 +7,7 @@ use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\CourseController;
 
 // Public Dynamic Home Route
 Route::get('/', HomeController::class)->name('home');
@@ -103,6 +104,16 @@ Route::prefix('admin')->group(function () {
         'edit' => 'admin.universities.edit',
         'update' => 'admin.universities.update',
         'destroy' => 'admin.universities.destroy',
+    ]);
+
+    // Courses CRUD Routes
+    Route::resource('courses', CourseController::class)->names([
+        'index' => 'admin.courses.index',
+        'create' => 'admin.courses.create',
+        'store' => 'admin.courses.store',
+        'edit' => 'admin.courses.edit',
+        'update' => 'admin.courses.update',
+        'destroy' => 'admin.courses.destroy',
     ]);
 });
 
