@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import {
     MapPin,
     Mail,
@@ -24,17 +25,32 @@ export default function ContactContent() {
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitted(true);
-        setTimeout(() => {
-            alert('Thank you for reaching out! A counselor will respond within 24 hours.');
-            setFormData({
-                fullName: '',
-                email: '',
-                phone: '',
-                topic: 'General Inquiry',
-                message: ''
-            });
-            setIsSubmitted(false);
-        }, 600);
+
+        router.post('/contact/submit', {
+            name: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            topic: formData.topic,
+            message: formData.message,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                alert('Thank you for reaching out! A counselor will respond within 24 hours.');
+                setFormData({
+                    fullName: '',
+                    email: '',
+                    phone: '',
+                    topic: 'General Inquiry',
+                    message: ''
+                });
+            },
+            onError: () => {
+                alert('There was an error sending your message. Please check your details and try again.');
+            },
+            onFinish: () => {
+                setIsSubmitted(false);
+            }
+        });
     };
 
     const handleChange = (e) => {

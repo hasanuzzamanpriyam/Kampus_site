@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\PartnerController;
+use App\Http\Controllers\Admin\InquiryController;
 
 // Public Dynamic Home Route
 Route::get('/', HomeController::class)->name('home');
@@ -132,7 +134,27 @@ Route::prefix('admin')->group(function () {
         'update' => 'admin.blog.update',
         'destroy' => 'admin.blog.destroy',
     ]);
+
+    // Partner Applications Routes (admin management)
+    Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([
+        'index' => 'admin.partners.index',
+        'update' => 'admin.partners.update',
+        'destroy' => 'admin.partners.destroy',
+    ]);
+
+    // Inquiries & Contact Messages Routes (admin management)
+    Route::resource('inquiries', InquiryController::class)->only(['index', 'update', 'destroy'])->names([
+        'index' => 'admin.inquiries.index',
+        'update' => 'admin.inquiries.update',
+        'destroy' => 'admin.inquiries.destroy',
+    ]);
 });
+
+// Public Partner Application Submission Route
+Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');
+
+// Public Contact Message Submission Route
+Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
 
 // Dynamic Catch-All Public Page Route (Placed at the VERY END)
 Route::get('/{slug}', [PublicPageController::class, 'show'])->name('pages.show');

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import { Search, Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Globe } from 'lucide-react';
 
 export default function TopBar({ onSearch }) {
@@ -27,20 +28,37 @@ export default function TopBar({ onSearch }) {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         setIsSubmitted(true);
-        setTimeout(() => {
-            alert('Thank you! Your agency partnership application has been submitted successfully. Our team will contact you shortly.');
-            setFormData({
-                companyName: '',
-                contactPerson: '',
-                email: '',
-                phone: '',
-                country: '',
-                yearsInBusiness: '1-3 years',
-                message: ''
-            });
-            setIsSubmitted(false);
-            setIsPartnerModalOpen(false);
-        }, 500);
+
+        router.post('/partner/apply', {
+            company_name: formData.companyName,
+            contact_person: formData.contactPerson,
+            email: formData.email,
+            phone: formData.phone,
+            country: formData.country,
+            years_in_business: formData.yearsInBusiness,
+            message: formData.message,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                alert('Thank you! Your agency partnership application has been submitted successfully. Our team will contact you shortly.');
+                setFormData({
+                    companyName: '',
+                    contactPerson: '',
+                    email: '',
+                    phone: '',
+                    country: '',
+                    yearsInBusiness: '1-3 years',
+                    message: ''
+                });
+                setIsPartnerModalOpen(false);
+            },
+            onError: () => {
+                alert('There was an error submitting your application. Please check your details and try again.');
+            },
+            onFinish: () => {
+                setIsSubmitted(false);
+            }
+        });
     };
 
     return (
