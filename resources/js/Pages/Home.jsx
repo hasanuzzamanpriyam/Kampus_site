@@ -7,14 +7,19 @@ import Destinations from '../Components/Destinations';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
-export default function Home() {
+export default function Home({ page = null, universities = [], courses = [] }) {
+    // Dynamic SEO values from database with sensible defaults
+    const metaTitle = page?.meta_title || 'Kampus EduConsult — Study Abroad Educational Consultancy';
+    const metaDescription = page?.meta_description || 'Empowering ambitious students worldwide to gain admission into top global universities in UK, USA, Canada, Australia & Europe.';
+    const metaKeywords = page?.meta_keywords || 'study abroad, UK universities, student visa guidance, scholarships';
+    const contentData = page?.content || {};
+
     // Handlers to trigger Navbar AI Search & Book Call Modals from components
     const handleOpenAiSearch = () => {
         const aiSearchBtn = document.querySelector('button[aria-label="Open AI Search"], button:has(.animate-pulse)');
         if (aiSearchBtn) {
             aiSearchBtn.click();
         } else {
-            // Fallback scroll to top or trigger modal
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     };
@@ -31,22 +36,31 @@ export default function Home() {
 
     return (
         <Layout>
-            <Head title="Kampus EduConsult — Study Abroad Educational Consultancy" />
+            {/* DYNAMIC INERTIA SEO HEAD COMPONENT */}
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+                <meta property="og:type" content="website" />
+            </Head>
 
             {/* MAIN HOMEPAGE CONTAINER WITH CLEAN SECTION SPACING */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
                 
-                {/* 1. HERO SECTION */}
+                {/* 1. HERO SECTION WITH DYNAMIC CMS CONTENT */}
                 <HeroSection
                     onOpenAiSearch={handleOpenAiSearch}
                     onOpenBookCall={handleOpenBookCall}
+                    content={contentData}
                 />
 
                 {/* 2. SERVICES GRID SECTION */}
                 <ServicesGrid />
 
-                {/* 3. DESTINATIONS GRID SECTION */}
-                <Destinations />
+                {/* 3. DESTINATIONS GRID SECTION (DYNAMICS WITH TOP UNIVERSITIES FROM DATABASE) */}
+                <Destinations universities={universities} />
 
                 {/* 4. JOURNEY PROCESS TIMELINE SECTION */}
                 <JourneyProcess />

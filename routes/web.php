@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\UniversityController;
+use App\Http\Controllers\Admin\SettingController;
 
-Route::get('/', function () {
-    return Inertia::render('Home'); 
-});
+// Public Dynamic Home Route
+Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
     return Inertia::render('About'); 
@@ -41,6 +45,10 @@ Route::get('/partner', function () {
     return Inertia::render('PartnerWithUs'); 
 });
 
+Route::get('/partner-with-us', function () {
+    return Inertia::render('PartnerWithUs'); 
+});
+
 Route::get('/scholarships', function () {
     return Inertia::render('Scholarships'); 
 });
@@ -68,3 +76,35 @@ Route::get('/cookie-preferences', function () {
 Route::get('/accreditation', function () {
     return Inertia::render('Accreditation'); 
 });
+
+// Admin CMS Routes
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('Admin/Dashboard');
+    });
+
+    // Global Settings Routes
+    Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+
+    // Pages & SEO Routes
+    Route::get('/pages', [PageController::class, 'index'])->name('admin.pages.index');
+    Route::get('/pages/create', [PageController::class, 'create'])->name('admin.pages.create');
+    Route::post('/pages', [PageController::class, 'store'])->name('admin.pages.store');
+    Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('admin.pages.edit');
+    Route::put('/pages/{id}', [PageController::class, 'update'])->name('admin.pages.update');
+    Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('admin.pages.destroy');
+
+    // Universities CRUD Routes
+    Route::resource('universities', UniversityController::class)->names([
+        'index' => 'admin.universities.index',
+        'create' => 'admin.universities.create',
+        'store' => 'admin.universities.store',
+        'edit' => 'admin.universities.edit',
+        'update' => 'admin.universities.update',
+        'destroy' => 'admin.universities.destroy',
+    ]);
+});
+
+// Dynamic Catch-All Public Page Route (Placed at the VERY END)
+Route::get('/{slug}', [PublicPageController::class, 'show'])->name('pages.show');

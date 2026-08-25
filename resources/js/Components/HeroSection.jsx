@@ -15,30 +15,34 @@ import {
     Check
 } from 'lucide-react';
 
-export default function HeroSection({ onOpenAiSearch, onOpenBookCall }) {
+export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = {} }) {
     const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
+
+    const heading = content?.hero_heading || 'Building global futures, from dreams to degrees.';
+    const subtitle = content?.hero_subtitle || 'Expert, unbiased guidance to top universities across the UK, USA, Finland and Dubai, completely free.';
+    const badgeText = content?.badge_text || 'ICEF & British Council Certified Guidance';
 
     const stats = [
         {
-            value: '24',
-            unit: 'Years',
-            label: 'of experience',
+            value: content?.stat_universities || '500+',
+            unit: 'Partners',
+            label: 'global universities',
             icon: Award,
             color: 'from-blue-500 to-indigo-600',
             textColor: 'text-blue-600 dark:text-blue-400'
         },
         {
-            value: '10,000+',
-            unit: 'Students',
-            label: 'placed globally',
+            value: content?.stat_acceptance || '98%',
+            unit: 'Visa Success',
+            label: 'approval rate',
             icon: Users,
             color: 'from-indigo-500 to-purple-600',
             textColor: 'text-indigo-600 dark:text-indigo-400'
         },
         {
-            value: '4.8/5',
-            unit: 'Rating',
-            label: 'Student rating',
+            value: content?.stat_scholarships || '$5M+',
+            unit: 'Funding',
+            label: 'scholarships awarded',
             icon: Star,
             color: 'from-amber-400 to-orange-500',
             textColor: 'text-amber-500 dark:text-amber-400'
@@ -46,11 +50,11 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall }) {
         {
             value: '100%',
             unit: 'Free',
-            label: 'Free services',
+            label: 'counseling services',
             icon: CheckCircle2,
             color: 'from-emerald-500 to-teal-600',
             textColor: 'text-emerald-600 dark:text-emerald-400'
-        },
+        }
     ];
 
     const countries = [
@@ -84,27 +88,24 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall }) {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                             </span>
-                            <span>ICEF & British Council Certified Guidance</span>
+                            <span>{badgeText}</span>
                         </div>
 
                         {/* Main Headline */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                            Building global futures, <br className="hidden sm:inline" />
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                                from dreams to degrees.
-                            </span>
+                            {heading}
                         </h1>
 
                         {/* Sub-headline */}
                         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl">
-                            Expert, unbiased guidance to top universities across the <strong className="font-semibold text-slate-900 dark:text-white">UK</strong>, <strong className="font-semibold text-slate-900 dark:text-white">USA</strong>, <strong className="font-semibold text-slate-900 dark:text-white">Finland</strong> and <strong className="font-semibold text-slate-900 dark:text-white">Dubai</strong>, completely free.
+                            {subtitle}
                         </p>
 
                         {/* CTA Buttons */}
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-2">
                             <button
                                 onClick={() => setAssessmentModalOpen(true)}
-                                className="px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-base shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+                                className="px-7 py-3.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold text-base shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                             >
                                 <span>Get Free Assessment</span>
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -112,7 +113,7 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall }) {
 
                             <button
                                 onClick={onOpenBookCall}
-                                className="px-7 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-semibold text-base border-2 border-slate-300 dark:border-slate-700 flex items-center justify-center gap-2 shadow-xs hover:border-blue-500 dark:hover:border-blue-500 transition-all"
+                                className="px-7 py-3.5 rounded-full bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-white font-semibold text-base border-2 border-slate-300 dark:border-slate-700 flex items-center justify-center gap-2 shadow-xs hover:border-blue-500 dark:hover:border-blue-500 transition-all cursor-pointer"
                             >
                                 <PhoneCall className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                 <span>Book a Call</span>
@@ -131,215 +132,114 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall }) {
                             </div>
                             <div className="flex items-center gap-1.5">
                                 <Check className="w-4 h-4 text-emerald-500" />
-                                <span>Visa & Scholarship Support</span>
+                                <span>100% Visa File Review</span>
                             </div>
                         </div>
+
                     </div>
 
-                    {/* RIGHT COLUMN: FLOATING INTERACTIVE GLASS CARD */}
+                    {/* RIGHT COLUMN: INTERACTIVE COUNTRY CARDS */}
                     <div className="lg:col-span-5 relative">
-                        <div className="relative rounded-3xl bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl p-6 sm:p-7 shadow-2xl border border-slate-200/80 dark:border-slate-800/80 space-y-6">
-                            
-                            {/* Card Header */}
-                            <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-600/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                                        <GraduationCap className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-slate-900 dark:text-white text-base">Top Global Destinations</h3>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400">Direct admission & visa support</p>
-                                    </div>
-                                </div>
-                                <span className="bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border border-emerald-300/40 dark:border-emerald-800/60">
-                                    98% Visa Pass
-                                </span>
-                            </div>
-
-                            {/* Destination Badges */}
-                            <div className="space-y-2.5">
-                                {countries.map((c, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/50 hover:bg-blue-50/50 dark:hover:bg-slate-800 transition-colors group"
-                                    >
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-2xl">{c.flag}</span>
-                                            <div>
-                                                <div className="font-semibold text-slate-900 dark:text-white text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                    {c.name}
-                                                </div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{c.unis}</div>
-                                            </div>
-                                        </div>
-                                        <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Student Rating Footer */}
-                            <div className="pt-2 flex items-center justify-between bg-gradient-to-r from-blue-900/90 via-indigo-900/90 to-slate-900 p-4 rounded-2xl text-white">
-                                <div className="flex items-center gap-3">
-                                    <div className="flex -space-x-2">
-                                        <div className="w-7 h-7 rounded-full bg-blue-400 border-2 border-slate-900 flex items-center justify-center font-bold text-[10px]">A</div>
-                                        <div className="w-7 h-7 rounded-full bg-indigo-400 border-2 border-slate-900 flex items-center justify-center font-bold text-[10px]">S</div>
-                                        <div className="w-7 h-7 rounded-full bg-emerald-400 border-2 border-slate-900 flex items-center justify-center font-bold text-[10px]">R</div>
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-1 text-amber-400">
-                                            {[...Array(5)].map((_, idx) => (
-                                                <Star key={idx} className="w-3.5 h-3.5 fill-current" />
-                                            ))}
-                                        </div>
-                                        <div className="text-[11px] text-slate-300 font-medium">Over 10,000+ Happy Students</div>
-                                    </div>
-                                </div>
-                                <span className="text-xs font-bold text-blue-300 bg-white/10 px-2.5 py-1 rounded-lg">
-                                    Trusted
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                {/* STATS BAR SECTION */}
-                <div className="mt-14 lg:mt-16 pt-8 border-t border-slate-200/80 dark:border-slate-800">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                        {stats.map((stat, index) => {
-                            const IconComponent = stat.icon;
-                            return (
+                        <div className="grid grid-cols-2 gap-4">
+                            {countries.map((c, idx) => (
                                 <div
-                                    key={index}
-                                    className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-500/40 transition-all duration-300 group"
+                                    key={idx}
+                                    className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-500 transition-all space-y-2"
                                 >
-                                    <div className="flex items-center justify-between mb-3">
-                                        <div className={`p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 ${stat.textColor} group-hover:scale-110 transition-transform`}>
-                                            <IconComponent className="w-5 h-5" />
-                                        </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                                            {stat.unit}
-                                        </span>
-                                    </div>
-                                    <div className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                        {stat.value}
-                                    </div>
-                                    <div className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
-                                        {stat.label}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* AI MATCHER BANNER SECTION */}
-                <div className="mt-8">
-                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 text-white p-5 sm:p-6 shadow-xl border border-indigo-500/30">
-                        {/* Glow decorative graphics */}
-                        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-56 h-56 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
-                        
-                        <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                            <div className="flex items-start sm:items-center gap-3.5">
-                                <div className="p-3 rounded-xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/40 shrink-0 mt-0.5 sm:mt-0">
-                                    <Sparkles className="w-6 h-6 animate-pulse" />
-                                </div>
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-500 text-white text-[10px] font-extrabold uppercase tracking-wider">
-                                            New
-                                        </span>
-                                        <span className="font-bold text-base text-white">
-                                            AI Course Matcher
-                                        </span>
-                                    </div>
-                                    <p className="text-xs sm:text-sm text-slate-300 leading-normal">
-                                        Not sure where to study? Get matched in 60 seconds.
+                                    <div className="text-3xl">{c.flag}</div>
+                                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+                                        {c.name}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                        {c.unis}
                                     </p>
                                 </div>
-                            </div>
-
-                            <button
-                                onClick={onOpenAiSearch}
-                                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-bold text-sm shadow-md shadow-indigo-500/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 shrink-0"
-                            >
-                                <span>Start matching</span>
-                                <ArrowRight className="w-4 h-4" />
-                            </button>
+                            ))}
                         </div>
                     </div>
+
+                </div>
+
+                {/* BOTTOM STATS STRIP */}
+                <div className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-slate-200/80 dark:border-slate-800/80">
+                    {stats.map((st, i) => {
+                        const IconComp = st.icon;
+                        return (
+                            <div
+                                key={i}
+                                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 shadow-xs flex items-center gap-4"
+                            >
+                                <div className={`p-3 rounded-xl bg-gradient-to-br ${st.color} text-white shrink-0 shadow-sm`}>
+                                    <IconComp className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                                        {st.value}
+                                    </div>
+                                    <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                        {st.label}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
 
             </div>
 
-            {/* FREE ASSESSMENT MODAL */}
+            {/* FREE ELIGIBILITY ASSESSMENT MODAL */}
             {assessmentModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
+                    <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
                         <button
                             onClick={() => setAssessmentModalOpen(false)}
-                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg"
+                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg cursor-pointer"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-3 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
                                 <GraduationCap className="w-6 h-6" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Get Free Assessment</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Check your eligibility for UK, USA, Finland & Dubai</p>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">Quick Eligibility Check</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">Get personalized university options in 24 hours</p>
                             </div>
                         </div>
 
-                        <form onSubmit={(e) => { e.preventDefault(); alert('Free assessment request submitted! Our senior counselor will contact you shortly.'); setAssessmentModalOpen(false); }} className="space-y-4">
+                        <form onSubmit={(e) => { e.preventDefault(); alert('Assessment submitted! Our counselors will reach out to you within 24 hours.'); setAssessmentModalOpen(false); }} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Full Name</label>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Rahul Sharma"
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="e.g. Hasanuzzaman Priyam"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 />
                             </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        placeholder="rahul@example.com"
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone (WhatsApp)</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        placeholder="+880 1700 000 000"
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
                             <div>
-                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Study Country</label>
-                                <select className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="USA">United States</option>
-                                    <option value="Finland">Finland</option>
-                                    <option value="Dubai">Dubai (UAE)</option>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone / WhatsApp Number</label>
+                                <input
+                                    type="tel"
+                                    required
+                                    placeholder="+880 1812713814"
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Highest Academic Qualification</label>
+                                <select className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                    <option value="HSC/A-Level">HSC / A-Level / High School</option>
+                                    <option value="Bachelor">Bachelor Degree (Graduate)</option>
+                                    <option value="Masters">Masters Degree</option>
                                 </select>
                             </div>
-
                             <button
                                 type="submit"
-                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-transform"
+                                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold text-sm shadow-md hover:scale-[1.01] transition-transform cursor-pointer"
                             >
-                                Submit Free Assessment Request
+                                Submit Free Assessment
                             </button>
                         </form>
                     </div>

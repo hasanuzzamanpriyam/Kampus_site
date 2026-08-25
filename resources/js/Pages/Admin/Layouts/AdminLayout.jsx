@@ -1,0 +1,218 @@
+import React, { useState } from 'react';
+import { Link, usePage } from '@inertiajs/react';
+import { useTheme } from '../../../Contexts/ThemeProvider';
+import {
+    LayoutDashboard,
+    Settings,
+    FileText,
+    Building2,
+    BookOpen,
+    Newspaper,
+    Handshake,
+    Mail,
+    LogOut,
+    Sun,
+    Moon,
+    GraduationCap,
+    Menu,
+    X,
+    UserCircle,
+    Bell,
+    ChevronRight,
+    ExternalLink
+} from 'lucide-react';
+
+export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
+    const { url, props } = usePage();
+    const { theme, toggleTheme } = useTheme();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    const adminName = props?.auth?.user?.name || 'Administrator';
+    const adminEmail = props?.auth?.user?.email || 'admin@kampusedu.com';
+
+    const sidebarLinks = [
+        { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Global Settings', href: '/admin/settings', icon: Settings },
+        { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
+        { name: 'Universities', href: '/admin/universities', icon: Building2 },
+        { name: 'Courses', href: '/admin/courses', icon: BookOpen },
+        { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper },
+        { name: 'Partner Applications', href: '/admin/partners', icon: Handshake },
+        { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail },
+    ];
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        alert('Logging out of Admin Dashboard...');
+        window.location.href = '/';
+    };
+
+    return (
+        <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors">
+            
+            {/* 1. FIXED LEFT SIDEBAR (DARK THEME) */}
+            <aside
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800 transition-transform duration-300 transform ${
+                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                }`}
+            >
+                <div>
+                    {/* Brand Header */}
+                    <div className="h-16 px-6 flex items-center justify-between border-b border-slate-800">
+                        <Link href="/admin/dashboard" className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-md">
+                                <GraduationCap className="w-5 h-5" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="font-extrabold text-base tracking-tight text-white">
+                                    Kampus <span className="text-blue-400">CMS</span>
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+                                    Admin Panel
+                                </span>
+                            </div>
+                        </Link>
+                        <button
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-white"
+                        >
+                            <X className="w-5 h-5" />
+                        </button>
+                    </div>
+
+                    {/* Navigation Menu Links */}
+                    <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
+                        <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Core Management
+                        </div>
+
+                        {sidebarLinks.map((link) => {
+                            const IconComp = link.icon;
+                            const isActive = url.startsWith(link.href);
+                            return (
+                                <Link
+                                    key={link.name}
+                                    href={link.href}
+                                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                                        isActive
+                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                                        <span>{link.name}</span>
+                                    </div>
+                                    {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
+                                </Link>
+                            );
+                        })}
+                    </nav>
+                </div>
+
+                {/* Bottom Footer: Live Website Link */}
+                <div className="p-4 border-t border-slate-800">
+                    <a
+                        href="/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white text-xs font-semibold border border-slate-700/60 transition-colors"
+                    >
+                        <div className="flex items-center gap-2">
+                            <ExternalLink className="w-4 h-4 text-blue-400" />
+                            <span>View Live Website</span>
+                        </div>
+                        <span className="text-[10px] bg-slate-700 px-1.5 py-0.5 rounded font-mono">127.0.0.1</span>
+                    </a>
+                </div>
+            </aside>
+
+            {/* OVERLAY FOR MOBILE SIDEBAR */}
+            {isSidebarOpen && (
+                <div
+                    onClick={() => setIsSidebarOpen(false)}
+                    className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-xs lg:hidden"
+                />
+            )}
+
+            {/* 2. RIGHT WRAPPER (TOP HEADER + MAIN CONTENT) */}
+            <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
+                
+                {/* TOP HEADER */}
+                <header className="sticky top-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs transition-colors">
+                    
+                    {/* Left: Mobile Hamburger & Page Title */}
+                    <div className="flex items-center gap-3">
+                        <button
+                            onClick={() => setIsSidebarOpen(true)}
+                            className="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                            <Menu className="w-6 h-6" />
+                        </button>
+                        <h1 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                            {title}
+                        </h1>
+                    </div>
+
+                    {/* Right: Theme Toggle, Admin User Profile & Logout */}
+                    <div className="flex items-center gap-3 sm:gap-4">
+                        
+                        {/* Notification Bell */}
+                        <button className="p-2 rounded-full text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative">
+                            <Bell className="w-5 h-5" />
+                            <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                        </button>
+
+                        {/* Dark / Light Mode Toggle Button */}
+                        <button
+                            onClick={toggleTheme}
+                            className="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
+                            aria-label="Toggle Theme"
+                            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                        >
+                            {theme === 'dark' ? (
+                                <Sun className="w-4 h-4 text-amber-400" />
+                            ) : (
+                                <Moon className="w-4 h-4 text-slate-700" />
+                            )}
+                        </button>
+
+                        <div className="h-6 border-l border-slate-200 dark:border-slate-700 hidden sm:block" />
+
+                        {/* Admin User Details */}
+                        <div className="hidden sm:flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center border border-blue-200 dark:border-blue-800">
+                                <UserCircle className="w-5 h-5" />
+                            </div>
+                            <div className="flex flex-col text-left">
+                                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                                    {adminName}
+                                </span>
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                                    {adminEmail}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Logout Button */}
+                        <button
+                            onClick={handleLogout}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900/60 text-xs font-bold border border-rose-200 dark:border-rose-800 transition-colors cursor-pointer"
+                            title="Sign Out"
+                        >
+                            <LogOut className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Logout</span>
+                        </button>
+
+                    </div>
+                </header>
+
+                {/* 3. MAIN CONTENT AREA WITH SOFT BACKGROUND */}
+                <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950">
+                    {children}
+                </main>
+
+            </div>
+        </div>
+    );
+}
