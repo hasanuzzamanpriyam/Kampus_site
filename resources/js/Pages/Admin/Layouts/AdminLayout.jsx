@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { useTheme } from '../../../Contexts/ThemeProvider';
 import {
     LayoutDashboard,
@@ -43,8 +43,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
     const handleLogout = (e) => {
         e.preventDefault();
-        alert('Logging out of Admin Dashboard...');
-        window.location.href = '/';
+        router.post(route('logout'));
     };
 
     return (

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
@@ -12,7 +13,7 @@ use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\InquiryController;
 
-// Public Dynamic Home Route
+// Public Dynamic Home Route (Using original HomeController)
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
@@ -87,11 +88,15 @@ Route::get('/accreditation', function () {
     return Inertia::render('Accreditation'); 
 });
 
-// Admin CMS Routes
-Route::prefix('admin')->group(function () {
+// Public Partner Application & Contact Submission Routes
+Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');
+Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
+
+// SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
+Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
-    });
+    })->name('admin.dashboard');
 
     // Global Settings Routes
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
@@ -150,11 +155,15 @@ Route::prefix('admin')->group(function () {
     ]);
 });
 
-// Public Partner Application Submission Route
-Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');
+// Profile Management Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Public Contact Message Submission Route
-Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
+// Include Breeze Auth Routes (login, register, logout, password.request)
+require __DIR__.'/auth.php';
 
 // Dynamic Catch-All Public Page Route (Placed at the VERY END)
 Route::get('/{slug}', [PublicPageController::class, 'show'])->name('pages.show');
