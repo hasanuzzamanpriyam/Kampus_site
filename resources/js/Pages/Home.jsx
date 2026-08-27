@@ -54,6 +54,7 @@ export default function Home({ page = null, universities = [], courses = [], cou
                     onOpenAiSearch={handleOpenAiSearch}
                     onOpenBookCall={handleOpenBookCall}
                     content={contentData}
+                    countries={countries}
                 />
 
                 {/* 2. SERVICES GRID SECTION */}

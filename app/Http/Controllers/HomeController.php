@@ -109,53 +109,87 @@ class HomeController extends Controller
             $courses = Course::with('university')->take(6)->get();
         }
 
-        // 4. Fetch Featured Destination Countries for Carousel
-        $countries = Country::where('is_featured', true)->get();
+        // 4. Fetch Randomized Featured Destination Countries
+        $defaultCountries = [
+            [
+                'name' => 'United Kingdom',
+                'slug' => 'united-kingdom',
+                'country_code' => 'GB',
+                'subtitle' => '150+ Partner Universities',
+                'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['Up to 3 Years Post-Study Work Visa', 'Scholarships up to £10,000'],
+            ],
+            [
+                'name' => 'United States',
+                'slug' => 'united-states',
+                'country_code' => 'US',
+                'subtitle' => '200+ Top Ranked Colleges',
+                'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['3-Year STEM OPT Extension', 'Merit Aid & Assistantships'],
+            ],
+            [
+                'name' => 'Finland',
+                'slug' => 'finland',
+                'country_code' => 'FI',
+                'subtitle' => '98% Visa Success Rate',
+                'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['PR Pathway After Graduation', '50-100% Tuition Waivers'],
+            ],
+            [
+                'name' => 'United Arab Emirates',
+                'slug' => 'united-arab-emirates',
+                'country_code' => 'AE',
+                'subtitle' => 'Global Tech & Business Hubs',
+                'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['100% Fast Student Visa', 'Tax-Free Career Opportunities'],
+            ],
+            [
+                'name' => 'Canada',
+                'slug' => 'canada',
+                'country_code' => 'CA',
+                'subtitle' => '3-Year PGWP & PR Pathways',
+                'image' => 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['3-Year Post-Grad Work Permit', 'Express Entry PR Pathway'],
+            ],
+            [
+                'name' => 'Australia',
+                'slug' => 'australia',
+                'country_code' => 'AU',
+                'subtitle' => 'Top Group of Eight Unis',
+                'image' => 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['Post-Study Work Rights', 'High Quality Life & Study'],
+            ],
+            [
+                'name' => 'Germany',
+                'slug' => 'germany',
+                'country_code' => 'DE',
+                'subtitle' => 'Zero/Low Tuition Fees',
+                'image' => 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['Tuition-Free Public Unis', '18-Month Job Seeking Visa'],
+            ],
+            [
+                'name' => 'Ireland',
+                'slug' => 'ireland',
+                'country_code' => 'IE',
+                'subtitle' => 'Silicon Valley of Europe',
+                'image' => 'https://images.unsplash.com/photo-1590089415225-401ed6f9db8e?auto=format&fit=crop&q=80&w=800',
+                'is_featured' => true,
+                'features' => ['2-Year Stay Back Option', 'European Tech Headquarters'],
+            ],
+        ];
 
-        if ($countries->isEmpty()) {
-            $defaultCountries = [
-                [
-                    'name' => 'United Kingdom',
-                    'slug' => 'united-kingdom',
-                    'country_code' => 'GB',
-                    'subtitle' => '150+ Partner Universities',
-                    'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800',
-                    'is_featured' => true,
-                    'features' => ['Up to 3 Years Post-Study Work Visa', 'Scholarships up to £10,000'],
-                ],
-                [
-                    'name' => 'United States',
-                    'slug' => 'united-states',
-                    'country_code' => 'US',
-                    'subtitle' => '200+ Top Ranked Colleges',
-                    'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800',
-                    'is_featured' => true,
-                    'features' => ['3-Year STEM OPT Extension', 'Merit Aid & Assistantships'],
-                ],
-                [
-                    'name' => 'Finland',
-                    'slug' => 'finland',
-                    'country_code' => 'FI',
-                    'subtitle' => '98% Visa Success Rate',
-                    'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800',
-                    'is_featured' => true,
-                    'features' => ['PR Pathway After Graduation', '50-100% Tuition Waivers'],
-                ],
-                [
-                    'name' => 'United Arab Emirates',
-                    'slug' => 'united-arab-emirates',
-                    'country_code' => 'AE',
-                    'subtitle' => 'Global Tech & Business Hubs',
-                    'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800',
-                    'is_featured' => true,
-                    'features' => ['100% Fast Student Visa', 'Tax-Free Career Opportunities'],
-                ],
-            ];
-            foreach ($defaultCountries as $dc) {
-                Country::updateOrCreate(['slug' => $dc['slug']], $dc);
-            }
-            $countries = Country::where('is_featured', true)->get();
+        foreach ($defaultCountries as $dc) {
+            Country::updateOrCreate(['slug' => $dc['slug']], $dc);
         }
+
+        $countries = Country::where('is_featured', true)->inRandomOrder()->get();
 
         return Inertia::render('Home', [
             'page' => $page,

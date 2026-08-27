@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import {
     Sparkles,
     ArrowRight,
@@ -15,7 +16,7 @@ import {
     Check
 } from 'lucide-react';
 
-export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = {} }) {
+export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = {}, countries = [] }) {
     const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
 
     const heading = content?.hero_heading || 'Building global futures, from dreams to degrees.';
@@ -57,12 +58,38 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
         }
     ];
 
-    const countries = [
-        { name: 'United Kingdom', flag: '🇬🇧', unis: '150+ Partner Universities' },
-        { name: 'United States', flag: '🇺🇸', unis: '200+ STEM & Ivy Pathways' },
-        { name: 'Finland', flag: '🇫🇮', unis: 'Pathway to Tuition Grants' },
-        { name: 'Dubai (UAE)', flag: '🇦🇪', unis: 'Fast 100% Visa Guarantee' },
+    const defaultCountries = [
+        {
+            name: 'United Kingdom',
+            slug: 'united-kingdom',
+            country_code: 'GB',
+            subtitle: '150+ Partner Universities',
+            image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
+        },
+        {
+            name: 'United States',
+            slug: 'united-states',
+            country_code: 'US',
+            subtitle: '200+ STEM & Ivy Pathways',
+            image: 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=800&q=80',
+        },
+        {
+            name: 'Finland',
+            slug: 'finland',
+            country_code: 'FI',
+            subtitle: 'Pathway to Tuition Grants',
+            image: 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&w=800&q=80',
+        },
+        {
+            name: 'Dubai (UAE)',
+            slug: 'united-arab-emirates',
+            country_code: 'AE',
+            subtitle: 'Fast 100% Visa Guarantee',
+            image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
+        },
     ];
+
+    const heroCountries = countries && countries.length >= 4 ? countries.slice(0, 4) : defaultCountries;
 
     return (
         <section className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24 bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -96,7 +123,7 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
                             {heading}
                         </h1>
 
-                        {/* Sub-headline */}
+                        {/* Subtitle */}
                         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl">
                             {subtitle}
                         </p>
@@ -138,22 +165,51 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
 
                     </div>
 
-                    {/* RIGHT COLUMN: INTERACTIVE COUNTRY CARDS */}
+                    {/* RIGHT COLUMN: DYNAMIC ANIMATED COUNTRY CARDS WITH BACKGROUND IMAGES */}
                     <div className="lg:col-span-5 relative">
                         <div className="grid grid-cols-2 gap-4">
-                            {countries.map((c, idx) => (
-                                <div
-                                    key={idx}
-                                    className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md hover:border-blue-500 transition-all space-y-2"
+                            {heroCountries.map((c, idx) => (
+                                <Link
+                                    key={c.id || idx}
+                                    href={`/destinations/${c.slug || 'united-kingdom'}`}
+                                    className="group relative h-44 sm:h-48 rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-500 hover:-translate-y-2 border border-slate-200/50 dark:border-slate-800 flex flex-col justify-between p-5 text-left"
                                 >
-                                    <div className="text-3xl">{c.flag}</div>
-                                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
-                                        {c.name}
-                                    </h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                                        {c.unis}
-                                    </p>
-                                </div>
+                                    {/* Country Background Image */}
+                                    <div className="absolute inset-0 bg-slate-950">
+                                        <img
+                                            src={c.image || 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80'}
+                                            alt={c.name}
+                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-75"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                e.target.src = 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80';
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Dark Gradient Overlay for Crisp Text Legibility */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/75 to-slate-950/40 group-hover:via-slate-950/65 transition-all" />
+
+                                    {/* Top Row: Country Code Badge & Hover Arrow */}
+                                    <div className="relative z-10 flex items-center justify-between">
+                                        <span className="px-2.5 py-1 rounded-xl bg-white/20 backdrop-blur-md text-white text-xs font-black font-mono border border-white/30 shadow-xs">
+                                            {c.country_code || (c.name ? c.name.substring(0, 2).toUpperCase() : 'GB')}
+                                        </span>
+                                        <div className="w-7 h-7 rounded-full bg-white/10 backdrop-blur-xs flex items-center justify-center text-white/70 group-hover:text-white group-hover:bg-blue-600 transition-all">
+                                            <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                                        </div>
+                                    </div>
+
+                                    {/* Bottom Row: Name & Subtitle */}
+                                    <div className="relative z-10 space-y-1">
+                                        <h3 className="font-extrabold text-white text-base sm:text-lg group-hover:text-blue-300 transition-colors leading-tight">
+                                            {c.name}
+                                        </h3>
+                                        <p className="text-[11px] sm:text-xs text-slate-300 group-hover:text-white font-medium line-clamp-1 transition-colors">
+                                            {c.subtitle || c.unis || 'Partner Universities'}
+                                        </p>
+                                    </div>
+                                </Link>
                             ))}
                         </div>
                     </div>
