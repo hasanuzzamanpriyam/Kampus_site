@@ -10,10 +10,11 @@ import {
     Trash2,
     MapPin,
     Image,
-    Sparkles
+    Sparkles,
+    Globe
 } from 'lucide-react';
 
-export default function Form({ university = null }) {
+export default function Form({ university = null, countries = [] }) {
     const isEdit = !!university;
 
     const initialFeatures = university?.features || [
@@ -28,6 +29,7 @@ export default function Form({ university = null }) {
     const [logoPreview, setLogoPreview] = useState(university?.logo || '');
 
     const { data, setData, processing, errors } = useForm({
+        country_id: university?.country_id || '',
         name: university?.name || '',
         slug: university?.slug || '',
         location: university?.location || '',
@@ -85,7 +87,6 @@ export default function Form({ university = null }) {
         };
 
         if (isEdit) {
-            // For Inertia file uploads on PUT endpoints, send POST with _method: 'put'
             payload._method = 'put';
             router.post(`/admin/universities/${university.id}`, payload, {
                 onSuccess: () => alert(`University "${data.name}" updated successfully!`)
@@ -136,7 +137,7 @@ export default function Form({ university = null }) {
                                     General Details
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Specify university name, unique slug, and campus location
+                                    Specify university name, unique slug, country destination, and campus location
                                 </p>
                             </div>
                         </div>
@@ -175,23 +176,48 @@ export default function Form({ university = null }) {
                             </div>
                         </div>
 
-                        {/* Location */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Location / Country & City *
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    required
-                                    value={data.location}
-                                    onChange={(e) => setData('location', e.target.value)}
-                                    placeholder="e.g. Oxford, United Kingdom"
-                                    className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                />
-                                <MapPin className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            {/* Country Select */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Destination Country
+                                </label>
+                                <div className="relative">
+                                    <select
+                                        value={data.country_id}
+                                        onChange={(e) => setData('country_id', e.target.value)}
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    >
+                                        <option value="">-- Select Country --</option>
+                                        {countries.map((c) => (
+                                            <option key={c.id} value={c.id}>
+                                                {c.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    <Globe className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                                </div>
+                                {errors.country_id && <span className="text-xs text-rose-500 font-semibold">{errors.country_id}</span>}
                             </div>
-                            {errors.location && <span className="text-xs text-rose-500 font-semibold">{errors.location}</span>}
+
+                            {/* Location */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Location / City & Region *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        required
+                                        value={data.location}
+                                        onChange={(e) => setData('location', e.target.value)}
+                                        placeholder="e.g. Oxford, United Kingdom"
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                    <MapPin className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                                </div>
+                                {errors.location && <span className="text-xs text-rose-500 font-semibold">{errors.location}</span>}
+                            </div>
                         </div>
 
                         {/* Description */}

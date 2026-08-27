@@ -19,7 +19,8 @@ export default function Index({ universities = [] }) {
 
     const filteredUniversities = universities.filter(u =>
         u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.location.toLowerCase().includes(searchTerm.toLowerCase())
+        u.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (u.country?.name && u.country.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
     const handleDelete = (id, name) => {
@@ -45,7 +46,7 @@ export default function Index({ universities = [] }) {
                             Partner Universities Database
                         </h2>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Add, edit, or remove partner universities, campus locations, cover photos, and feature highlights.
+                            Add, edit, or remove partner universities, destination country links, campus locations, cover photos, and feature highlights.
                         </p>
                     </div>
 
@@ -64,7 +65,7 @@ export default function Index({ universities = [] }) {
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search university by name or location (e.g. Oxford, Finland)..."
+                        placeholder="Search university by name, location, or country (e.g. Oxford, Finland, United Kingdom)..."
                         className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-xs"
                     />
                     <Search className="w-5 h-5 text-slate-400 absolute left-4 top-3.5" />
@@ -77,6 +78,7 @@ export default function Index({ universities = [] }) {
                             <thead>
                                 <tr className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                                     <th className="py-4 px-6 font-extrabold">University Name</th>
+                                    <th className="py-4 px-6 font-extrabold">Country</th>
                                     <th className="py-4 px-6 font-extrabold">Location</th>
                                     <th className="py-4 px-6 font-extrabold">Features</th>
                                     <th className="py-4 px-6 font-extrabold">Courses</th>
@@ -86,7 +88,7 @@ export default function Index({ universities = [] }) {
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                                 {filteredUniversities.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                                        <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                                             No universities found matching your search.
                                         </td>
                                     </tr>
@@ -112,6 +114,14 @@ export default function Index({ universities = [] }) {
                                                             /{u.slug}
                                                         </span>
                                                     </div>
+                                                </div>
+                                            </td>
+
+                                            {/* Country */}
+                                            <td className="py-4 px-6 text-slate-700 dark:text-slate-300 text-xs font-bold">
+                                                <div className="flex items-center gap-1.5">
+                                                    <Globe className="w-4 h-4 text-blue-500 shrink-0" />
+                                                    <span>{u.country?.name || 'Unassigned'}</span>
                                                 </div>
                                             </td>
 

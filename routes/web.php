@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CourseController;
@@ -109,6 +110,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('admin.pages.edit');
     Route::put('/pages/{id}', [PageController::class, 'update'])->name('admin.pages.update');
     Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('admin.pages.destroy');
+
+    // Countries CRUD Routes
+    Route::resource('countries', CountryController::class)->names([
+        'index' => 'admin.countries.index',
+        'create' => 'admin.countries.create',
+        'store' => 'admin.countries.store',
+        'edit' => 'admin.countries.edit',
+        'update' => 'admin.countries.update',
+        'destroy' => 'admin.countries.destroy',
+    ]);
 
     // Universities CRUD Routes
     Route::resource('universities', UniversityController::class)->names([

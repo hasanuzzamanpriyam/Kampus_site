@@ -19,7 +19,8 @@ import {
     UserCircle,
     Bell,
     ChevronRight,
-    ExternalLink
+    ExternalLink,
+    Globe
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
@@ -34,6 +35,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings },
         { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
+        { name: 'Countries', href: '/admin/countries', icon: Globe },
         { name: 'Universities', href: '/admin/universities', icon: Building2 },
         { name: 'Courses', href: '/admin/courses', icon: BookOpen },
         { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper },

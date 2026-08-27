@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\University;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -16,12 +17,18 @@ class UniversityController extends Controller
      */
     public function index()
     {
-        $universities = University::withCount('courses')->orderBy('id', 'desc')->get();
+        $universities = University::with('country')->withCount('courses')->orderBy('id', 'desc')->get();
 
         // Seed default universities if database table is empty
         if ($universities->isEmpty()) {
+            $uk = Country::firstOrCreate(['slug' => 'united-kingdom'], ['name' => 'United Kingdom']);
+            $usa = Country::firstOrCreate(['slug' => 'united-states'], ['name' => 'United States']);
+            $finland = Country::firstOrCreate(['slug' => 'finland'], ['name' => 'Finland']);
+            $uae = Country::firstOrCreate(['slug' => 'united-arab-emirates'], ['name' => 'United Arab Emirates']);
+
             $defaultUniversities = [
                 [
+                    'country_id' => $uk->id,
                     'name' => 'University of Oxford',
                     'slug' => 'university-of-oxford',
                     'location' => 'Oxford, United Kingdom',
@@ -31,6 +38,7 @@ class UniversityController extends Controller
                     'features' => ['QS World Rank #1', 'High Employability', '100% Research Excellence', 'Global Alumni Network']
                 ],
                 [
+                    'country_id' => $usa->id,
                     'name' => 'Harvard University',
                     'slug' => 'harvard-university',
                     'location' => 'Cambridge, Massachusetts, USA',
@@ -40,6 +48,7 @@ class UniversityController extends Controller
                     'features' => ['Ivy League Member', 'Top Business & Law Schools', 'Need-Blind Financial Aid']
                 ],
                 [
+                    'country_id' => $finland->id,
                     'name' => 'University of Helsinki',
                     'slug' => 'university-of-helsinki',
                     'location' => 'Helsinki, Finland',
@@ -49,6 +58,7 @@ class UniversityController extends Controller
                     'features' => ['Top 1% Global Ranking', '50-100% Tuition Waivers', 'Post-Study Work Permit']
                 ],
                 [
+                    'country_id' => $uae->id,
                     'name' => 'Middlesex University Dubai',
                     'slug' => 'middlesex-university-dubai',
                     'location' => 'Dubai Knowledge Park, UAE',
@@ -63,7 +73,23 @@ class UniversityController extends Controller
                 University::create($u);
             }
 
-            $universities = University::withCount('courses')->orderBy('id', 'desc')->get();
+            $universities = University::with('country')->withCount('courses')->orderBy('id', 'desc')->get();
+        } else {
+            // Auto link country_id for pre-existing records if null
+            $countriesMap = Country::all()->keyBy('slug');
+            foreach ($universities as $uni) {
+                if (!$uni->country_id) {
+                    if (str_contains(strtolower($uni->location), 'united kingdom') || str_contains(strtolower($uni->location), 'oxford') || str_contains(strtolower($uni->location), 'london')) {
+                        $uni->update(['country_id' => $countriesMap->get('united-kingdom')?->id]);
+                    } elseif (str_contains(strtolower($uni->location), 'usa') || str_contains(strtolower($uni->location), 'massachusetts') || str_contains(strtolower($uni->location), 'states')) {
+                        $uni->update(['country_id' => $countriesMap->get('united-states')?->id]);
+                    } elseif (str_contains(strtolower($uni->location), 'finland') || str_contains(strtolower($uni->location), 'helsinki')) {
+                        $uni->update(['country_id' => $countriesMap->get('finland')?->id]);
+                    } elseif (str_contains(strtolower($uni->location), 'uae') || str_contains(strtolower($uni->location), 'dubai')) {
+                        $uni->update(['country_id' => $countriesMap->get('united-arab-emirates')?->id]);
+                    }
+                }
+            }
         }
 
         return Inertia::render('Admin/Universities/Index', [
@@ -76,8 +102,11 @@ class UniversityController extends Controller
      */
     public function create()
     {
+        $countries = Country::select('id', 'name')->orderBy('name', 'asc')->get();
+
         return Inertia::render('Admin/Universities/Form', [
             'university' => null,
+            'countries' => $countries,
         ]);
     }
 
@@ -87,6 +116,7 @@ class UniversityController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'country_id' => 'nullable|exists:countries,id',
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:universities,slug',
             'location' => 'required|string|max:255',
@@ -122,9 +152,11 @@ class UniversityController extends Controller
     public function edit($id)
     {
         $university = University::findOrFail($id);
+        $countries = Country::select('id', 'name')->orderBy('name', 'asc')->get();
 
         return Inertia::render('Admin/Universities/Form', [
             'university' => $university,
+            'countries' => $countries,
         ]);
     }
 
@@ -136,6 +168,7 @@ class UniversityController extends Controller
         $university = University::findOrFail($id);
 
         $validated = $request->validate([
+            'country_id' => 'nullable|exists:countries,id',
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:universities,slug,' . $university->id,
             'location' => 'required|string|max:255',
@@ -147,7 +180,6 @@ class UniversityController extends Controller
 
         // Handle cover_image file upload
         if ($request->hasFile('cover_image')) {
-            // Remove old uploaded file if it exists in local storage
             if ($university->cover_image && str_contains($university->cover_image, '/storage/')) {
                 $oldPath = str_replace('/storage/', '', $university->cover_image);
                 Storage::disk('public')->delete($oldPath);
