@@ -10,7 +10,8 @@
         "@inertiajs/react": "^2.0.3",
         "lucide-react": "^0.475.0",
         "react": "^19.0.0",
-        "react-dom": "^19.0.0"
+        "react-dom": "^19.0.0",
+        "react-fast-marquee": "^1.6.5"
     },
     "devDependencies": {
         "@headlessui/react": "^2.0.0",

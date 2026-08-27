@@ -16,6 +16,13 @@ class Country extends Model
         'country_code',
         'subtitle',
         'image',
+        'is_featured',
+        'features',
+    ];
+
+    protected $casts = [
+        'is_featured' => 'boolean',
+        'features' => 'array',
     ];
 
     /**

@@ -109,20 +109,52 @@ class HomeController extends Controller
             $courses = Course::with('university')->take(6)->get();
         }
 
-        // 4. Fetch 4 Random Destination Countries
-        $countries = Country::inRandomOrder()->take(4)->get();
+        // 4. Fetch Featured Destination Countries for Carousel
+        $countries = Country::where('is_featured', true)->get();
 
         if ($countries->isEmpty()) {
             $defaultCountries = [
-                ['name' => 'United Kingdom', 'slug' => 'united-kingdom', 'country_code' => 'GB', 'subtitle' => '150+ Partner Universities', 'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800'],
-                ['name' => 'United States', 'slug' => 'united-states', 'country_code' => 'US', 'subtitle' => '200+ Top Ranked Colleges', 'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800'],
-                ['name' => 'Finland', 'slug' => 'finland', 'country_code' => 'FI', 'subtitle' => '98% Visa Success Rate', 'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800'],
-                ['name' => 'United Arab Emirates', 'slug' => 'united-arab-emirates', 'country_code' => 'AE', 'subtitle' => 'Global Tech & Business Hubs', 'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800'],
+                [
+                    'name' => 'United Kingdom',
+                    'slug' => 'united-kingdom',
+                    'country_code' => 'GB',
+                    'subtitle' => '150+ Partner Universities',
+                    'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800',
+                    'is_featured' => true,
+                    'features' => ['Up to 3 Years Post-Study Work Visa', 'Scholarships up to £10,000'],
+                ],
+                [
+                    'name' => 'United States',
+                    'slug' => 'united-states',
+                    'country_code' => 'US',
+                    'subtitle' => '200+ Top Ranked Colleges',
+                    'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800',
+                    'is_featured' => true,
+                    'features' => ['3-Year STEM OPT Extension', 'Merit Aid & Assistantships'],
+                ],
+                [
+                    'name' => 'Finland',
+                    'slug' => 'finland',
+                    'country_code' => 'FI',
+                    'subtitle' => '98% Visa Success Rate',
+                    'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800',
+                    'is_featured' => true,
+                    'features' => ['PR Pathway After Graduation', '50-100% Tuition Waivers'],
+                ],
+                [
+                    'name' => 'United Arab Emirates',
+                    'slug' => 'united-arab-emirates',
+                    'country_code' => 'AE',
+                    'subtitle' => 'Global Tech & Business Hubs',
+                    'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800',
+                    'is_featured' => true,
+                    'features' => ['100% Fast Student Visa', 'Tax-Free Career Opportunities'],
+                ],
             ];
             foreach ($defaultCountries as $dc) {
-                Country::create($dc);
+                Country::updateOrCreate(['slug' => $dc['slug']], $dc);
             }
-            $countries = Country::inRandomOrder()->take(4)->get();
+            $countries = Country::where('is_featured', true)->get();
         }
 
         return Inertia::render('Home', [

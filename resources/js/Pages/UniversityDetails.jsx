@@ -6,8 +6,8 @@ import UniversityTabs from '../Components/UniversityTabs';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
-export default function UniversityDetails({ slug = 'university-of-oxford' }) {
-    // Dynamic dataset mapping based on route slug
+export default function UniversityDetails({ university = null, slug = 'university-of-oxford' }) {
+    // Dynamic dataset mapping based on database record or fallback map
     const universitiesMap = {
         'university-of-oxford': {
             name: 'University of Oxford',
@@ -29,10 +29,6 @@ export default function UniversityDetails({ slug = 'university-of-oxford' }) {
             gallery: [
                 { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Historic Quadrangle & Radcliffe Camera' },
                 { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', caption: 'Bodleian Library Study Halls' },
-                { url: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80', caption: 'Science & AI Laboratories' },
-                { url: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80', caption: 'Student Residence Halls' },
-                { url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80', caption: 'International Student Activity Desk' },
-                { url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80', caption: 'Academic Lecture Theatre' },
             ],
             admissionReqs: [
                 'High School Diploma / A-Levels (AAA or equivalent) for Undergraduate',
@@ -42,60 +38,41 @@ export default function UniversityDetails({ slug = 'university-of-oxford' }) {
                 'Valid Passport copy & financial proof for UKVI Tier-4 Student Visa'
             ]
         },
-        'harvard-university': {
-            name: 'Harvard University',
-            location: 'Cambridge, Massachusetts, United States',
-            website: 'https://www.harvard.edu',
-            ranking: '#4 QS World University Rankings',
-            coverImage: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1600&q=80',
-            logoText: 'HU',
-            logoBg: 'bg-red-900 text-white',
-            established: 'Est. 1636',
-            type: 'Private Ivy League University',
-            description: 'Harvard University is a private Ivy League research university in Cambridge, Massachusetts. Founded in 1636, it is the oldest institution of higher learning in the United States and among the most prestigious in the world.',
-            courses: [
-                { code: 'CS50', name: 'BSc Computer Science', level: 'Undergraduate', duration: '4 Years Full-Time', tuition: '$54,000 / Year', intake: 'Fall 2026', desc: 'Introduction to the intellectual enterprises of computer science and the art of programming.' },
-                { code: 'MBA1', name: 'Harvard Business School MBA', level: 'Postgraduate', duration: '2 Years Full-Time', tuition: '$73,440 / Year', intake: 'Fall 2026', desc: 'General management curriculum focusing on real-world case studies and leadership.' },
-            ],
-            gallery: [
-                { url: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80', caption: 'Harvard Yard & Widener Library' },
-                { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Harvard Business School Campus' },
-            ],
-            admissionReqs: [
-                'SAT/ACT Scores or Test-Optional Pathway',
-                'High School Transcript & GPA 3.8+',
-                'IELTS 7.5 or TOEFL 100+',
-                'Common Application Essay & Counselor Recommendation'
-            ]
-        },
     };
 
-    // Fallback data if slug doesn't match predefined map
-    const currentUniversity = universitiesMap[slug] || {
-        name: slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'University of Oxford',
-        location: 'United Kingdom',
-        website: 'https://www.ox.ac.uk',
-        ranking: 'Top 100 Global University',
-        coverImage: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80',
-        logoText: slug ? slug.substring(0, 2).toUpperCase() : 'UN',
+    const currentUniversity = university ? {
+        name: university.name,
+        location: university.location || (university.country ? university.country.name : 'United Kingdom'),
+        website: university.website || 'https://www.kampusedu.com',
+        ranking: university.ranking || 'Top Ranked Global Institution',
+        coverImage: university.cover_image || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80',
+        logoText: university.name ? university.name.split(' ').map(w => w[0]).join('').substring(0, 3) : 'UN',
         logoBg: 'bg-blue-900 text-white',
-        established: 'Partner Institution',
-        type: 'Public Research University',
-        description: 'World-renowned partner institution providing top-tier academic degrees, research facilities, and global career prospects.',
-        courses: [
+        established: 'Est. Partner Campus',
+        type: 'Public Research Institution',
+        description: university.description || 'World-renowned partner institution providing top-tier academic degrees, research facilities, and global career prospects.',
+        courses: (university.courses && university.courses.length > 0) ? university.courses.map(c => ({
+            code: c.slug ? c.slug.substring(0, 6).toUpperCase() : 'CRS',
+            name: c.title,
+            level: c.level || 'Postgraduate',
+            duration: c.duration || '1 Year Full-Time',
+            tuition: c.tuition_fee || '£18,500 / Year',
+            intake: c.intake || 'September 2026',
+            desc: c.description || 'Comprehensive degree program with specialized academic tracks.'
+        })) : [
             { code: 'UG10', name: 'Bachelor of Science (BSc)', level: 'Undergraduate', duration: '3 Years Full-Time', tuition: '£22,000 / Year', intake: 'September 2026', desc: 'Degree program with specialized academic tracks.' },
             { code: 'PG20', name: 'Master of Science (MSc)', level: 'Postgraduate', duration: '1 Year Full-Time', tuition: '£24,500 / Year', intake: 'September 2026', desc: 'Postgraduate research & coursework degree.' },
         ],
         gallery: [
-            { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Campus Grounds' },
-            { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', caption: 'Library & Facilities' },
+            { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Historic Campus Grounds' },
+            { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', caption: 'Library & Research Halls' },
         ],
         admissionReqs: [
             'High School / Undergraduate Transcripts',
             'IELTS 6.5 or equivalent English test',
             'Statement of Purpose & References'
         ]
-    };
+    } : (universitiesMap[slug] || universitiesMap['university-of-oxford']);
 
     return (
         <Layout>

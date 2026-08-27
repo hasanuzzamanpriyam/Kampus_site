@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\PublicDestinationController;
+use App\Http\Controllers\PublicUniversityController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
@@ -32,11 +34,8 @@ Route::get('/universities', function () {
     return Inertia::render('Universities'); 
 });
 
-Route::get('/universities/{slug}', function ($slug) {
-    return Inertia::render('UniversityDetails', [
-        'slug' => $slug
-    ]);
-});
+Route::get('/destinations/{slug}', [PublicDestinationController::class, 'show'])->name('destinations.show');
+Route::get('/universities/{slug}', [PublicUniversityController::class, 'show'])->name('universities.show');
 
 Route::get('/blog', function () {
     return Inertia::render('Blog'); 
