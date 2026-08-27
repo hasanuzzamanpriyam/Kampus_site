@@ -20,7 +20,9 @@ import {
     Bell,
     ChevronRight,
     ExternalLink,
-    Globe
+    Globe,
+    Users,
+    ShieldCheck
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
@@ -28,8 +30,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const { theme, toggleTheme } = useTheme();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const adminName = props?.auth?.user?.name || 'Administrator';
-    const adminEmail = props?.auth?.user?.email || 'admin@kampusedu.com';
+    const currentUser = props?.auth?.user;
+    const adminName = currentUser?.name || 'Administrator';
+    const adminEmail = currentUser?.email || 'admin@kampusedu.com';
+    const isSuperAdmin = currentUser?.id === 1;
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
@@ -41,6 +45,11 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
         { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper },
         { name: 'Partner Applications', href: '/admin/partners', icon: Handshake },
         { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail },
+    ];
+
+    const accessControlLinks = [
+        { name: 'User Management', href: '/admin/users', icon: Users },
+        { name: 'Roles & Permissions', href: '/admin/roles', icon: ShieldCheck },
     ];
 
     const handleLogout = (e) => {
@@ -108,6 +117,36 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 </Link>
                             );
                         })}
+
+                        {/* Access Control Navigation Section */}
+                        {isSuperAdmin && (
+                            <>
+                                <div className="px-3 py-2 pt-4 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-t border-slate-800/80 mt-2">
+                                    Access Control
+                                </div>
+                                {accessControlLinks.map((link) => {
+                                    const IconComp = link.icon;
+                                    const isActive = url.startsWith(link.href);
+                                    return (
+                                        <Link
+                                            key={link.name}
+                                            href={link.href}
+                                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                                                isActive
+                                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                            }`}
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                                                <span>{link.name}</span>
+                                            </div>
+                                            {isActive && <ChevronRight className="w-4 h-4 opacity-70" />}
+                                        </Link>
+                                    );
+                                })}
+                            </>
+                        )}
                     </nav>
                 </div>
 

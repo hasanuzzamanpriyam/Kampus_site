@@ -13,6 +13,8 @@ use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\InquiryController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 
 // Public Dynamic Home Route (Using original HomeController)
 Route::get('/', HomeController::class)->name('home');
@@ -163,6 +165,21 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'index' => 'admin.inquiries.index',
         'update' => 'admin.inquiries.update',
         'destroy' => 'admin.inquiries.destroy',
+    ]);
+
+    // Roles & Permissions Management Routes
+    Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->names([
+        'index' => 'admin.roles.index',
+        'store' => 'admin.roles.store',
+        'update' => 'admin.roles.update',
+        'destroy' => 'admin.roles.destroy',
+    ]);
+
+    // User Management Routes
+    Route::resource('users', UserController::class)->only(['index', 'update', 'destroy'])->names([
+        'index' => 'admin.users.index',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy',
     ]);
 });
 
