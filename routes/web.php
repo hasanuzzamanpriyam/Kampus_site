@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\CountryController;
@@ -91,9 +92,10 @@ Route::get('/accreditation', function () {
     return Inertia::render('Accreditation'); 
 });
 
-// Public Partner Application & Contact Submission Routes
+// Public Partner Application, Contact & Call Booking Submission Routes
 Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');
 Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
+Route::post('/book-call', [FrontendController::class, 'bookCall'])->name('book-call.submit');
 
 // SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
 Route::middleware(['auth'])->prefix('admin')->group(function () {

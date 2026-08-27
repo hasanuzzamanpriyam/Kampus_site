@@ -60,7 +60,7 @@ export default function ServicesGrid() {
     return (
         <section className="py-16 lg:py-24 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 transition-colors">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
+
                 {/* SECTION HEADER */}
                 <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
                     <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200 dark:border-slate-700">
@@ -109,10 +109,10 @@ export default function ServicesGrid() {
                                 </div>
 
                                 {/* Learn More Action Link */}
-                                <div className="pt-6 mt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
+                                {/* <div className="pt-6 mt-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
                                     <span className="group-hover:underline">Explore Service</span>
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </div>
+                                </div> */}
                             </div>
                         );
                     })}

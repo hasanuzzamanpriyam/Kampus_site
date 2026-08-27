@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { useTheme } from '../Contexts/ThemeProvider';
 import TopBar from '../Components/TopBar';
+import BookCallModal from '../Components/BookCallModal';
 import {
     GraduationCap,
     Globe,
@@ -363,6 +364,8 @@ export default function Layout({ children }) {
                     </div>
                 </div>
             )}
+            {/* Multi-Step Book a Call Modal */}
+            <BookCallModal isOpen={isBookCallOpen} onClose={() => setIsBookCallOpen(false)} />
         </div>
     );
 }

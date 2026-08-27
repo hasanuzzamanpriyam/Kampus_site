@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\University;
 use App\Models\Course;
+use App\Models\Country;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -108,10 +109,27 @@ class HomeController extends Controller
             $courses = Course::with('university')->take(6)->get();
         }
 
+        // 4. Fetch 4 Random Destination Countries
+        $countries = Country::inRandomOrder()->take(4)->get();
+
+        if ($countries->isEmpty()) {
+            $defaultCountries = [
+                ['name' => 'United Kingdom', 'slug' => 'united-kingdom', 'country_code' => 'GB', 'subtitle' => '150+ Partner Universities', 'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800'],
+                ['name' => 'United States', 'slug' => 'united-states', 'country_code' => 'US', 'subtitle' => '200+ Top Ranked Colleges', 'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800'],
+                ['name' => 'Finland', 'slug' => 'finland', 'country_code' => 'FI', 'subtitle' => '98% Visa Success Rate', 'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800'],
+                ['name' => 'United Arab Emirates', 'slug' => 'united-arab-emirates', 'country_code' => 'AE', 'subtitle' => 'Global Tech & Business Hubs', 'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800'],
+            ];
+            foreach ($defaultCountries as $dc) {
+                Country::create($dc);
+            }
+            $countries = Country::inRandomOrder()->take(4)->get();
+        }
+
         return Inertia::render('Home', [
             'page' => $page,
             'universities' => $universities,
             'courses' => $courses,
+            'countries' => $countries,
         ]);
     }
 }

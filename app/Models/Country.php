@@ -13,6 +13,9 @@ class Country extends Model
     protected $fillable = [
         'name',
         'slug',
+        'country_code',
+        'subtitle',
+        'image',
     ];
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Http\RedirectResponse;
@@ -18,21 +19,69 @@ class CountryController extends Controller
     {
         $countries = Country::withCount('universities')->orderBy('name', 'asc')->get();
 
+        $defaultCountries = [
+            [
+                'name' => 'United Kingdom',
+                'slug' => 'united-kingdom',
+                'country_code' => 'GB',
+                'subtitle' => '150+ Partner Universities',
+                'image' => 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&q=80&w=800',
+            ],
+            [
+                'name' => 'United States',
+                'slug' => 'united-states',
+                'country_code' => 'US',
+                'subtitle' => '200+ Top Ranked Colleges',
+                'image' => 'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&q=80&w=800',
+            ],
+            [
+                'name' => 'Finland',
+                'slug' => 'finland',
+                'country_code' => 'FI',
+                'subtitle' => '98% Visa Success Rate',
+                'image' => 'https://images.unsplash.com/photo-1538332576228-eb5b4c4de6f5?auto=format&fit=crop&q=80&w=800',
+            ],
+            [
+                'name' => 'United Arab Emirates',
+                'slug' => 'united-arab-emirates',
+                'country_code' => 'AE',
+                'subtitle' => 'Global Tech & Business Hubs',
+                'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=800',
+            ],
+            [
+                'name' => 'Canada',
+                'slug' => 'canada',
+                'country_code' => 'CA',
+                'subtitle' => 'Post-Study Work Permits',
+                'image' => 'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&q=80&w=800',
+            ],
+            [
+                'name' => 'Australia',
+                'slug' => 'australia',
+                'country_code' => 'AU',
+                'subtitle' => 'High Quality Education',
+                'image' => 'https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?auto=format&fit=crop&q=80&w=800',
+            ],
+        ];
+
         // Seed default destination countries if table is empty
         if ($countries->isEmpty()) {
-            $defaultCountries = [
-                ['name' => 'United Kingdom', 'slug' => 'united-kingdom'],
-                ['name' => 'United States', 'slug' => 'united-states'],
-                ['name' => 'Finland', 'slug' => 'finland'],
-                ['name' => 'United Arab Emirates', 'slug' => 'united-arab-emirates'],
-                ['name' => 'Canada', 'slug' => 'canada'],
-                ['name' => 'Australia', 'slug' => 'australia'],
-            ];
-
             foreach ($defaultCountries as $c) {
                 Country::create($c);
             }
-
+            $countries = Country::withCount('universities')->orderBy('name', 'asc')->get();
+        } else {
+            // Update missing country_code / subtitle / image attributes for existing records
+            foreach ($defaultCountries as $def) {
+                $c = Country::where('slug', $def['slug'])->first();
+                if ($c && (empty($c->country_code) || empty($c->image))) {
+                    $c->update([
+                        'country_code' => $c->country_code ?: $def['country_code'],
+                        'subtitle' => $c->subtitle ?: $def['subtitle'],
+                        'image' => $c->image ?: $def['image'],
+                    ]);
+                }
+            }
             $countries = Country::withCount('universities')->orderBy('name', 'asc')->get();
         }
 
@@ -59,7 +108,20 @@ class CountryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:countries,slug',
+            'country_code' => 'nullable|string|max:10',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable',
         ]);
+
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            ]);
+            $path = $request->file('image')->store('countries', 'public');
+            $validated['image'] = '/storage/' . $path;
+        } elseif (is_string($request->image)) {
+            $validated['image'] = $request->image;
+        }
 
         Country::create($validated);
 
@@ -89,7 +151,25 @@ class CountryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:countries,slug,' . $country->id,
+            'country_code' => 'nullable|string|max:10',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable',
         ]);
+
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            ]);
+            // Delete old file if local storage
+            if ($country->image && str_starts_with($country->image, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $country->image);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $path = $request->file('image')->store('countries', 'public');
+            $validated['image'] = '/storage/' . $path;
+        } elseif (is_string($request->image)) {
+            $validated['image'] = $request->image;
+        }
 
         $country->update($validated);
 
@@ -103,6 +183,12 @@ class CountryController extends Controller
     public function destroy(int $id): RedirectResponse
     {
         $country = Country::findOrFail($id);
+
+        if ($country->image && str_starts_with($country->image, '/storage/')) {
+            $oldPath = str_replace('/storage/', '', $country->image);
+            Storage::disk('public')->delete($oldPath);
+        }
+
         $country->delete();
 
         return redirect()->route('admin.countries.index')

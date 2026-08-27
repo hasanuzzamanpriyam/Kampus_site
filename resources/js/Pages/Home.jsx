@@ -7,7 +7,7 @@ import Destinations from '../Components/Destinations';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
-export default function Home({ page = null, universities = [], courses = [] }) {
+export default function Home({ page = null, universities = [], courses = [], countries = [] }) {
     // Dynamic SEO values from database with sensible defaults
     const metaTitle = page?.meta_title || 'Kampus EduConsult — Study Abroad Educational Consultancy';
     const metaDescription = page?.meta_description || 'Empowering ambitious students worldwide to gain admission into top global universities in UK, USA, Canada, Australia & Europe.';
@@ -59,8 +59,8 @@ export default function Home({ page = null, universities = [], courses = [] }) {
                 {/* 2. SERVICES GRID SECTION */}
                 <ServicesGrid />
 
-                {/* 3. DESTINATIONS GRID SECTION (DYNAMICS WITH TOP UNIVERSITIES FROM DATABASE) */}
-                <Destinations universities={universities} />
+                {/* 3. DESTINATIONS GRID SECTION (DYNAMICALLY RANDOMIZED COUNTRIES FROM DATABASE) */}
+                <Destinations countries={countries} />
 
                 {/* 4. JOURNEY PROCESS TIMELINE SECTION */}
                 <JourneyProcess />

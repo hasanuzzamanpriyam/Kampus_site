@@ -88,7 +88,7 @@ export default function Dashboard() {
                                 { name: 'Edit Global Site Settings', desc: 'Logos, phone numbers & footers', href: '/admin/settings', icon: Settings },
                                 { name: 'Manage SEO & Pages', desc: 'Hero titles, meta tags & content', href: '/admin/pages', icon: FileText },
                                 { name: 'Manage Universities', desc: 'Add or update campus details', href: '/admin/universities', icon: Building2 },
-                                { name: 'Manage Course Database', desc: 'Tuition fees, intakes & degrees', href: '/admin/courses', icon: BookOpen },
+                                { name: 'Manage Courses', desc: 'Tuition fees, intakes & degrees', href: '/admin/courses', icon: BookOpen },
                             ].map((short, i) => (
                                 <a
                                     key={i}
