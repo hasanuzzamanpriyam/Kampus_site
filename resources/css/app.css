@@ -6,4 +6,34 @@
     body {
         font-family: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
     }
+
+    /* Modern Thin Custom Scrollbar for Firefox */
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+    }
+
+    /* Custom Webkit Scrollbar (Chrome, Edge, Safari) */
+    ::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: rgba(100, 116, 139, 0.4);
+        border-radius: 9999px;
+        transition: background-color 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(100, 116, 139, 0.7);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
 }
