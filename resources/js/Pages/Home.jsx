@@ -5,9 +5,10 @@ import HeroSection from '../Components/HeroSection';
 import ServicesGrid from '../Components/ServicesGrid';
 import Destinations from '../Components/Destinations';
 import JourneyProcess from '../Components/JourneyProcess';
+import SuccessStories from '../Components/SuccessStories';
 import FaqSection from '../Components/FaqSection';
 
-export default function Home({ page = null, universities = [], courses = [], countries = [] }) {
+export default function Home({ page = null, universities = [], courses = [], countries = [], successStories = [] }) {
     // Dynamic SEO values from database with sensible defaults
     const metaTitle = page?.meta_title || 'Kampus EduConsult — Study Abroad Educational Consultancy';
     const metaDescription = page?.meta_description || 'Empowering ambitious students worldwide to gain admission into top global universities in UK, USA, Canada, Australia & Europe.';
@@ -66,7 +67,10 @@ export default function Home({ page = null, universities = [], courses = [], cou
                 {/* 4. JOURNEY PROCESS TIMELINE SECTION */}
                 <JourneyProcess />
 
-                {/* 5. FAQ ACCORDION SECTION */}
+                {/* 5. STUDENT SUCCESS STORIES MARQUEE SECTION */}
+                <SuccessStories stories={successStories} />
+
+                {/* 6. FAQ ACCORDION SECTION */}
                 <FaqSection />
 
             </div>

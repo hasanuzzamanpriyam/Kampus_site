@@ -6,6 +6,7 @@ use App\Models\Page;
 use App\Models\University;
 use App\Models\Course;
 use App\Models\Country;
+use App\Models\Blog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -191,11 +192,66 @@ class HomeController extends Controller
 
         $countries = Country::where('is_featured', true)->inRandomOrder()->get();
 
+        // 5. Fetch Featured Success Stories (Blogs)
+        $successStories = Blog::where('is_published', true)->where('is_featured', true)->latest()->take(8)->get();
+
+        if ($successStories->isEmpty()) {
+            $defaultStories = [
+                [
+                    'title' => 'How Ayesha Secured a £10,000 Scholarship at University of Oxford',
+                    'slug' => 'ayesha-oxford-scholarship-success',
+                    'category' => 'Success Stories',
+                    'excerpt' => 'From initial SOP review to the final visa interview, discover the step-by-step roadmap that helped Ayesha win a prestigious merit scholarship.',
+                    'content' => 'Full inspiring journey of Ayesha getting into Oxford MSc Data Science with a full scholarship grant and tier-4 visa on the first attempt.',
+                    'image' => 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80',
+                    'is_published' => true,
+                    'is_featured' => true,
+                ],
+                [
+                    'title' => 'From Dhaka to Harvard: Tanvir’s Full-Ride MBA Acceptance Story',
+                    'slug' => 'tanvir-harvard-mba-journey',
+                    'category' => 'Success Stories',
+                    'excerpt' => 'Read how Tanvir cracked the GMAT 740 and crafted standout leadership essays with our certified Ivy League admissions counselors.',
+                    'content' => 'Tanvir shares his application insights, reference letter tactics, and mock interview preparations for Harvard Business School.',
+                    'image' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+                    'is_published' => true,
+                    'is_featured' => true,
+                ],
+                [
+                    'title' => '100% Tuition Waiver in Finland: Farhan’s Tech Degree Pathway',
+                    'slug' => 'farhan-finland-tuition-waiver',
+                    'category' => 'Success Stories',
+                    'excerpt' => 'How Farhan landed a 100% tuition waiver at University of Helsinki and brought his family on a residence permit seamlessly.',
+                    'content' => 'Finland offers incredible career benefits and family PR paths. Here is how Farhan prepared his portfolio and motivational video.',
+                    'image' => 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80',
+                    'is_published' => true,
+                    'is_featured' => true,
+                ],
+                [
+                    'title' => 'Fast-Track Dubai Tech Career: Sarah’s Global University Journey',
+                    'slug' => 'sarah-dubai-tech-career-journey',
+                    'category' => 'Success Stories',
+                    'excerpt' => 'Sarah received her unconditional offer and student visa in just 7 days to study AI in Dubai with zero income tax prospects.',
+                    'content' => 'Comprehensive interview with Sarah discussing her internship placements and fast-track student visa experience with Kampus EduConsult.',
+                    'image' => 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
+                    'is_published' => true,
+                    'is_featured' => true,
+                ],
+            ];
+
+            foreach ($defaultStories as $ds) {
+                Blog::updateOrCreate(['slug' => $ds['slug']], $ds);
+            }
+
+            $successStories = Blog::where('is_published', true)->where('is_featured', true)->latest()->take(8)->get();
+        }
+
         return Inertia::render('Home', [
             'page' => $page,
             'universities' => $universities,
             'courses' => $courses,
             'countries' => $countries,
+            'successStories' => $successStories,
         ]);
     }
 }

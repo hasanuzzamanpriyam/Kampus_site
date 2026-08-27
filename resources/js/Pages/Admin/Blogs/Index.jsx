@@ -12,7 +12,8 @@ import {
     Sparkles,
     Image,
     Filter,
-    Tag
+    Tag,
+    Star
 } from 'lucide-react';
 
 export default function Index({ blogs = [] }) {
@@ -36,6 +37,10 @@ export default function Index({ blogs = [] }) {
         }
     };
 
+    const handleToggleFeatured = (id) => {
+        router.patch(`/admin/blogs/${id}/toggle-featured`, {}, { preserveScroll: true });
+    };
+
     return (
         <AdminLayout title="Blog Posts Management">
             <Head title="Blog Posts — Kampus CMS" />
@@ -47,13 +52,13 @@ export default function Index({ blogs = [] }) {
                     <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 text-xs font-bold uppercase tracking-wider mb-2">
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>BLOG CONTENT ENGINE</span>
+                            <span>BLOG CONTENT & SUCCESS STORIES</span>
                         </div>
                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                            Blog Posts & Articles
+                            Blog Posts & Success Stories
                         </h2>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Publish study abroad guides, visa tips, university news, and scholarship deadlines.
+                            Publish study abroad guides, student success stories, and toggle "Home Featured" to display them on the homepage carousel.
                         </p>
                     </div>
 
@@ -102,6 +107,7 @@ export default function Index({ blogs = [] }) {
                                     <th className="py-4 px-6 font-extrabold">Post Title</th>
                                     <th className="py-4 px-6 font-extrabold">Category</th>
                                     <th className="py-4 px-6 font-extrabold">Status</th>
+                                    <th className="py-4 px-6 font-extrabold text-center">Home Featured</th>
                                     <th className="py-4 px-6 font-extrabold">Created</th>
                                     <th className="py-4 px-6 font-extrabold text-right">Actions</th>
                                 </tr>
@@ -109,7 +115,7 @@ export default function Index({ blogs = [] }) {
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                                 {filteredBlogs.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
+                                        <td colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400 text-sm">
                                             No blog posts found matching your search.
                                         </td>
                                     </tr>
@@ -159,6 +165,24 @@ export default function Index({ blogs = [] }) {
                                                         Draft
                                                     </span>
                                                 )}
+                                            </td>
+
+                                            {/* Home Featured Toggle Switch */}
+                                            <td className="py-4 px-6 text-center">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleToggleFeatured(blog.id)}
+                                                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                                        blog.is_featured ? 'bg-amber-500' : 'bg-slate-300 dark:bg-slate-700'
+                                                    }`}
+                                                    title={blog.is_featured ? 'Featured on Home (Click to remove)' : 'Not featured on Home (Click to feature)'}
+                                                >
+                                                    <span
+                                                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                                                            blog.is_featured ? 'translate-x-5' : 'translate-x-0'
+                                                        }`}
+                                                    />
+                                                </button>
                                             </td>
 
                                             {/* Created Date */}

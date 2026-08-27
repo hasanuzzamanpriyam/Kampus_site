@@ -45,9 +45,11 @@ class BlogController extends Controller
             'content' => 'required|string',
             'image' => 'nullable|image|max:5120',
             'is_published' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
+        $validated['is_featured'] = $request->boolean('is_featured');
 
         // Handle image file upload
         if ($request->hasFile('image')) {
@@ -89,9 +91,11 @@ class BlogController extends Controller
             'content' => 'required|string',
             'image' => 'nullable|image|max:5120',
             'is_published' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
         ]);
 
         $validated['is_published'] = $request->boolean('is_published');
+        $validated['is_featured'] = $request->boolean('is_featured');
 
         // Handle image file upload
         if ($request->hasFile('image')) {
@@ -107,6 +111,15 @@ class BlogController extends Controller
 
         return redirect()->route('admin.blog.index')
             ->with('success', 'Blog post updated successfully.');
+    }
+
+    /**
+     * Toggle featured status for the specified blog post.
+     */
+    public function toggleFeatured(Blog $blog)
+    {
+        $blog->update(['is_featured' => !$blog->is_featured]);
+        return back()->with('success', 'Featured status updated.');
     }
 
     /**

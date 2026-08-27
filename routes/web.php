@@ -39,13 +39,13 @@ Route::get('/universities/{slug}', [PublicUniversityController::class, 'show'])-
 
 Route::get('/blog', function () {
     return Inertia::render('Blog'); 
-});
+})->name('blog.index');
 
 Route::get('/blog/{slug}', function ($slug) {
     return Inertia::render('BlogPostDetails', [
         'slug' => $slug
     ]);
-});
+})->name('blog.show');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact'); 
@@ -153,6 +153,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'update' => 'admin.blog.update',
         'destroy' => 'admin.blog.destroy',
     ]);
+    Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
 
     // Partner Applications Routes (admin management)
     Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([

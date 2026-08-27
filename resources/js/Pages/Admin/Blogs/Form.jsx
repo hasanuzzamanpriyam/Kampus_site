@@ -26,6 +26,7 @@ export default function Form({ blog = null }) {
         content: blog?.content || '',
         image: null,
         is_published: blog ? Boolean(blog.is_published) : true,
+        is_featured: blog ? Boolean(blog.is_featured) : false,
     });
 
     const [imagePreview, setImagePreview] = React.useState(blog?.image || '');
@@ -235,6 +236,16 @@ export default function Form({ blog = null }) {
                                     className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
                                 />
                                 <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Published</span>
+                            </label>
+
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={Boolean(data.is_featured)}
+                                    onChange={(e) => setData('is_featured', e.target.checked)}
+                                    className="w-5 h-5 accent-amber-500 rounded cursor-pointer"
+                                />
+                                <span className="text-xs font-bold text-amber-600 dark:text-amber-400">Featured on Homepage (Success Stories Carousel)</span>
                             </label>
                         </div>
 
