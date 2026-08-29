@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Page;
+use App\Models\Faq;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -42,6 +43,9 @@ class HandleInertiaRequests extends Middleware
             'footer_pages' => fn () => Page::where('is_active', true)
                 ->where('show_in_footer', true)
                 ->select('id', 'name', 'slug')
+                ->get(),
+            'faqs' => fn () => Faq::where('is_active', true)
+                ->orderBy('sort_order', 'asc')
                 ->get(),
         ];
     }

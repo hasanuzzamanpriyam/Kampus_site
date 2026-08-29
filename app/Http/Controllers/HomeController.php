@@ -7,6 +7,7 @@ use App\Models\University;
 use App\Models\Course;
 use App\Models\Country;
 use App\Models\Blog;
+use App\Models\Faq;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -246,12 +247,63 @@ class HomeController extends Controller
             $successStories = Blog::where('is_published', true)->where('is_featured', true)->latest()->take(8)->get();
         }
 
+        // 6. Fetch Dynamic FAQs from Database (with default seeding if empty)
+        $faqs = Faq::where('is_active', true)->orderBy('sort_order', 'asc')->get();
+
+        if ($faqs->isEmpty()) {
+            $defaultFaqs = [
+                [
+                    'question' => 'Where can I study?',
+                    'answer' => 'We partner with over 500+ top-ranked universities across the UK, USA, Canada, Australia, Finland, and Dubai (UAE). Our senior education counselors analyze your academic background, budget, and career goals to shortlist the ideal target destinations.',
+                    'sort_order' => 1,
+                    'is_active' => true,
+                ],
+                [
+                    'question' => 'Can I get a scholarship?',
+                    'answer' => 'Yes! Most of our partner universities offer merit-based scholarships, country-specific grants, and tuition fee waivers ranging from £2,000 up to 100% full tuition coverage. We guide you through writing compelling personal statements and scholarship applications.',
+                    'sort_order' => 2,
+                    'is_active' => true,
+                ],
+                [
+                    'question' => 'How much does it cost to live in the UK?',
+                    'answer' => 'According to UKVI student visa guidelines, living costs in the UK are estimated at approximately £9,207 per academic year (outside London) and £12,006 per academic year (inside London). This budget covers accommodation, food, utilities, and daily travel.',
+                    'sort_order' => 3,
+                    'is_active' => true,
+                ],
+                [
+                    'question' => 'Are Kampus consultancy services really 100% free?',
+                    'answer' => 'Yes, 100%! Our counseling, university application processing, document review, and visa guidance services are completely free for students. We are officially contracted and funded directly by our partner universities globally.',
+                    'sort_order' => 4,
+                    'is_active' => true,
+                ],
+                [
+                    'question' => 'What are the English language test requirements?',
+                    'answer' => 'Universities accept IELTS (typically 6.0 – 7.0 overall), TOEFL iBT, PTE Academic, or Duolingo English Tests. Additionally, several UK and European universities offer IELTS waivers based on high school or undergraduate Medium of Instruction (MOI) certificates.',
+                    'sort_order' => 5,
+                    'is_active' => true,
+                ],
+                [
+                    'question' => 'How long does it take to get a university offer letter?',
+                    'answer' => 'Conditional offer letters are usually issued within 48 hours to 2 weeks, depending on the university and course selection. Our fast-track application system ensures your application is processed with priority.',
+                    'sort_order' => 6,
+                    'is_active' => true,
+                ],
+            ];
+
+            foreach ($defaultFaqs as $df) {
+                Faq::create($df);
+            }
+
+            $faqs = Faq::where('is_active', true)->orderBy('sort_order', 'asc')->get();
+        }
+
         return Inertia::render('Home', [
             'page' => $page,
             'universities' => $universities,
             'courses' => $courses,
             'countries' => $countries,
             'successStories' => $successStories,
+            'faqs' => $faqs,
         ]);
     }
 }

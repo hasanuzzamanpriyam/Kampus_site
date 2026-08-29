@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import Layout from '../Layouts/Layout';
 import JourneyProcess from '../Components/JourneyProcess';
+import FaqSection from '../Components/FaqSection';
 import {
     Plane,
     FileCheck,
@@ -297,48 +298,12 @@ export default function VisaGuide() {
                     </div>
                 </section>
 
-                {/* 3. VISA FREQUENTLY ASKED QUESTIONS (ACCORDION) */}
-                <section className="py-16 lg:py-24 bg-slate-50 dark:bg-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        
-                        <div className="text-center mb-12 space-y-2">
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-xs font-bold uppercase">
-                                <HelpCircle className="w-3.5 h-3.5" />
-                                <span>VISA ACCORDION</span>
-                            </div>
-                            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                                Common Student Visa Questions
-                            </h2>
-                        </div>
-
-                        <div className="space-y-4">
-                            {visaFaqs.map((faq, idx) => {
-                                const isOpen = openFaqIndex === idx;
-                                return (
-                                    <div
-                                        key={idx}
-                                        className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs"
-                                    >
-                                        <button
-                                            onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                                            className="w-full p-5 text-left flex items-center justify-between gap-4 text-base font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
-                                        >
-                                            <span>{faq.question}</span>
-                                            {isOpen ? <ChevronUp className="w-5 h-5 text-blue-600 shrink-0" /> : <ChevronDown className="w-5 h-5 text-slate-400 shrink-0" />}
-                                        </button>
-
-                                        {isOpen && (
-                                            <div className="px-5 pb-5 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/80 pt-3">
-                                                {faq.answer}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })}
-                        </div>
-
-                    </div>
-                </section>
+                {/* 3. DYNAMIC VISA FREQUENTLY ASKED QUESTIONS */}
+                <FaqSection
+                    badge="VISA GUIDANCE & FAQS"
+                    title="Frequently Asked Visa & Admission Questions"
+                    subtitle="Comprehensive answers regarding visa processing times, financial requirements, IELTS waivers, and work permits."
+                />
 
             </div>
         </Layout>

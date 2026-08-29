@@ -210,13 +210,14 @@ export default function BlogPostDetails({ slug }) {
                             Our certified education advisers provide 1-on-1 guidance for university applications, merit scholarships, bank financial proof, and visa file submission.
                         </p>
                         <div className="pt-2 flex flex-wrap gap-4">
-                            <Link
-                                href="/contact"
-                                className="px-6 py-3 rounded-2xl bg-white text-blue-700 font-extrabold text-xs hover:bg-blue-50 shadow-md transition-all inline-flex items-center gap-2"
+                            <button
+                                type="button"
+                                onClick={() => window.dispatchEvent(new CustomEvent('open-book-call-modal'))}
+                                className="px-6 py-3 rounded-2xl bg-white text-blue-700 font-extrabold text-xs hover:bg-blue-50 shadow-md transition-all inline-flex items-center gap-2 cursor-pointer"
                             >
                                 <PhoneCall className="w-4 h-4" />
                                 <span>Book Free Counseling Call</span>
-                            </Link>
+                            </button>
                             <Link
                                 href="/universities"
                                 className="px-6 py-3 rounded-2xl bg-blue-800/60 text-white font-extrabold text-xs border border-blue-400/40 hover:bg-blue-800 transition-all inline-flex items-center gap-2"

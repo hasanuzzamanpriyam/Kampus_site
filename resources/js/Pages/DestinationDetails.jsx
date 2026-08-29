@@ -12,6 +12,8 @@ import {
     GraduationCap,
     Award
 } from 'lucide-react';
+import ConsultationBanner from '../Components/ConsultationBanner';
+import FaqSection from '../Components/FaqSection';
 
 export default function DestinationDetails({ country = null }) {
     const defaultCountry = {
@@ -176,8 +178,14 @@ export default function DestinationDetails({ country = null }) {
                             </div>
                         )}
 
+                        {/* Consultation Trust Banner */}
+                        <ConsultationBanner />
+
                     </div>
                 </section>
+
+                {/* FAQ Accordion Section */}
+                <FaqSection />
 
             </div>
         </Layout>

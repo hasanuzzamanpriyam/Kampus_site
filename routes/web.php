@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\BlogController;
+use App\Http\Controllers\Admin\FaqController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\RoleController;
@@ -155,6 +156,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'destroy' => 'admin.blog.destroy',
     ]);
     Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
+
+    // FAQs CRUD Routes
+    Route::resource('faqs', FaqController::class)->names([
+        'index' => 'admin.faqs.index',
+        'create' => 'admin.faqs.create',
+        'store' => 'admin.faqs.store',
+        'edit' => 'admin.faqs.edit',
+        'update' => 'admin.faqs.update',
+        'destroy' => 'admin.faqs.destroy',
+    ]);
+    Route::patch('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('admin.faqs.toggle-status');
 
     // Partner Applications Routes (admin management)
     Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([

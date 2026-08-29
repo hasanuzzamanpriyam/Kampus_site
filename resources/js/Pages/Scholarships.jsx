@@ -294,7 +294,8 @@ export default function Scholarships() {
                         </div>
 
                         <button
-                            onClick={handleOpenBookCall}
+                            type="button"
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-book-call-modal'))}
                             className="px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-extrabold shadow-lg shadow-blue-600/30 hover:scale-105 transition-all whitespace-nowrap cursor-pointer"
                         >
                             Book Free Consultation

@@ -10,6 +10,7 @@ import {
     Sparkles,
     CheckCircle2
 } from 'lucide-react';
+import ConsultationBanner from './ConsultationBanner';
 
 export default function ServicesGrid() {
     const services = [
@@ -118,19 +119,8 @@ export default function ServicesGrid() {
                     })}
                 </div>
 
-                {/* Bottom Trust CTA */}
-                <div className="mt-14 p-6 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
-                    <div className="flex items-center gap-3 text-center sm:text-left">
-                        <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0 hidden sm:block" />
-                        <div>
-                            <div className="font-bold text-base">Need customized help with your application?</div>
-                            <div className="text-xs text-slate-300">Book a free 1-on-1 session with our senior education counselor today.</div>
-                        </div>
-                    </div>
-                    <button className="px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md hover:scale-[1.02] transition-all whitespace-nowrap cursor-pointer">
-                        Book Free Consultation
-                    </button>
-                </div>
+                {/* Bottom Trust CTA Banner */}
+                <ConsultationBanner />
 
             </div>
         </section>

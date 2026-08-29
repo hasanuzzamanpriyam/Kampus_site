@@ -5,6 +5,7 @@ import AboutHero from '../Components/AboutHero';
 import AboutMission from '../Components/AboutMission';
 import AboutValues from '../Components/AboutValues';
 import AboutCommitment from '../Components/AboutCommitment';
+import FaqSection from '../Components/FaqSection';
 
 export default function About() {
     return (
@@ -24,6 +25,9 @@ export default function About() {
 
                 {/* 4. OUR COMMITMENT (DARK NAVY ETHICS & ACCREDITATION SECTION) */}
                 <AboutCommitment />
+
+                {/* 5. DYNAMIC FREQUENTLY ASKED QUESTIONS */}
+                <FaqSection />
             </div>
         </Layout>
     );

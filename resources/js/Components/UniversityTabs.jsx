@@ -9,6 +9,7 @@ import {
 import TabAbout from './TabAbout';
 import TabGallery from './TabGallery';
 import TabCourses from './TabCourses';
+import ConsultationBanner from './ConsultationBanner';
 
 export default function UniversityTabs({
     university = {
@@ -108,6 +109,8 @@ export default function UniversityTabs({
                                     </div>
                                 ))}
                             </div>
+
+                            <ConsultationBanner className="mt-6" />
                         </div>
                     )}
 

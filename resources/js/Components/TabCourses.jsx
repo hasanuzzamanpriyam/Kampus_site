@@ -154,8 +154,12 @@ export default function TabCourses({ courses }) {
 
                         <div className="pt-4">
                             <button
-                                onClick={() => { alert(`Application for ${selectedCourse.name} initialized!`); setSelectedCourse(null); }}
-                                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md"
+                                type="button"
+                                onClick={() => {
+                                    setSelectedCourse(null);
+                                    window.dispatchEvent(new CustomEvent('open-book-call-modal'));
+                                }}
+                                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md cursor-pointer"
                             >
                                 Apply for this Course
                             </button>

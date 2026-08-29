@@ -52,7 +52,14 @@ export default function Layout({ children }) {
             }
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+
+        const handleOpenModal = () => setIsBookCallOpen(true);
+        window.addEventListener('open-book-call-modal', handleOpenModal);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('open-book-call-modal', handleOpenModal);
+        };
     }, []);
 
     const scrollToTop = () => {

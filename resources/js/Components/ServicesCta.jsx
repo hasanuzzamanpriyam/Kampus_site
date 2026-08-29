@@ -57,8 +57,9 @@ export default function ServicesCta({ onOpenBookCall }) {
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-4">
                             {/* Primary Button (White background, Dark text) */}
                             <button
-                                onClick={onOpenBookCall}
-                                className="px-8 py-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-extrabold text-base shadow-xl shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+                                type="button"
+                                onClick={() => window.dispatchEvent(new CustomEvent('open-book-call-modal'))}
+                                className="px-8 py-4 rounded-full bg-white hover:bg-slate-100 text-slate-950 font-extrabold text-base shadow-xl shadow-white/10 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
                             >
                                 <PhoneCall className="w-5 h-5 text-blue-600 group-hover:scale-110 transition-transform" />
                                 <span>Book a Free Call</span>
