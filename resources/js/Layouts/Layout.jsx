@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { useTheme } from '../Contexts/ThemeProvider';
 import TopBar from '../Components/TopBar';
 import BookCallModal from '../Components/BookCallModal';
+import AiCourseMatcher from '../Components/AiCourseMatcher';
 import {
     GraduationCap,
     Globe,
@@ -34,7 +35,7 @@ import {
 
 export default function Layout({ children }) {
     const { url, props } = usePage();
-    const { nav_pages = [], footer_pages = [], globalBranches = [] } = props;
+    const { nav_pages = [], footer_pages = [], globalBranches = [], globalSettings = {} } = props;
     const { theme, toggleTheme } = useTheme();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,9 +57,13 @@ export default function Layout({ children }) {
         const handleOpenModal = () => setIsBookCallOpen(true);
         window.addEventListener('open-book-call-modal', handleOpenModal);
 
+        const handleOpenAiMatcher = () => setIsAiSearchOpen(true);
+        window.addEventListener('open-ai-course-matcher', handleOpenAiMatcher);
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('open-book-call-modal', handleOpenModal);
+            window.removeEventListener('open-ai-course-matcher', handleOpenAiMatcher);
         };
     }, []);
 
@@ -317,14 +322,18 @@ export default function Layout({ children }) {
                             )}
                         </div>
 
-                        {/* COL 4: Head Office */}
+                        {/* COL 4: Head Office Contact */}
                         <div className="space-y-4">
                             <h3 className="text-base font-bold text-white tracking-wide border-l-2 border-blue-500 pl-3">
                                 Head Office Contact
                             </h3>
                             <div className="space-y-3 text-sm text-slate-400">
-                                <p>124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom</p>
-                                <p>UK: +44 20 7946 0912 | BD: +880 1812713814</p>
+                                <p className="whitespace-pre-line leading-relaxed">
+                                    {globalSettings?.head_office_address || globalSettings?.contact_address || '124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom'}
+                                </p>
+                                <p className="font-medium text-slate-300">
+                                    {globalSettings?.head_office_phone || 'UK: +44 20 7946 0912 | BD: +880 1812713814'}
+                                </p>
                             </div>
                         </div>
 
@@ -354,27 +363,9 @@ export default function Layout({ children }) {
                 </div>
             </footer>
 
-            {/* AI Search Drawer */}
-            {isAiSearchOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
-                        <button
-                            onClick={() => setIsAiSearchOpen(false)}
-                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">AI University & Course Matcher</h3>
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search degrees, scholarships..."
-                            className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm"
-                        />
-                    </div>
-                </div>
-            )}
+            {/* 7-Step Interactive AI Course Matcher Modal */}
+            <AiCourseMatcher isOpen={isAiSearchOpen} onClose={() => setIsAiSearchOpen(false)} />
+
             {/* Multi-Step Book a Call Modal */}
             <BookCallModal isOpen={isBookCallOpen} onClose={() => setIsBookCallOpen(false)} />
         </div>

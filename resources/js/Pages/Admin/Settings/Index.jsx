@@ -9,7 +9,6 @@ import {
     Phone,
     MapPin,
     Clock,
-    Globe,
     Share2,
     Sparkles,
     CheckCircle2
@@ -17,12 +16,12 @@ import {
 
 export default function Index({ settings = {} }) {
     const { data, setData, post, processing } = useForm({
+        head_office_address: settings.head_office_address || settings.contact_address || '124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom',
+        head_office_phone: settings.head_office_phone || 'UK: +44 20 7946 0912 | BD: +880 1812713814',
         site_name: settings.site_name || 'Kampus EduConsult',
         site_tagline: settings.site_tagline || 'Global Higher Education Advisers',
         contact_email: settings.contact_email || 'apply@kampusedu.com',
-        contact_phone: settings.contact_phone || '+44 20 7946 0912',
         contact_bd_hotline: settings.contact_bd_hotline || '+880 1812713814',
-        contact_address: settings.contact_address || '124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom',
         operating_hours: settings.operating_hours || 'Mon - Sat: 9:00 AM - 7:00 PM',
         facebook_url: settings.facebook_url || 'https://facebook.com/kampusedu',
         linkedin_url: settings.linkedin_url || 'https://linkedin.com/company/kampusedu',
@@ -32,11 +31,7 @@ export default function Index({ settings = {} }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/settings', {
-            onSuccess: () => {
-                alert('Global site settings saved successfully!');
-            }
-        });
+        post('/admin/settings');
     };
 
     return (
@@ -56,7 +51,7 @@ export default function Index({ settings = {} }) {
                             Website Brand & Contact Settings
                         </h2>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Configure global website brand text, hotline numbers, office addresses, and social media handles.
+                            Configure global website brand text, hotline numbers, footer office addresses, and social media handles.
                         </p>
                     </div>
 
@@ -71,11 +66,78 @@ export default function Index({ settings = {} }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
-                    
-                    {/* SECTION 1: GENERAL BRAND INFO */}
+
+                    {/* SECTION 1: FOOTER CONTACT INFORMATION (HEAD OFFICE CONTACT) */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                                <Building2 className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Footer Contact Information
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Manage the "Head Office Contact" details rendered dynamically in the global website Footer
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            {/* Head Office Address Textarea */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Head Office Address *
+                                </label>
+                                <div className="relative">
+                                    <textarea
+                                        rows={3}
+                                        required
+                                        value={data.head_office_address}
+                                        onChange={(e) => setData('head_office_address', e.target.value)}
+                                        placeholder="124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Line breaks in this textarea will be preserved in the footer layout.
+                                </p>
+                            </div>
+
+                            {/* Contact Numbers Text Input */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Contact Numbers (Phone / Hotline) *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        required
+                                        value={data.head_office_phone}
+                                        onChange={(e) => setData('head_office_phone', e.target.value)}
+                                        placeholder="UK: +44 20 7946 0912 | BD: +880 1812713814"
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                    <Phone className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Live Footer Preview Box */}
+                        <div className="p-5 rounded-2xl bg-slate-950 text-white border border-slate-800 space-y-2">
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Footer Preview:</span>
+                            <div className="space-y-2 text-sm text-slate-300">
+                                <h4 className="text-sm font-bold text-white border-l-2 border-blue-500 pl-2">Head Office Contact</h4>
+                                <p className="text-xs text-slate-400 whitespace-pre-line leading-relaxed">{data.head_office_address}</p>
+                                <p className="text-xs text-slate-400 font-semibold">{data.head_office_phone}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* SECTION 2: GENERAL BRAND INFO */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
                                 <Building2 className="w-6 h-6" />
                             </div>
                             <div>
@@ -118,23 +180,23 @@ export default function Index({ settings = {} }) {
                         </div>
                     </div>
 
-                    {/* SECTION 2: CONTACT INFORMATION & HOTLINES */}
+                    {/* SECTION 3: OTHER CONTACTS & HOTLINES */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                            <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
                                 <Phone className="w-6 h-6" />
                             </div>
                             <div>
                                 <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                    Contact & Office Information
+                                    Email & Support Hotlines
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Displayed in header, topbar, and website footer
+                                    Displayed in header and topbar
                                 </p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                                     Support Email Address
@@ -148,31 +210,13 @@ export default function Index({ settings = {} }) {
                                         placeholder="apply@kampusedu.com"
                                         className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     />
-                                    <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                                    <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                    UK Head Office Phone
-                                </label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        value={data.contact_phone}
-                                        onChange={(e) => setData('contact_phone', e.target.value)}
-                                        placeholder="+44 20 7946 0912"
-                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                    <Phone className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                    BD Hotline Number (TopBar)
+                                    BD Hotline (TopBar)
                                 </label>
                                 <input
                                     type="text"
@@ -195,26 +239,13 @@ export default function Index({ settings = {} }) {
                                         placeholder="Mon - Sat: 9:00 AM - 7:00 PM"
                                         className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     />
-                                    <Clock className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
+                                    <Clock className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
                                 </div>
                             </div>
                         </div>
-
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Head Office Physical Address
-                            </label>
-                            <textarea
-                                rows={2}
-                                value={data.contact_address}
-                                onChange={(e) => setData('contact_address', e.target.value)}
-                                placeholder="Full street address..."
-                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
                     </div>
 
-                    {/* SECTION 3: SOCIAL MEDIA LINKS */}
+                    {/* SECTION 4: SOCIAL MEDIA LINKS */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="p-2.5 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">

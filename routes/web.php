@@ -98,6 +98,10 @@ Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partne
 Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
 Route::post('/book-call', [FrontendController::class, 'bookCall'])->name('book-call.submit');
 
+// AI Course Matcher API Routes
+Route::post('/api/course-matcher', [FrontendController::class, 'matchCourses'])->name('api.course-matcher');
+Route::post('/api/course-matcher-lead', [FrontendController::class, 'saveMatcherLead'])->name('api.course-matcher-lead');
+
 // SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -106,7 +110,8 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
 
     // Global Settings Routes
     Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
-    Route::post('/settings', [SettingController::class, 'update'])->name('admin.settings.update');
+    Route::post('/settings', [SettingController::class, 'store'])->name('admin.settings.store');
+    Route::post('/settings/update', [SettingController::class, 'store'])->name('admin.settings.update');
 
     // Pages & SEO Routes
     Route::get('/pages', [PageController::class, 'index'])->name('admin.pages.index');

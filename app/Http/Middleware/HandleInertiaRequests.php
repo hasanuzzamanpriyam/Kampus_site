@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Page;
 use App\Models\Faq;
 use App\Models\Branch;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -51,6 +52,7 @@ class HandleInertiaRequests extends Middleware
             'globalBranches' => fn () => Branch::where('is_active', true)
                 ->orderBy('sort_order', 'asc')
                 ->get(),
+            'globalSettings' => fn () => Setting::pluck('value', 'key')->toArray(),
         ];
     }
 }
