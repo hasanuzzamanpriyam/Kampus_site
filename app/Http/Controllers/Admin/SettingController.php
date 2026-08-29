@@ -16,9 +16,13 @@ class SettingController extends Controller
     {
         // Seed default key-values if not present
         $defaults = [
-            'site_name' => 'Kampus EduConsult',
+            'site_name' => 'Kampus Edu',
+            'header_subtitle' => 'Educational Consultancy',
             'site_tagline' => 'Global Higher Education Advisers',
-            'head_office_address' => "124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom",
+            'footer_name' => 'Kampus EduConsult',
+            'footer_subtitle' => 'Global Higher Education Advisers',
+            'footer_description' => 'Empowering ambitious students worldwide to access top-tier university education with bespoke admissions counselling, visa support, and scholarship guidance.',
+            'head_office_address' => "124 Education Avenue, Suite 400, Oxford Street\nLondon W1B 3AG, United Kingdom",
             'head_office_phone' => "UK: +44 20 7946 0912 | BD: +880 1812713814",
             'contact_email' => 'apply@kampusedu.com',
             'contact_bd_hotline' => '+880 1812713814',
@@ -35,7 +39,7 @@ class SettingController extends Controller
             }
         }
 
-        // Pluck key-value array format e.g. ['head_office_address' => '...', ...]
+        // Pluck key-value array format e.g. ['site_name' => 'Kampus Edu', ...]
         $settings = Setting::pluck('value', 'key')->toArray();
 
         return Inertia::render('Admin/Settings/Index', [
@@ -44,21 +48,24 @@ class SettingController extends Controller
     }
 
     /**
-     * Store or update global site settings in storage.
+     * Store or update global site settings and file uploads in storage.
      */
     public function store(Request $request)
     {
-        $data = $request->except(['_token']);
-
-        foreach ($data as $key => $value) {
-            Setting::updateOrCreate(
-                ['key' => $key],
-                ['value' => is_array($value) ? json_encode($value) : $value]
-            );
+        foreach ($request->except(['_token', '_method']) as $key => $value) {
+            if ($request->hasFile($key)) {
+                $path = $request->file($key)->store('settings', 'public');
+                Setting::updateOrCreate(['key' => $key], ['value' => $path]);
+            } elseif ($value !== null) {
+                Setting::updateOrCreate(
+                    ['key' => $key],
+                    ['value' => is_array($value) ? json_encode($value) : $value]
+                );
+            }
         }
 
         return redirect()->route('admin.settings.index')
-            ->with('success', 'Global settings updated successfully.');
+            ->with('success', 'Global brand and site settings updated successfully.');
     }
 
     /**

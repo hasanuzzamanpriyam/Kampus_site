@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import { Search, Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Globe } from 'lucide-react';
 
 export default function TopBar({ onSearch }) {
+    const { props } = usePage();
+    const hotline = props?.globalSettings?.contact_bd_hotline || '+880 1812713814';
     const [searchQuery, setSearchQuery] = useState('');
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -95,11 +97,11 @@ export default function TopBar({ onSearch }) {
                                 BD
                             </span>
                             <a
-                                href="tel:+1234567890"
+                                href={`tel:${hotline.replace(/\s+/g, '')}`}
                                 className="flex items-center gap-1.5 hover:text-purple-300 transition-colors"
                             >
                                 <Phone className="w-3.5 h-3.5 text-white" />
-                                <span className="tracking-wide">+1234567890</span>
+                                <span className="tracking-wide">{hotline}</span>
                             </a>
                         </div>
 

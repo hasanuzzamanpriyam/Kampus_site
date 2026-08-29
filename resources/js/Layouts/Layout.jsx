@@ -133,20 +133,25 @@ export default function Layout({ children }) {
                         
                         {/* 1. Brand Logo */}
                         <Link href="/" className="flex items-center gap-3 group focus:outline-none">
-                            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                                <GraduationCap className="w-6 h-6" />
-                            </div>
+                            {globalSettings?.site_logo ? (
+                                <img
+                                    src={`/storage/${globalSettings.site_logo}`}
+                                    alt={globalSettings?.site_name || 'Logo'}
+                                    className="w-10 h-10 object-contain rounded-xl shadow-md group-hover:scale-105 transition-transform"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                                    <GraduationCap className="w-6 h-6" />
+                                </div>
+                            )}
                             <div className="flex flex-col">
                                 <div className="flex items-center gap-1.5">
                                     <span className="font-extrabold text-xl tracking-tight text-slate-900 dark:text-white">
-                                        Kampus
-                                    </span>
-                                    <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider dark:bg-blue-900/60 dark:text-blue-300">
-                                        Edu
+                                        {globalSettings?.site_name || 'Kampus Edu'}
                                     </span>
                                 </div>
                                 <span className="text-[11px] font-medium text-slate-500 tracking-wide dark:text-slate-400">
-                                    Educational Consultancy
+                                    {globalSettings?.header_subtitle || 'Educational Consultancy'}
                                 </span>
                             </div>
                         </Link>
@@ -176,9 +181,6 @@ export default function Layout({ children }) {
                             >
                                 <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 group-hover:text-white animate-pulse" />
                                 <span>AI Search</span>
-                                <span className="bg-indigo-600 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full group-hover:bg-white group-hover:text-indigo-600 transition-colors">
-                                    PRO
-                                </span>
                             </button>
                         </nav>
 
@@ -257,21 +259,37 @@ export default function Layout({ children }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-slate-800/80">
                         
-                        {/* COL 1: Logo */}
+                        {/* COL 1: Logo & Brand Information */}
                         <div className="space-y-5">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
-                                    <GraduationCap className="w-6 h-6" />
-                                </div>
+                                {globalSettings?.footer_logo ? (
+                                    <img
+                                        src={`/storage/${globalSettings.footer_logo}`}
+                                        alt={globalSettings?.footer_name || 'Footer Logo'}
+                                        className="w-10 h-10 object-contain rounded-xl shadow-lg"
+                                    />
+                                ) : globalSettings?.site_logo ? (
+                                    <img
+                                        src={`/storage/${globalSettings.site_logo}`}
+                                        alt={globalSettings?.footer_name || 'Footer Logo'}
+                                        className="w-10 h-10 object-contain rounded-xl shadow-lg"
+                                    />
+                                ) : (
+                                    <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                                        <GraduationCap className="w-6 h-6" />
+                                    </div>
+                                )}
                                 <div className="flex flex-col">
                                     <span className="font-extrabold text-xl text-white tracking-tight">
-                                        Kampus <span className="text-blue-400">EduConsult</span>
+                                        {globalSettings?.footer_name || globalSettings?.site_name || 'Kampus EduConsult'}
                                     </span>
-                                    <span className="text-[11px] text-slate-400">Global Higher Education Advisers</span>
+                                    <span className="text-[11px] text-slate-400">
+                                        {globalSettings?.footer_subtitle || globalSettings?.site_tagline || 'Global Higher Education Advisers'}
+                                    </span>
                                 </div>
                             </div>
-                            <p className="text-sm text-slate-400 leading-relaxed">
-                                Empowering ambitious students worldwide to gain admission into top global universities in UK, USA, Canada, Australia, & Europe.
+                            <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-line">
+                                {globalSettings?.footer_description || 'Empowering ambitious students worldwide to gain admission into top global universities in UK, USA, Canada, Australia, & Europe.'}
                             </p>
                         </div>
 

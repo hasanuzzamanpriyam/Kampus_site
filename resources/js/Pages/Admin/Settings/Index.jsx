@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Head, useForm } from '@inertiajs/react';
 import AdminLayout from '../Layouts/AdminLayout';
 import {
@@ -11,27 +11,63 @@ import {
     Clock,
     Share2,
     Sparkles,
-    CheckCircle2
+    CheckCircle2,
+    Image as ImageIcon,
+    Upload,
+    Globe,
+    Layout,
+    FileText
 } from 'lucide-react';
 
 export default function Index({ settings = {} }) {
+    const [logoPreview, setLogoPreview] = useState(settings.site_logo ? `/storage/${settings.site_logo}` : null);
+    const [footerLogoPreview, setFooterLogoPreview] = useState(settings.footer_logo ? `/storage/${settings.footer_logo}` : null);
+    const [faviconPreview, setFaviconPreview] = useState(settings.site_favicon ? `/storage/${settings.site_favicon}` : null);
+
     const { data, setData, post, processing } = useForm({
+        // Brand & Logos
+        site_name: settings.site_name || 'Kampus Edu',
+        header_subtitle: settings.header_subtitle || 'Educational Consultancy',
+        site_logo: null,
+        footer_name: settings.footer_name || settings.site_name || 'Kampus EduConsult',
+        footer_subtitle: settings.footer_subtitle || settings.site_tagline || 'Global Higher Education Advisers',
+        footer_logo: null,
+        site_favicon: null,
+        footer_description: settings.footer_description || 'Empowering ambitious students worldwide to access top-tier university education with bespoke admissions counselling, visa support, and scholarship guidance.',
+        
+        // General & Header
+        site_tagline: settings.site_tagline || 'Global Higher Education Advisers',
+        
+        // Footer Contact Information (Head Office)
         head_office_address: settings.head_office_address || settings.contact_address || '124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom',
         head_office_phone: settings.head_office_phone || 'UK: +44 20 7946 0912 | BD: +880 1812713814',
-        site_name: settings.site_name || 'Kampus EduConsult',
-        site_tagline: settings.site_tagline || 'Global Higher Education Advisers',
+        
+        // Other Contacts
         contact_email: settings.contact_email || 'apply@kampusedu.com',
         contact_bd_hotline: settings.contact_bd_hotline || '+880 1812713814',
         operating_hours: settings.operating_hours || 'Mon - Sat: 9:00 AM - 7:00 PM',
+        
+        // Social Media
         facebook_url: settings.facebook_url || 'https://facebook.com/kampusedu',
         linkedin_url: settings.linkedin_url || 'https://linkedin.com/company/kampusedu',
         instagram_url: settings.instagram_url || 'https://instagram.com/kampusedu',
         youtube_url: settings.youtube_url || 'https://youtube.com/c/kampusedu',
     });
 
+    const handleFileChange = (field, file, previewSetter) => {
+        setData(field, file);
+        if (file) {
+            const url = URL.createObjectURL(file);
+            previewSetter(url);
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/settings');
+        post('/admin/settings', {
+            forceFormData: true,
+            preserveScroll: true,
+        });
     };
 
     return (
@@ -45,13 +81,13 @@ export default function Index({ settings = {} }) {
                     <div>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider mb-2">
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>GLOBAL CONFIGURATION</span>
+                            <span>GLOBAL BRAND & SITE SETTINGS</span>
                         </div>
                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                            Website Brand & Contact Settings
+                            Website Brand & Configuration
                         </h2>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Configure global website brand text, hotline numbers, footer office addresses, and social media handles.
+                            Manage your website logos, favicon, brand titles, footer copy, head office details, and social profiles.
                         </p>
                     </div>
 
@@ -61,13 +97,118 @@ export default function Index({ settings = {} }) {
                         className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer shrink-0"
                     >
                         <Save className="w-4 h-4" />
-                        <span>{processing ? 'Saving...' : 'Save Global Settings'}</span>
+                        <span>{processing ? 'Saving...' : 'Save Settings'}</span>
                     </button>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
 
-                    {/* SECTION 1: FOOTER CONTACT INFORMATION (HEAD OFFICE CONTACT) */}
+                    {/* SECTION 1: BRAND LOGOS & FAVICON */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                                <ImageIcon className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Brand Logos & Favicon
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Upload official brand images for the navbar header, footer, and browser favicon
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            
+                            {/* 1. Header Logo */}
+                            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 space-y-3">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    Header Logo
+                                </label>
+                                <div className="h-24 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-2 overflow-hidden">
+                                    {logoPreview ? (
+                                        <img src={logoPreview} alt="Header Logo Preview" className="max-h-full max-w-full object-contain" />
+                                    ) : (
+                                        <span className="text-xs text-slate-400">No logo uploaded (using default)</span>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    id="site_logo_input"
+                                    className="hidden"
+                                    onChange={(e) => handleFileChange('site_logo', e.target.files[0], setLogoPreview)}
+                                />
+                                <label
+                                    htmlFor="site_logo_input"
+                                    className="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+                                >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Header Logo</span>
+                                </label>
+                            </div>
+
+                            {/* 2. Footer Logo */}
+                            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 space-y-3">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    Footer Logo
+                                </label>
+                                <div className="h-24 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-2 overflow-hidden">
+                                    {footerLogoPreview ? (
+                                        <img src={footerLogoPreview} alt="Footer Logo Preview" className="max-h-full max-w-full object-contain" />
+                                    ) : (
+                                        <span className="text-xs text-slate-400">No logo uploaded (using default)</span>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    id="footer_logo_input"
+                                    className="hidden"
+                                    onChange={(e) => handleFileChange('footer_logo', e.target.files[0], setFooterLogoPreview)}
+                                />
+                                <label
+                                    htmlFor="footer_logo_input"
+                                    className="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+                                >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Footer Logo</span>
+                                </label>
+                            </div>
+
+                            {/* 3. Site Favicon */}
+                            <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/60 space-y-3">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    Website Favicon (.ico, .png)
+                                </label>
+                                <div className="h-24 rounded-xl bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center p-2 overflow-hidden">
+                                    {faviconPreview ? (
+                                        <img src={faviconPreview} alt="Favicon Preview" className="w-10 h-10 object-contain" />
+                                    ) : (
+                                        <span className="text-xs text-slate-400">No favicon uploaded</span>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*,.ico"
+                                    id="site_favicon_input"
+                                    className="hidden"
+                                    onChange={(e) => handleFileChange('site_favicon', e.target.files[0], setFaviconPreview)}
+                                />
+                                <label
+                                    htmlFor="site_favicon_input"
+                                    className="w-full py-2 px-3 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+                                >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Favicon</span>
+                                </label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {/* SECTION 2: BRAND TITLES & HEADINGS */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
@@ -75,7 +216,94 @@ export default function Index({ settings = {} }) {
                             </div>
                             <div>
                                 <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                    Footer Contact Information
+                                    Brand Titles & Descriptions
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Titles and subtitles for Header, Footer, and Browser Tab
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Header Brand Name (Navbar) *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={data.site_name}
+                                    onChange={(e) => setData('site_name', e.target.value)}
+                                    placeholder="e.g. Kampus Edu"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Header Subtitle (Navbar)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.header_subtitle}
+                                    onChange={(e) => setData('header_subtitle', e.target.value)}
+                                    placeholder="e.g. Educational Consultancy"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Footer Brand Name *
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={data.footer_name}
+                                    onChange={(e) => setData('footer_name', e.target.value)}
+                                    placeholder="e.g. Kampus EduConsult"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Footer Subtitle / Tagline
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.footer_subtitle}
+                                    onChange={(e) => setData('footer_subtitle', e.target.value)}
+                                    placeholder="e.g. Global Higher Education Advisers"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                Footer Brand Description *
+                            </label>
+                            <textarea
+                                rows={3}
+                                required
+                                value={data.footer_description}
+                                onChange={(e) => setData('footer_description', e.target.value)}
+                                placeholder="Empowering ambitious students worldwide to access top-tier university education..."
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* SECTION 3: FOOTER CONTACT INFORMATION (HEAD OFFICE CONTACT) */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
+                                <MapPin className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Footer Head Office Contact
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400">
                                     Manage the "Head Office Contact" details rendered dynamically in the global website Footer
@@ -84,27 +312,23 @@ export default function Index({ settings = {} }) {
                         </div>
 
                         <div className="space-y-6">
-                            {/* Head Office Address Textarea */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                                     Head Office Address *
                                 </label>
-                                <div className="relative">
-                                    <textarea
-                                        rows={3}
-                                        required
-                                        value={data.head_office_address}
-                                        onChange={(e) => setData('head_office_address', e.target.value)}
-                                        placeholder="124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom"
-                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
+                                <textarea
+                                    rows={3}
+                                    required
+                                    value={data.head_office_address}
+                                    onChange={(e) => setData('head_office_address', e.target.value)}
+                                    placeholder="124 Education Avenue, Suite 400, Oxford Street, London W1B 3AG, United Kingdom"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
                                 <p className="text-[11px] text-slate-400 mt-1">
                                     Line breaks in this textarea will be preserved in the footer layout.
                                 </p>
                             </div>
 
-                            {/* Contact Numbers Text Input */}
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                                     Contact Numbers (Phone / Hotline) *
@@ -122,65 +346,9 @@ export default function Index({ settings = {} }) {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Live Footer Preview Box */}
-                        <div className="p-5 rounded-2xl bg-slate-950 text-white border border-slate-800 space-y-2">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Live Footer Preview:</span>
-                            <div className="space-y-2 text-sm text-slate-300">
-                                <h4 className="text-sm font-bold text-white border-l-2 border-blue-500 pl-2">Head Office Contact</h4>
-                                <p className="text-xs text-slate-400 whitespace-pre-line leading-relaxed">{data.head_office_address}</p>
-                                <p className="text-xs text-slate-400 font-semibold">{data.head_office_phone}</p>
-                            </div>
-                        </div>
                     </div>
 
-                    {/* SECTION 2: GENERAL BRAND INFO */}
-                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
-                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
-                                <Building2 className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                    General Brand Info
-                                </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Main consultancy title and sub-heading
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                    Website Brand Name *
-                                </label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={data.site_name}
-                                    onChange={(e) => setData('site_name', e.target.value)}
-                                    placeholder="e.g. Kampus EduConsult"
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                    Brand Tagline / Subtitle
-                                </label>
-                                <input
-                                    type="text"
-                                    value={data.site_tagline}
-                                    onChange={(e) => setData('site_tagline', e.target.value)}
-                                    placeholder="e.g. Global Higher Education Advisers"
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* SECTION 3: OTHER CONTACTS & HOTLINES */}
+                    {/* SECTION 4: OTHER CONTACTS & HOTLINES */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
@@ -245,10 +413,10 @@ export default function Index({ settings = {} }) {
                         </div>
                     </div>
 
-                    {/* SECTION 4: SOCIAL MEDIA LINKS */}
+                    {/* SECTION 5: SOCIAL MEDIA LINKS */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="p-2.5 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
+                            <div className="p-2.5 rounded-2xl bg-pink-100 dark:bg-pink-950 text-pink-600 dark:text-pink-400">
                                 <Share2 className="w-6 h-6" />
                             </div>
                             <div>
@@ -271,7 +439,7 @@ export default function Index({ settings = {} }) {
                                     value={data.facebook_url}
                                     onChange={(e) => setData('facebook_url', e.target.value)}
                                     placeholder="https://facebook.com/..."
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none"
                                 />
                             </div>
 
@@ -284,7 +452,7 @@ export default function Index({ settings = {} }) {
                                     value={data.linkedin_url}
                                     onChange={(e) => setData('linkedin_url', e.target.value)}
                                     placeholder="https://linkedin.com/..."
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none"
                                 />
                             </div>
 
@@ -297,7 +465,7 @@ export default function Index({ settings = {} }) {
                                     value={data.instagram_url}
                                     onChange={(e) => setData('instagram_url', e.target.value)}
                                     placeholder="https://instagram.com/..."
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none"
                                 />
                             </div>
 
@@ -310,7 +478,7 @@ export default function Index({ settings = {} }) {
                                     value={data.youtube_url}
                                     onChange={(e) => setData('youtube_url', e.target.value)}
                                     placeholder="https://youtube.com/..."
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none"
                                 />
                             </div>
                         </div>

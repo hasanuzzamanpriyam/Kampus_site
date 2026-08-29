@@ -4,7 +4,15 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Kampus EduConsult') }}</title>
+        @php
+            $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
+            $favicon = isset($settings['site_favicon']) && !empty($settings['site_favicon']) 
+                ? asset('storage/' . $settings['site_favicon']) 
+                : asset('favicon.ico');
+            $siteName = $settings['site_name'] ?? config('app.name', 'Kampus EduConsult');
+        @endphp
+        <link rel="icon" type="image/x-icon" href="{{ $favicon }}">
+        <title inertia>{{ $siteName }}</title>
 
         <!-- Inline Theme Script (Prevents Dark Mode Flash) -->
         <script>

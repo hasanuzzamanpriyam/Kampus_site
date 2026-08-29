@@ -13,8 +13,12 @@ class SettingSeeder extends Seeder
     public function run(): void
     {
         $defaults = [
-            'site_name' => 'Kampus EduConsult',
+            'site_name' => 'Kampus Edu',
+            'header_subtitle' => 'Educational Consultancy',
             'site_tagline' => 'Global Higher Education Advisers',
+            'footer_name' => 'Kampus EduConsult',
+            'footer_subtitle' => 'Global Higher Education Advisers',
+            'footer_description' => 'Empowering ambitious students worldwide to access top-tier university education with bespoke admissions counselling, visa support, and scholarship guidance.',
             'head_office_address' => "124 Education Avenue, Suite 400, Oxford Street\nLondon W1B 3AG, United Kingdom",
             'head_office_phone' => "UK: +44 20 7946 0912 | BD: +880 1812713814",
             'contact_email' => 'apply@kampusedu.com',
