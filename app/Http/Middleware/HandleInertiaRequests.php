@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Page;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -34,6 +35,14 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'nav_pages' => fn () => Page::where('is_active', true)
+                ->where('show_in_navbar', true)
+                ->select('id', 'name', 'slug')
+                ->get(),
+            'footer_pages' => fn () => Page::where('is_active', true)
+                ->where('show_in_footer', true)
+                ->select('id', 'name', 'slug')
+                ->get(),
         ];
     }
 }

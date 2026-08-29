@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class PageController extends Controller
@@ -95,6 +96,22 @@ class PageController extends Controller
 
         return redirect()->route('admin.pages.index')
             ->with('success', "Page '{$page->name}' updated successfully.");
+    }
+
+    /**
+     * Upload an image for dynamic page builder blocks.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:10240',
+        ]);
+
+        $path = $request->file('image')->store('pages', 'public');
+
+        return response()->json([
+            'url' => '/storage/' . $path,
+        ]);
     }
 
     /**

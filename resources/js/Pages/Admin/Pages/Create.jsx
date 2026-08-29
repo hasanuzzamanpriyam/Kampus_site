@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '../Layouts/AdminLayout';
+import PageBuilder from '../../../Components/Admin/PageBuilder';
 import {
     Save,
     ArrowLeft,
     FileText,
-    Plus,
-    Trash2,
-    Sliders
+    Sparkles
 } from 'lucide-react';
 
 export default function Create() {
-    const [contentPairs, setContentPairs] = useState([
-        { key: 'body_heading', value: 'Welcome to this custom page' },
-        { key: 'body_text', value: 'Add your custom page description or HTML content here.' }
-    ]);
-
     const { data, setData, processing, errors } = useForm({
         name: '',
         slug: '',
@@ -25,7 +19,26 @@ export default function Create() {
         is_active: true,
         show_in_navbar: false,
         show_in_footer: false,
-        content: {},
+        content: {
+            hero: {
+                badge: 'OFFICIAL PROGRAM',
+                title: '',
+                subtitle: '',
+                image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80',
+            },
+            sections: [
+                {
+                    id: 1,
+                    type: 'image_text',
+                    title: 'About This Program',
+                    subtitle: 'Excellence & Guidance',
+                    content: 'We provide specialized international admission guidance, tailored scholarship planning, and end-to-end visa assistance.',
+                    image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
+                    image_position: 'right',
+                    bullets: ['Recognized Degree Qualifications', 'Post-Study Work & Settlement Support'],
+                }
+            ],
+        },
     });
 
     const handleNameChange = (e) => {
@@ -33,38 +46,23 @@ export default function Create() {
         setData((prev) => ({
             ...prev,
             name: val,
-            slug: val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+            slug: val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+            meta_title: prev.meta_title ? prev.meta_title : `${val} — Kampus EduConsult`,
+            content: {
+                ...prev.content,
+                hero: {
+                    ...prev.content.hero,
+                    title: prev.content.hero?.title ? prev.content.hero.title : val,
+                }
+            }
         }));
-    };
-
-    const handleAddContentPair = () => {
-        setContentPairs([...contentPairs, { key: `field_${contentPairs.length + 1}`, value: '' }]);
-    };
-
-    const handleRemoveContentPair = (index) => {
-        const updated = contentPairs.filter((_, i) => i !== index);
-        setContentPairs(updated);
-    };
-
-    const handlePairChange = (index, field, value) => {
-        const updated = [...contentPairs];
-        updated[index][field] = value;
-        setContentPairs(updated);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const finalJson = {};
-        contentPairs.forEach(p => {
-            if (p.key && p.key.trim() !== '') {
-                finalJson[p.key.trim()] = p.value;
-            }
-        });
-
         const payload = {
             ...data,
-            content: finalJson,
             is_active: data.is_active ? 1 : 0,
             show_in_navbar: data.show_in_navbar ? 1 : 0,
             show_in_footer: data.show_in_footer ? 1 : 0,
@@ -81,25 +79,35 @@ export default function Create() {
         <AdminLayout title="Create New Page">
             <Head title="Create New Page — Kampus CMS" />
 
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="max-w-5xl mx-auto space-y-8">
                 
                 {/* HEADER ROW */}
-                <div className="flex items-center justify-between">
-                    <Link
-                        href="/admin/pages"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-slate-100 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        <span>Back to All Pages</span>
-                    </Link>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/admin/pages"
+                            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </Link>
+                        <div>
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+                                <Sparkles className="w-3 h-3" />
+                                <span>NEW DYNAMIC PAGE</span>
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                                Create New Page & Layout
+                            </h2>
+                        </div>
+                    </div>
 
                     <button
                         onClick={handleSubmit}
                         disabled={processing}
-                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-all cursor-pointer"
                     >
                         <Save className="w-4 h-4" />
-                        <span>{processing ? 'Saving...' : 'Publish Page'}</span>
+                        <span>{processing ? 'Publishing...' : 'Publish Page'}</span>
                     </button>
                 </div>
 
@@ -172,8 +180,8 @@ export default function Create() {
                                     required
                                     value={data.name}
                                     onChange={handleNameChange}
-                                    placeholder="e.g. Student Life in UK"
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="e.g. Student Support & Resources"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
                                 />
                                 {errors.name && <span className="text-xs text-rose-500 font-semibold">{errors.name}</span>}
                             </div>
@@ -187,7 +195,7 @@ export default function Create() {
                                     required
                                     value={data.slug}
                                     onChange={(e) => setData('slug', e.target.value)}
-                                    placeholder="e.g. student-life-uk"
+                                    placeholder="e.g. student-support"
                                     className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 />
                                 {errors.slug && <span className="text-xs text-rose-500 font-semibold">{errors.slug}</span>}
@@ -202,7 +210,7 @@ export default function Create() {
                                 type="text"
                                 value={data.meta_title}
                                 onChange={(e) => setData('meta_title', e.target.value)}
-                                placeholder="e.g. Student Life in UK — Kampus Group"
+                                placeholder="e.g. Student Support & Resources — Kampus Group"
                                 className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                             />
                         </div>
@@ -221,77 +229,11 @@ export default function Create() {
                         </div>
                     </div>
 
-                    {/* SECTION 2: PAGE CONTENT FIELDS */}
-                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
-                        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
-                                    <Sliders className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                        Page Content & Text Fields
-                                    </h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        Add dynamic headings, paragraphs, or body HTML for this page
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={handleAddContentPair}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold hover:bg-purple-100 transition-colors cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Add Content Field</span>
-                            </button>
-                        </div>
-
-                        <div className="space-y-4">
-                            {contentPairs.map((pair, idx) => (
-                                <div
-                                    key={idx}
-                                    className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center gap-3"
-                                >
-                                    <div className="w-full sm:w-1/3">
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                            Field Key / Label
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={pair.key}
-                                            onChange={(e) => handlePairChange(idx, 'key', e.target.value)}
-                                            placeholder="e.g. body_heading"
-                                            className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                        />
-                                    </div>
-
-                                    <div className="w-full sm:flex-1">
-                                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                            Text Value / Paragraph
-                                        </label>
-                                        <textarea
-                                            rows={2}
-                                            value={pair.value}
-                                            onChange={(e) => handlePairChange(idx, 'value', e.target.value)}
-                                            placeholder="Field text or HTML content..."
-                                            className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                        />
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => handleRemoveContentPair(idx)}
-                                        className="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors self-end sm:self-center cursor-pointer"
-                                        title="Delete Field"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    {/* SECTION 2: DYNAMIC VISUAL PAGE BUILDER & SECTIONS */}
+                    <PageBuilder
+                        content={data.content}
+                        onChange={(newContent) => setData('content', newContent)}
+                    />
 
                     {/* SUBMIT BUTTON */}
                     <div className="pt-2 flex justify-end">

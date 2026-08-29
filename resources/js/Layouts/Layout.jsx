@@ -70,14 +70,14 @@ export default function Layout({ children }) {
     ];
 
     // Combine static nav links with dynamic navbar pages enabled by Admin
-    const dynamicNavLinks = nav_pages.map(p => ({
+    const dynamicNavLinks = (nav_pages || []).map(p => ({
         name: p.name,
-        href: p.slug === 'home' ? '/' : `/${p.slug}`
+        href: p.slug === 'home' || p.slug === '/' ? '/' : `/${p.slug.replace(/^\//, '')}`
     }));
 
     const navLinks = [
         ...staticNavLinks,
-        ...dynamicNavLinks.filter(d => !staticNavLinks.some(s => s.href === d.href))
+        ...dynamicNavLinks.filter(d => !staticNavLinks.some(s => s.href.toLowerCase() === d.href.toLowerCase()))
     ];
 
     const staticQuickLinks = [
@@ -90,14 +90,14 @@ export default function Layout({ children }) {
     ];
 
     // Combine static footer links with dynamic footer pages enabled by Admin
-    const dynamicFooterLinks = footer_pages.map(p => ({
+    const dynamicFooterLinks = (footer_pages || []).map(p => ({
         name: p.name,
-        href: p.slug === 'home' ? '/' : `/${p.slug}`
+        href: p.slug === 'home' || p.slug === '/' ? '/' : `/${p.slug.replace(/^\//, '')}`
     }));
 
     const quickLinks = [
         ...staticQuickLinks,
-        ...dynamicFooterLinks.filter(d => !staticQuickLinks.some(s => s.href === d.href))
+        ...dynamicFooterLinks.filter(d => !staticQuickLinks.some(s => s.href.toLowerCase() === d.href.toLowerCase()))
     ];
 
     const globalBranches = [
@@ -338,6 +338,14 @@ export default function Layout({ children }) {
                             <Link href="/terms-of-service" className="hover:text-white transition-colors">Terms of Service</Link>
                             <Link href="/cookie-preferences" className="hover:text-white transition-colors">Cookie Preferences</Link>
                             <Link href="/accreditation" className="hover:text-white transition-colors">Accreditation</Link>
+                            {dynamicFooterLinks
+                                .filter(d => !['/', '/about', '/services', '/universities', '/courses', '/scholarships', '/visa-guide', '/privacy-policy', '/terms-of-service', '/terms', '/cookie-preferences', '/accreditation'].includes(d.href.toLowerCase()))
+                                .map(p => (
+                                    <Link key={p.name} href={p.href} className="hover:text-blue-400 text-slate-300 font-medium transition-colors">
+                                        {p.name}
+                                    </Link>
+                                ))
+                            }
                         </div>
                     </div>
                 </div>

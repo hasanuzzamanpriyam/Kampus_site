@@ -1,25 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '../Layouts/AdminLayout';
+import PageBuilder from '../../../Components/Admin/PageBuilder';
 import {
     Save,
     ArrowLeft,
     Globe,
-    Plus,
-    Trash2,
-    Code,
+    FileText,
     Sliders,
-    Menu,
-    LayoutList
+    Sparkles
 } from 'lucide-react';
 
 export default function Edit({ page }) {
-    const initialContentPairs = page.content
-        ? Object.entries(page.content).map(([k, v]) => ({ key: k, value: typeof v === 'object' ? JSON.stringify(v) : v }))
-        : [];
-
-    const [contentPairs, setContentPairs] = useState(initialContentPairs);
-
     const { data, setData, processing, errors } = useForm({
         name: page.name || '',
         slug: page.slug || '',
@@ -32,34 +24,11 @@ export default function Edit({ page }) {
         content: page.content || {},
     });
 
-    const handleAddContentPair = () => {
-        setContentPairs([...contentPairs, { key: `new_field_${contentPairs.length + 1}`, value: '' }]);
-    };
-
-    const handleRemoveContentPair = (index) => {
-        const updated = contentPairs.filter((_, i) => i !== index);
-        setContentPairs(updated);
-    };
-
-    const handlePairChange = (index, field, value) => {
-        const updated = [...contentPairs];
-        updated[index][field] = value;
-        setContentPairs(updated);
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        const finalJson = {};
-        contentPairs.forEach(p => {
-            if (p.key && p.key.trim() !== '') {
-                finalJson[p.key.trim()] = p.value;
-            }
-        });
 
         const payload = {
             ...data,
-            content: finalJson,
             is_active: data.is_active ? 1 : 0,
             show_in_navbar: data.show_in_navbar ? 1 : 0,
             show_in_footer: data.show_in_footer ? 1 : 0,
@@ -73,27 +42,37 @@ export default function Edit({ page }) {
     };
 
     return (
-        <AdminLayout title={`Edit Page & SEO: ${page.name}`}>
+        <AdminLayout title={`Edit Page & Layout: ${page.name}`}>
             <Head title={`Edit ${page.name} — Kampus CMS`} />
 
             <div className="max-w-5xl mx-auto space-y-8">
                 
                 {/* HEADER ROW WITH BACK BUTTON & SUBMIT ACTION */}
-                <div className="flex items-center justify-between">
-                    <Link
-                        href="/admin/pages"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-800 text-xs font-bold hover:bg-slate-100 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4" />
-                        <span>Back to All Pages</span>
-                    </Link>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                    <div className="flex items-center gap-3">
+                        <Link
+                            href="/admin/pages"
+                            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                        </Link>
+                        <div>
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">
+                                <Sparkles className="w-3 h-3" />
+                                <span>VISUAL PAGE BUILDER</span>
+                            </div>
+                            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+                                Customize Page: {page.name}
+                            </h2>
+                        </div>
+                    </div>
 
                     <div className="flex items-center gap-3">
                         <a
                             href={page.slug === 'home' ? '/' : `/${page.slug}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-colors cursor-pointer"
                         >
                             <Globe className="w-4 h-4 text-blue-500" />
                             <span>Preview Live Page</span>
@@ -102,7 +81,7 @@ export default function Edit({ page }) {
                         <button
                             onClick={handleSubmit}
                             disabled={processing}
-                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md transition-all cursor-pointer"
+                            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-all cursor-pointer"
                         >
                             <Save className="w-4 h-4" />
                             <span>{processing ? 'Saving Changes...' : 'Save Page & SEO'}</span>
@@ -121,10 +100,10 @@ export default function Edit({ page }) {
                                 </div>
                                 <div>
                                     <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                        SEO & Meta Tags Configuration
+                                        SEO & Navigation Settings
                                     </h3>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        Optimize how this page appears in Google & search engine results
+                                        Configure page name, slug, search tags, and menu placement
                                     </p>
                                 </div>
                             </div>
@@ -170,6 +149,34 @@ export default function Edit({ page }) {
                             </div>
                         </div>
 
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Page Display Name
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Route URL Slug
+                                </label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={data.slug}
+                                    onChange={(e) => setData('slug', e.target.value)}
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+                        </div>
+
                         {/* Meta Title */}
                         <div>
                             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
@@ -199,101 +206,13 @@ export default function Edit({ page }) {
                             />
                             {errors.meta_description && <span className="text-xs text-rose-500 font-semibold">{errors.meta_description}</span>}
                         </div>
-
-                        {/* Meta Keywords */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Meta Keywords <span className="text-slate-400 font-normal">(Comma separated)</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={data.meta_keywords}
-                                onChange={(e) => setData('meta_keywords', e.target.value)}
-                                placeholder="study abroad, UK universities, scholarship, visa guidance"
-                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            />
-                        </div>
                     </div>
 
-                    {/* SECTION 2: DYNAMIC COMPONENT JSON CONTENT EDITOR */}
-                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
-                        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="flex items-center gap-3">
-                                <div className="p-2.5 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
-                                    <Sliders className="w-6 h-6" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
-                                        Dynamic Component Content (JSON Fields)
-                                    </h3>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        Edit component text variables like Hero Headings, Subtitles & Stats numbers
-                                    </p>
-                                </div>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={handleAddContentPair}
-                                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 text-xs font-bold hover:bg-purple-100 transition-colors cursor-pointer"
-                            >
-                                <Plus className="w-4 h-4" />
-                                <span>Add New Field</span>
-                            </button>
-                        </div>
-
-                        {contentPairs.length === 0 ? (
-                            <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800/40 text-center space-y-2 border border-dashed border-slate-300 dark:border-slate-700">
-                                <Code className="w-8 h-8 text-slate-400 mx-auto" />
-                                <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">No dynamic content fields defined yet</p>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Click "Add New Field" above to map custom component parameters.</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-4">
-                                {contentPairs.map((pair, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 flex flex-col sm:flex-row items-start sm:items-center gap-3"
-                                    >
-                                        <div className="w-full sm:w-1/3">
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                                Field Key / Identifier
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={pair.key}
-                                                onChange={(e) => handlePairChange(idx, 'key', e.target.value)}
-                                                placeholder="e.g. hero_heading"
-                                                className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        <div className="w-full sm:flex-1">
-                                            <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">
-                                                Text Value / Content
-                                            </label>
-                                            <textarea
-                                                rows={2}
-                                                value={pair.value}
-                                                onChange={(e) => handlePairChange(idx, 'value', e.target.value)}
-                                                placeholder="Field content..."
-                                                className="w-full px-3.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                            />
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveContentPair(idx)}
-                                            className="p-2 rounded-xl text-rose-500 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/60 transition-colors self-end sm:self-center cursor-pointer"
-                                            title="Delete Field"
-                                        >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {/* SECTION 2: DYNAMIC VISUAL PAGE BUILDER & SECTIONS */}
+                    <PageBuilder
+                        content={data.content}
+                        onChange={(newContent) => setData('content', newContent)}
+                    />
 
                     {/* SUBMIT BUTTON AT BOTTOM */}
                     <div className="pt-2 flex justify-end">
@@ -303,7 +222,7 @@ export default function Edit({ page }) {
                             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.01] transition-transform cursor-pointer"
                         >
                             <Save className="w-4 h-4" />
-                            <span>{processing ? 'Saving Changes...' : 'Save Page & SEO Settings'}</span>
+                            <span>{processing ? 'Saving Changes...' : 'Save Page & Publish'}</span>
                         </button>
                     </div>
 

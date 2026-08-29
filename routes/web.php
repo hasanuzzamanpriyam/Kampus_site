@@ -110,6 +110,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/pages', [PageController::class, 'index'])->name('admin.pages.index');
     Route::get('/pages/create', [PageController::class, 'create'])->name('admin.pages.create');
     Route::post('/pages', [PageController::class, 'store'])->name('admin.pages.store');
+    Route::post('/pages/upload-image', [PageController::class, 'uploadImage'])->name('admin.pages.upload-image');
     Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('admin.pages.edit');
     Route::put('/pages/{id}', [PageController::class, 'update'])->name('admin.pages.update');
     Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('admin.pages.destroy');
