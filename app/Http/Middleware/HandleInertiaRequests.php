@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Models\Page;
 use App\Models\Faq;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -45,6 +46,9 @@ class HandleInertiaRequests extends Middleware
                 ->select('id', 'name', 'slug')
                 ->get(),
             'faqs' => fn () => Faq::where('is_active', true)
+                ->orderBy('sort_order', 'asc')
+                ->get(),
+            'globalBranches' => fn () => Branch::where('is_active', true)
                 ->orderBy('sort_order', 'asc')
                 ->get(),
         ];

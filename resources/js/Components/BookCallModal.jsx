@@ -161,10 +161,10 @@ export default function BookCallModal({ isOpen, onClose }) {
                                 </label>
                                 <div className="grid grid-cols-2 gap-3">
                                     {[
-                                        { id: 'UK', code: 'GB', label: 'GB UK', desc: 'United Kingdom' },
-                                        { id: 'USA', code: 'US', label: 'US USA', desc: 'United States' },
-                                        { id: 'Finland', code: 'FI', label: 'FI Finland', desc: 'Finland' },
-                                        { id: 'UAE', code: 'AE', label: 'AE UAE', desc: 'Dubai / UAE' }
+                                        { id: 'UK', code: 'GB', name: 'United Kingdom' },
+                                        { id: 'USA', code: 'US', name: 'United States' },
+                                        { id: 'Finland', code: 'FI', name: 'Finland' },
+                                        { id: 'UAE', code: 'AE', name: 'Dubai / UAE' }
                                     ].map((item) => {
                                         const isSelected = formData.destination === item.id;
                                         return (
@@ -172,20 +172,25 @@ export default function BookCallModal({ isOpen, onClose }) {
                                                 key={item.id}
                                                 type="button"
                                                 onClick={() => handleFieldChange('destination', item.id)}
-                                                className={`p-3.5 sm:p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                                                className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                                                     isSelected
                                                         ? 'bg-blue-50/90 dark:bg-blue-950/60 border-blue-600 text-blue-900 dark:text-blue-100 shadow-xs ring-1 ring-blue-600'
                                                         : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700/80 text-slate-700 dark:text-slate-300 hover:border-blue-400'
                                                 }`}
                                             >
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-lg font-extrabold text-slate-900 dark:text-white">{item.code}</span>
-                                                    {isSelected && <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />}
+                                                <div className="flex items-center min-w-0">
+                                                    <div className={`flex items-center justify-center w-9 h-9 rounded-xl text-xs font-bold mr-3 shrink-0 transition-colors ${
+                                                        isSelected
+                                                            ? 'bg-blue-600 text-white shadow-xs'
+                                                            : 'bg-slate-200/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300'
+                                                    }`}>
+                                                        {item.code}
+                                                    </div>
+                                                    <span className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                                                        {item.name}
+                                                    </span>
                                                 </div>
-                                                <div className="mt-3">
-                                                    <span className="block text-xs sm:text-sm font-extrabold">{item.label}</span>
-                                                    <span className="block text-[11px] text-slate-500 dark:text-slate-400">{item.desc}</span>
-                                                </div>
+                                                {isSelected && <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 ml-2" />}
                                             </button>
                                         );
                                     })}

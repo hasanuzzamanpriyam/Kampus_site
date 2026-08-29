@@ -34,7 +34,7 @@ import {
 
 export default function Layout({ children }) {
     const { url, props } = usePage();
-    const { nav_pages = [], footer_pages = [] } = props;
+    const { nav_pages = [], footer_pages = [], globalBranches = [] } = props;
     const { theme, toggleTheme } = useTheme();
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -107,13 +107,7 @@ export default function Layout({ children }) {
         ...dynamicFooterLinks.filter(d => !staticQuickLinks.some(s => s.href.toLowerCase() === d.href.toLowerCase()))
     ];
 
-    const globalBranches = [
-        { country: 'Bangladesh', cities: 'Dhaka (Gulshan-2), Chattogram', flag: '🇧🇩', hotline: '+880 1812713814', status: 'Open Now' },
-        { country: 'United Kingdom', cities: 'London (HQ Oxford St.)', flag: '🇬🇧', hotline: '+44 20 7946 0912', status: 'Open Now' },
-        { country: 'United States', cities: 'New York (Manhattan)', flag: '🇺🇸', hotline: '+1 212 555 0198', status: 'Open 9 AM EST' },
-        { country: 'Canada', cities: 'Toronto (Financial Dist.)', flag: '🇨🇦', hotline: '+1 416 555 0147', status: 'Open 9 AM EST' },
-        { country: 'Australia', cities: 'Sydney (CBD Square)', flag: '🇦🇺', hotline: '+61 2 9385 1000', status: 'Open Tomorrow' },
-    ];
+
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 antialiased">
@@ -301,24 +295,26 @@ export default function Layout({ children }) {
                             <h3 className="text-base font-bold text-white tracking-wide border-l-2 border-blue-500 pl-3">
                                 Global Branches
                             </h3>
-                            <div className="space-y-3">
-                                {globalBranches.map((branch, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/60 hover:border-slate-700 transition-colors"
-                                    >
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span className="font-semibold text-white flex items-center gap-2">
-                                                <span>{branch.flag}</span>
-                                                <span>{branch.country}</span>
-                                            </span>
-                                            <span className="text-[10px] font-medium bg-slate-800 text-emerald-400 px-2 py-0.5 rounded-full border border-slate-700">
-                                                {branch.status}
+                            {globalBranches && globalBranches.length > 0 ? (
+                                <div className="flex flex-col space-y-3 max-h-[280px] overflow-y-auto pr-3 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900/50">
+                                    {globalBranches.map((branch) => (
+                                        <div 
+                                            key={branch.id} 
+                                            className="flex items-center justify-between p-3 border border-slate-700/50 rounded-xl bg-slate-800/30 hover:bg-slate-800/60 transition-colors shrink-0"
+                                        >
+                                            <div className="flex items-center space-x-3 min-w-0">
+                                                <span className="font-bold text-slate-100 shrink-0">{branch.country_code}</span>
+                                                <span className="text-slate-300 text-sm truncate">{branch.country_name}</span>
+                                            </div>
+                                            <span className="text-xs px-2 py-1 rounded-full border border-teal-500/30 text-teal-400 bg-teal-500/10 shrink-0 ml-2">
+                                                {branch.status_text}
                                             </span>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className="text-xs text-slate-500">No branch locations available.</p>
+                            )}
                         </div>
 
                         {/* COL 4: Head Office */}

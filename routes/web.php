@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\CourseController;
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\FaqController;
+use App\Http\Controllers\Admin\BranchController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\InquiryController;
 use App\Http\Controllers\Admin\RoleController;
@@ -167,6 +168,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'destroy' => 'admin.faqs.destroy',
     ]);
     Route::patch('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('admin.faqs.toggle-status');
+
+    // Global Branches CRUD Routes
+    Route::resource('branches', BranchController::class)->names([
+        'index' => 'admin.branches.index',
+        'create' => 'admin.branches.create',
+        'store' => 'admin.branches.store',
+        'edit' => 'admin.branches.edit',
+        'update' => 'admin.branches.update',
+        'destroy' => 'admin.branches.destroy',
+    ]);
+    Route::patch('/branches/{branch}/toggle-status', [BranchController::class, 'toggleStatus'])->name('admin.branches.toggle-status');
 
     // Partner Applications Routes (admin management)
     Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([

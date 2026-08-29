@@ -21,6 +21,7 @@ import {
     ChevronRight,
     ExternalLink,
     Globe,
+    Globe2,
     Users,
     ShieldCheck,
     HelpCircle
@@ -34,13 +35,14 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const currentUser = props?.auth?.user;
     const adminName = currentUser?.name || 'Administrator';
     const adminEmail = currentUser?.email || 'admin@kampusedu.com';
-    const isSuperAdmin = currentUser?.id === 1;
+    const isSuperAdmin = props?.auth?.user?.role === 'super_admin' || !props?.auth?.user?.role;
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings },
         { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
+        { name: 'Global Branches', href: '/admin/branches', icon: Globe2 },
         { name: 'Countries', href: '/admin/countries', icon: Globe },
         { name: 'Universities', href: '/admin/universities', icon: Building2 },
         { name: 'Courses', href: '/admin/courses', icon: BookOpen },
