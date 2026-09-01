@@ -59,20 +59,20 @@ export default function CoursesHero({
 
                 {/* 2. LARGE PROMINENT FLOATING SEARCH BAR */}
                 <div className="max-w-3xl mx-auto">
-                    <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xl p-2 sm:p-2.5 flex items-center gap-2 transition-all focus-within:ring-2 focus-within:ring-blue-500/50">
+                    <form onSubmit={handleSubmit} className="relative rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-2xl p-2 sm:p-2.5 flex items-center gap-2 transition-all focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50">
                         
                         {/* Search Icon */}
-                        <div className="pl-3 text-slate-400">
+                        <div className="pl-3.5 text-slate-400 flex items-center justify-center shrink-0">
                             <Search className="w-5 h-5 text-blue-500" />
                         </div>
 
-                        {/* Text Input */}
+                        {/* Text Input without internal border */}
                         <input
                             type="text"
                             value={searchTerm}
                             onChange={handleInputChange}
                             placeholder="Search for a course (e.g., Data Science, Law, Business)..."
-                            className="w-full bg-transparent py-2.5 px-2 text-slate-900 dark:text-white text-sm sm:text-base font-medium placeholder-slate-400 focus:outline-none"
+                            className="w-full bg-transparent py-2.5 px-2 text-slate-900 dark:text-white text-sm sm:text-base font-medium placeholder-slate-400 dark:placeholder-slate-500 border-0 border-none outline-none focus:outline-none focus:ring-0 focus:border-none shadow-none"
                         />
 
                         {/* Solid Brand Search Button */}

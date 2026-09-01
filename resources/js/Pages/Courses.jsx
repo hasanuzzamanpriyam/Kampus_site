@@ -1,34 +1,88 @@
-import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import Layout from '../Layouts/Layout';
 import CoursesHero from '../Components/CoursesHero';
 import CourseFilters from '../Components/CourseFilters';
 import CourseList from '../Components/CourseList';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
 export default function Courses() {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filters, setFilters] = useState({
-        levels: [],
-        subjects: [],
-        destinations: []
-    });
+    const { courses = {}, destinations = [], levels = [], filters = {} } = usePage().props;
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = 4;
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+    const [selectedLevels, setSelectedLevels] = useState(
+        filters.level ? (Array.isArray(filters.level) ? filters.level : filters.level.split(',')) : []
+    );
+    const [selectedDestination, setSelectedDestination] = useState(filters.country || 'All');
+    const [sortBy, setSortBy] = useState(filters.sort || 'popularity');
+    const isFirstMount = useRef(true);
 
-    const handlePageChange = (newPage) => {
-        if (newPage >= 1 && newPage <= totalPages) {
-            setCurrentPage(newPage);
-            window.scrollTo({ top: 380, behavior: 'smooth' });
-        }
+    // Inertia SPA visit handler with preserveState and preserveScroll
+    const fetchResults = (search, lvls, dest, srt) => {
+        const url = typeof route === 'function' ? route('courses.index') : '/courses';
+        router.get(url, {
+            search: search || undefined,
+            level: lvls && lvls.length > 0 ? lvls.join(',') : undefined,
+            country: dest === 'All' ? undefined : dest,
+            sort: srt !== 'popularity' ? srt : undefined,
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+        });
     };
+
+    // 300ms Search Debouncer
+    useEffect(() => {
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchResults(searchQuery, selectedLevels, selectedDestination, sortBy);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Handle Study Level checkbox toggle
+    const handleLevelToggle = (lvl) => {
+        const nextLevels = selectedLevels.includes(lvl)
+            ? selectedLevels.filter((item) => item !== lvl)
+            : [...selectedLevels, lvl];
+        setSelectedLevels(nextLevels);
+        fetchResults(searchQuery, nextLevels, selectedDestination, sortBy);
+    };
+
+    // Handle Destination selection
+    const handleDestinationChange = (dest) => {
+        setSelectedDestination(dest);
+        fetchResults(searchQuery, selectedLevels, dest, sortBy);
+    };
+
+    // Handle Sort change
+    const handleSortChange = (newSort) => {
+        setSortBy(newSort);
+        fetchResults(searchQuery, selectedLevels, selectedDestination, newSort);
+    };
+
+    // Reset all filters
+    const handleResetAll = () => {
+        setSearchQuery('');
+        setSelectedLevels([]);
+        setSelectedDestination('All');
+        setSortBy('popularity');
+        fetchResults('', [], 'All', 'popularity');
+    };
+
+    const hasActiveFilters = Boolean(searchQuery.trim()) || selectedLevels.length > 0 || selectedDestination !== 'All';
 
     return (
         <Layout>
-            <Head title="Find Degree Courses — Kampus EduConsult" />
+            <Head title="Find Degree Courses & Programmes — Kampus EduConsult" />
 
             {/* MAIN COURSES PAGE CONTAINER WITH TAILWIND SECTION SPACING */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
@@ -36,77 +90,68 @@ export default function Courses() {
                 {/* 1. COURSES HERO WITH GLOBAL SEARCH BAR */}
                 <CoursesHero
                     initialSearch={searchQuery}
-                    onSearchChange={(val) => setSearchQuery(val)}
-                    onSearchSubmit={(val) => setSearchQuery(val)}
+                    onSearchChange={setSearchQuery}
+                    onSearchSubmit={(val) => {
+                        setSearchQuery(val);
+                        fetchResults(val, selectedLevels, selectedDestination, sortBy);
+                    }}
                 />
 
                 {/* 2. PAGE LAYOUT STRUCTURE: RESPONSIVE FLEX CONTAINER (FILTERS LEFT, COURSE LIST RIGHT) */}
                 <section className="py-12 px-4 sm:px-6 lg:px-8 bg-slate-50/50 dark:bg-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
                     <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-8">
                         
-                        {/* LEFT SIDE: COURSE FILTERS SIDEBAR */}
+                        {/* LEFT SIDE: DYNAMIC COURSE FILTERS SIDEBAR */}
                         <CourseFilters
-                            initialFilters={filters}
-                            onFilterChange={(newFilters) => {
-                                setFilters(newFilters);
-                                setCurrentPage(1);
-                            }}
+                            availableLevels={levels}
+                            availableDestinations={destinations}
+                            selectedLevels={selectedLevels}
+                            selectedDestination={selectedDestination}
+                            onLevelToggle={handleLevelToggle}
+                            onDestinationChange={handleDestinationChange}
+                            onClearAll={handleResetAll}
+                            hasActiveFilters={hasActiveFilters}
                         />
 
-                        {/* RIGHT SIDE: COURSE LIST & PAGINATION */}
-                        <div className="w-full flex-1 space-y-8">
+                        {/* RIGHT SIDE: DYNAMIC COURSE LIST & INERTIA PAGINATION */}
+                        <div className="w-full flex-1 space-y-6">
                             <CourseList
+                                courses={courses}
                                 searchQuery={searchQuery}
-                                filters={filters}
+                                selectedLevels={selectedLevels}
+                                selectedDestination={selectedDestination}
+                                sortBy={sortBy}
+                                onSortChange={handleSortChange}
+                                onResetFilters={handleResetAll}
                             />
 
-                            {/* GENERIC PAGINATION COMPONENT BELOW COURSE LIST */}
-                            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs flex items-center justify-between gap-4">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                                        currentPage === 1
-                                            ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed'
-                                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700 shadow-xs'
-                                    }`}
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                    <span>Previous</span>
-                                </button>
-
-                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                                    {[1, 2, 3, 4].map((page) => (
-                                        <button
-                                            key={page}
-                                            onClick={() => handlePageChange(page)}
-                                            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center font-extrabold transition-all ${
-                                                currentPage === page
-                                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/25'
-                                                    : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                                            }`}
-                                        >
-                                            {page}
-                                        </button>
+                            {/* INERTIA SPA PAGINATION SECTION WITH preserveScroll={true} */}
+                            {courses?.links && courses.links.length > 3 && (
+                                <div className="flex items-center justify-center mt-10 space-x-2 flex-wrap gap-y-2">
+                                    {courses.links.map((link, index) => (
+                                        link.url ? (
+                                            <Link
+                                                key={index}
+                                                href={link.url}
+                                                preserveScroll={true}
+                                                preserveState={true}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors border shadow-md ${
+                                                    link.active
+                                                        ? 'bg-blue-600 border-blue-600 text-white shadow-blue-500/20'
+                                                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-white'
+                                                }`}
+                                            />
+                                        ) : (
+                                            <span
+                                                key={index}
+                                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                                className="px-4 py-2 text-sm font-medium text-slate-400 dark:text-slate-600 bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg cursor-not-allowed opacity-50"
+                                            />
+                                        )
                                     ))}
-                                    <span className="hidden sm:inline text-slate-400 pl-1">
-                                        Page {currentPage} of {totalPages}
-                                    </span>
                                 </div>
-
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                                        currentPage === totalPages
-                                            ? 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed'
-                                            : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-blue-600 hover:text-white border border-slate-200 dark:border-slate-700 shadow-xs'
-                                    }`}
-                                >
-                                    <span>Next</span>
-                                    <ChevronRight className="w-4 h-4" />
-                                </button>
-                            </div>
+                            )}
                         </div>
 
                     </div>

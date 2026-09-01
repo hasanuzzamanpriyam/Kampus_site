@@ -115,24 +115,10 @@ export default function JourneyProcess() {
                                             </p>
                                         </div>
                                     </div>
-
-                                    {/* Arrow Step Indicator */}
-                                    <div className="pt-4 mt-4 border-t border-slate-200/50 dark:border-slate-700/50 flex items-center justify-between text-[11px] font-semibold text-slate-400 group-hover:text-blue-600 transition-colors">
-                                        <span>Next Step</span>
-                                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                                    </div>
                                 </div>
                             );
                         })}
                     </div>
-                </div>
-
-                {/* Bottom CTA Banner */}
-                <div className="mt-14 text-center">
-                    <button className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.02] transition-all">
-                        <span>Begin Step 1: Get Free Profile Evaluation</span>
-                        <ArrowRight className="w-4 h-4" />
-                    </button>
                 </div>
 
             </div>

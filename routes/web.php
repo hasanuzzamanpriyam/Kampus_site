@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\PublicDestinationController;
 use App\Http\Controllers\PublicUniversityController;
+use App\Http\Controllers\PublicCourseController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
@@ -52,9 +53,7 @@ Route::get('/contact', function () {
     return Inertia::render('Contact'); 
 });
 
-Route::get('/courses', function () {
-    return Inertia::render('Courses'); 
-});
+Route::get('/courses', [PublicCourseController::class, 'index'])->name('courses.index');
 
 Route::get('/partner', function () {
     return Inertia::render('PartnerWithUs'); 
