@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import { Search, Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Globe } from 'lucide-react';
+import { Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Globe } from 'lucide-react';
+import TopbarSearch from './TopbarSearch';
 
 export default function TopBar({ onSearch }) {
     const { props } = usePage();
     const hotline = props?.globalSettings?.contact_bd_hotline || '+880 1812713814';
-    const [searchQuery, setSearchQuery] = useState('');
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
@@ -17,15 +17,6 @@ export default function TopBar({ onSearch }) {
         yearsInBusiness: '1-3 years',
         message: ''
     });
-
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        if (onSearch) {
-            onSearch(searchQuery);
-        } else {
-            window.location.href = `/universities?search=${encodeURIComponent(searchQuery)}`;
-        }
-    };
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
@@ -68,25 +59,8 @@ export default function TopBar({ onSearch }) {
             <div className="w-full bg-[#1E1B3A] text-white py-3 px-4 md:px-8 border-b border-slate-800/80 relative z-50">
                 <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                     
-                    {/* CENTER/LEFT: WIDE ROUNDED SEARCH BAR */}
-                    <div className="max-w-xl lg:max-w-2xl w-full">
-                        <form onSubmit={handleSearchSubmit} className="relative w-full">
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                placeholder="Search for universities & courses"
-                                className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-xs sm:text-sm font-medium rounded-full pl-5 pr-11 py-2.5 shadow-sm border border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
-                            />
-                            <button
-                                type="submit"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
-                                aria-label="Submit Search"
-                            >
-                                <Search className="w-4 h-4 stroke-[2.5]" />
-                            </button>
-                        </form>
-                    </div>
+                    {/* CENTER/LEFT: LIVE DEBOUNCED SCOUT SEARCH */}
+                    <TopbarSearch onSearch={onSearch} />
 
                     {/* RIGHT SIDE: CONTACT & BECOME A PARTNER ACTION */}
                     <div className="flex items-center gap-3 sm:gap-6 shrink-0">

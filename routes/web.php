@@ -7,6 +7,7 @@ use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\PublicDestinationController;
 use App\Http\Controllers\PublicUniversityController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\CountryController;
@@ -101,6 +102,9 @@ Route::post('/book-call', [FrontendController::class, 'bookCall'])->name('book-c
 // AI Course Matcher API Routes
 Route::post('/api/course-matcher', [FrontendController::class, 'matchCourses'])->name('api.course-matcher');
 Route::post('/api/course-matcher-lead', [FrontendController::class, 'saveMatcherLead'])->name('api.course-matcher-lead');
+
+// Global Index Search API (Laravel Scout)
+Route::get('/api/global-search', [SearchController::class, 'search'])->name('api.global-search');
 
 // SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
 Route::middleware(['auth'])->prefix('admin')->group(function () {
