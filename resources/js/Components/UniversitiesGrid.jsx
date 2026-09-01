@@ -1,211 +1,197 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import {
     MapPin,
     ArrowRight,
     Award,
     Building2,
-    Sparkles,
+    BookOpen,
     SearchX,
-    CheckCircle2
+    ChevronLeft,
+    ChevronRight,
+    X,
+    RotateCcw
 } from 'lucide-react';
 
-export default function UniversitiesGrid({ searchQuery = '', selectedDestination = 'All' }) {
-    const universities = [
-        {
-            id: 1,
-            name: 'University of Oxford',
-            destination: 'UK',
-            location: 'Oxford, United Kingdom',
-            ranking: 'Top 5 Global',
-            image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
-            logoText: 'OX',
-            logoBg: 'bg-blue-900 text-white',
-            features: ['Scholarships Available', 'Post-Study Work Visa', 'Russell Group']
-        },
-        {
-            id: 2,
-            name: 'Harvard University',
-            destination: 'USA',
-            location: 'Cambridge, MA, United States',
-            ranking: 'Top 5 Global',
-            image: 'https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=800&q=80',
-            logoText: 'HU',
-            logoBg: 'bg-red-900 text-white',
-            features: ['STEM 3-Yr OPT', 'Need-Based Financial Aid', 'Ivy League']
-        },
-        {
-            id: 3,
-            name: 'University of Helsinki',
-            destination: 'Finland',
-            location: 'Helsinki, Finland',
-            ranking: 'Top 100 Global',
-            image: 'https://images.unsplash.com/photo-1592280771190-3e2e4d571952?auto=format&fit=crop&w=800&q=80',
-            logoText: 'UH',
-            logoBg: 'bg-teal-800 text-white',
-            features: ['100% Tuition Waiver', 'Fast PR Pathway', 'Nordic Research']
-        },
-        {
-            id: 4,
-            name: 'Heriot-Watt University Dubai',
-            destination: 'Dubai',
-            location: 'Dubai International Academic City, UAE',
-            ranking: 'Top 300 Global',
-            image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=800&q=80',
-            logoText: 'HW',
-            logoBg: 'bg-amber-800 text-white',
-            features: ['UK Degree in Dubai', '100% Visa Guarantee', 'Tax-Free Campus']
-        },
-        {
-            id: 5,
-            name: 'University of Birmingham',
-            destination: 'UK',
-            location: 'Birmingham, United Kingdom',
-            ranking: 'Top 100 Global',
-            image: 'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80',
-            logoText: 'UB',
-            logoBg: 'bg-indigo-900 text-white',
-            features: ['£10,000 Bursaries', '2-Year PSW Visa', 'Red Brick Uni']
-        },
-        {
-            id: 6,
-            name: 'New York University (NYU)',
-            destination: 'USA',
-            location: 'New York City, United States',
-            ranking: 'Top 30 Global',
-            image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=800&q=80',
-            logoText: 'NYU',
-            logoBg: 'bg-purple-900 text-white',
-            features: ['Global Internship Network', 'STEM Programs', 'Manhattan Campus']
-        },
-        {
-            id: 7,
-            name: 'Aalto University',
-            destination: 'Finland',
-            location: 'Espoo / Helsinki, Finland',
-            ranking: 'Top 150 Global',
-            image: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80',
-            logoText: 'AU',
-            logoBg: 'bg-emerald-900 text-white',
-            features: ['50% Scholarship', 'Design & Tech Hub', 'Innovation Grants']
-        },
-        {
-            id: 8,
-            name: 'University of Wollongong Dubai',
-            destination: 'Dubai',
-            location: 'Knowledge Park, Dubai, UAE',
-            ranking: 'Top 200 Global',
-            image: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80',
-            logoText: 'UOW',
-            logoBg: 'bg-blue-800 text-white',
-            features: ['Australian Curriculum', 'Dual Campus Transfer', 'Fast Admissions']
-        },
-    ];
+export default function UniversitiesGrid({
+    universities = [],
+    currentPage = 1,
+    onPageChange,
+    searchQuery = '',
+    selectedDestination = 'All',
+    onResetFilters
+}) {
+    const ITEMS_PER_PAGE = 12;
+    const totalItems = universities.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-    // Filter Logic based on searchQuery and selectedDestination
-    const filteredUniversities = universities.filter((uni) => {
-        const matchesDestination =
-            selectedDestination === 'All' ||
-            uni.destination.toLowerCase() === selectedDestination.toLowerCase();
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedUniversities = universities.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
-        const query = searchQuery.trim().toLowerCase();
-        const matchesQuery =
-            !query ||
-            uni.name.toLowerCase().includes(query) ||
-            uni.location.toLowerCase().includes(query) ||
-            uni.features.some((f) => f.toLowerCase().includes(query));
+    const hasFilters = Boolean(searchQuery.trim()) || selectedDestination !== 'All';
 
-        return matchesDestination && matchesQuery;
-    });
+    // Dynamic contextual heading
+    const institutionText = totalItems === 1 ? 'Partner Institution' : 'Partner Institutions';
+    let filterContext = '';
+    if (searchQuery.trim() && selectedDestination !== 'All') {
+        filterContext = ` matching "${searchQuery.trim()}" in ${selectedDestination}`;
+    } else if (selectedDestination !== 'All') {
+        filterContext = ` in ${selectedDestination}`;
+    } else if (searchQuery.trim()) {
+        filterContext = ` matching "${searchQuery.trim()}"`;
+    }
+
+    // Dynamic contextual subtitle
+    const subtitleText = hasFilters
+        ? `Found ${totalItems} ${totalItems === 1 ? 'institution' : 'institutions'} matching your criteria.`
+        : 'Verified official higher education admissions partners worldwide';
+
+    const handlePageClick = (page) => {
+        if (page < 1 || page > totalPages || page === currentPage) return;
+        if (onPageChange) {
+            onPageChange(page);
+        }
+        // Smooth scroll to top of grid section
+        const element = document.getElementById('universities-grid-section');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
-        <section className="py-16 lg:py-24 bg-white dark:bg-slate-900 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
+        <section id="universities-grid-section" className="py-16 lg:py-24 bg-white dark:bg-slate-900 border-b border-slate-200/60 dark:border-slate-800 transition-colors relative">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* SECTION HEADER BAR */}
+                {/* SECTION HEADER BAR - COMPLETELY DYNAMIC */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10 pb-4 border-b border-slate-200/70 dark:border-slate-800">
                     <div>
                         <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                            Showing <span className="text-blue-600 dark:text-blue-400">{filteredUniversities.length}</span> Partner Institutions
+                            Showing <span className="text-blue-600 dark:text-blue-400">{totalItems}</span> {institutionText}{filterContext}
                         </h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Verified official higher education admissions partners
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                            {subtitleText}
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>Live Admissions Open 2026</span>
-                    </div>
+                    {/* Active Filters Reset Pill */}
+                    {hasFilters && onResetFilters && (
+                        <button
+                            type="button"
+                            onClick={onResetFilters}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                        >
+                            <RotateCcw className="w-3 h-3 text-blue-500" />
+                            <span>Reset Filters</span>
+                        </button>
+                    )}
                 </div>
 
-                {/* RESPONSIVE GRID LAYOUT (1 COL MOBILE, 2 TABLET, 3 DESKTOP) */}
-                {filteredUniversities.length > 0 ? (
+                {/* RESPONSIVE GRID OF UNIVERSITY CARDS */}
+                {paginatedUniversities.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredUniversities.map((uni) => (
-                            <div
-                                key={uni.id}
-                                className="group relative rounded-3xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 hover:border-blue-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
-                            >
-                                <div>
-                                    {/* TOP: RECTANGULAR CAMPUS IMAGE WITH OVERLAPPING LOGO */}
-                                    <div className="relative h-52 w-full bg-slate-900 overflow-hidden">
-                                        <img
-                                            src={uni.image}
-                                            alt={uni.name}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
-                                            loading="lazy"
-                                        />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent" />
+                        {paginatedUniversities.map((uni) => {
+                            const coverImg = uni.cover_image
+                                ? (uni.cover_image.startsWith('http') ? uni.cover_image : `/storage/${uni.cover_image}`)
+                                : (uni.image || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80');
 
-                                        {/* Top Ranking Badge */}
-                                        <div className="absolute top-4 right-4">
-                                            <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-400 text-[10px] font-extrabold uppercase tracking-wider border border-emerald-500/30 flex items-center gap-1 shadow-md">
-                                                <Award className="w-3 h-3" />
-                                                <span>{uni.ranking}</span>
-                                            </span>
+                            const logoImg = uni.logo
+                                ? (uni.logo.startsWith('http') ? uni.logo : `/storage/${uni.logo}`)
+                                : null;
+
+                            const initials = (uni.name || 'UN')
+                                .split(' ')
+                                .map((w) => w[0])
+                                .join('')
+                                .substring(0, 2)
+                                .toUpperCase();
+
+                            return (
+                                <Link
+                                    key={uni.id}
+                                    href={`/universities/${uni.slug}`}
+                                    className="group relative rounded-3xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 shadow-xs hover:shadow-xl hover:-translate-y-1.5 hover:border-blue-500/50 transition-all duration-300 flex flex-col justify-between overflow-hidden cursor-pointer"
+                                >
+                                    <div>
+                                        {/* TOP: CAMPUS COVER IMAGE WITH OVERLAPPING LOGO */}
+                                        <div className="relative h-52 w-full bg-slate-900 overflow-hidden">
+                                            <img
+                                                src={coverImg}
+                                                alt={uni.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90"
+                                                loading="lazy"
+                                                onError={(e) => {
+                                                    e.target.src = 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80';
+                                                }}
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+
+                                            {/* Country Badge */}
+                                            {uni.country && (
+                                                <div className="absolute top-4 right-4">
+                                                    <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-extrabold uppercase tracking-wider border border-white/20 flex items-center gap-1 shadow-md">
+                                                        <span>{uni.country.name}</span>
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {/* OVERLAPPING CIRCULAR LOGO */}
+                                            <div className="absolute -bottom-5 left-5 w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-md flex items-center justify-center font-extrabold text-xs tracking-wider z-10 overflow-hidden bg-white dark:bg-slate-900">
+                                                {logoImg ? (
+                                                    <img
+                                                        src={logoImg}
+                                                        alt={uni.name}
+                                                        className="w-full h-full object-contain p-1"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full bg-blue-900 text-white flex items-center justify-center font-extrabold text-xs">
+                                                        {initials}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
 
-                                        {/* OVERLAPPING CIRCULAR UNIVERSITY LOGO ON BOTTOM-LEFT */}
-                                        <div className="absolute -bottom-5 left-5 w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 shadow-md flex items-center justify-center font-extrabold text-xs tracking-wider z-10 overflow-hidden">
-                                            <div className={`w-full h-full ${uni.logoBg} flex items-center justify-center font-extrabold`}>
-                                                {uni.logoText}
+                                        {/* MIDDLE CONTENT: NAME, LOCATION & COURSE COUNT */}
+                                        <div className="p-6 pt-8 space-y-4">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
+                                                    {uni.name}
+                                                </h3>
+                                                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium mt-1.5">
+                                                    <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                                                    <span>{uni.country?.name ? `${uni.location ? uni.location + ', ' : ''}${uni.country.name}` : (uni.location || 'Global Campus')}</span>
+                                                </div>
                                             </div>
+
+                                            {/* COURSE COUNT BADGE */}
+                                            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 border border-blue-200/60 dark:border-blue-800/60 px-3 py-1 rounded-full w-fit">
+                                                <BookOpen className="w-3.5 h-3.5" />
+                                                <span>{uni.courses_count ?? 0} Courses Available</span>
+                                            </div>
+
+                                            {/* FEATURE BADGES */}
+                                            {Array.isArray(uni.features) && uni.features.length > 0 && (
+                                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                                    {uni.features.slice(0, 3).map((feature, i) => (
+                                                        <span
+                                                            key={i}
+                                                            className="bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-slate-200/70 dark:border-slate-700/70 shadow-2xs"
+                                                        >
+                                                            {feature}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
-                                    {/* MIDDLE CONTENT: NAME & LOCATION */}
-                                    <div className="p-6 pt-8 space-y-4">
-                                        <div>
-                                            <h3 className="text-xl font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-snug">
-                                                {uni.name}
-                                            </h3>
-                                            <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium mt-1.5">
-                                                <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                                                <span>{uni.location}</span>
-                                            </div>
-                                        </div>
-
-                                        {/* FEATURE BADGES */}
-                                        <div className="flex flex-wrap gap-1.5 pt-1">
-                                            {uni.features.map((feature, i) => (
-                                                <span
-                                                    key={i}
-                                                    className="bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[11px] font-semibold px-2.5 py-1 rounded-full border border-slate-200/70 dark:border-slate-700/70 shadow-2xs"
-                                                >
-                                                    {feature}
-                                                </span>
-                                            ))}
-                                        </div>
+                                    {/* BOTTOM: HORIZONTAL DIVIDER & EXPLORE LINK */}
+                                    <div className="px-6 pb-6 pt-4 border-t border-slate-200/60 dark:border-slate-700/50 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
+                                        <span className="group-hover:underline">Explore University</span>
+                                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                     </div>
-                                </div>
-
-                                {/* BOTTOM: HORIZONTAL DIVIDER & EXPLORE LINK */}
-                                <div className="px-6 pb-6 pt-4 border-t border-slate-200/60 dark:border-slate-700/50 flex items-center justify-between text-xs font-bold text-blue-600 dark:text-blue-400">
-                                    <span className="group-hover:underline">Explore University</span>
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </div>
-                        ))}
+                                </Link>
+                            );
+                        })}
                     </div>
                 ) : (
                     /* EMPTY STATE WHEN NO RESULTS MATCH */
@@ -217,8 +203,71 @@ export default function UniversitiesGrid({ searchQuery = '', selectedDestination
                             No universities found
                         </h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                            No institutions matched your search term "{searchQuery}" in "{selectedDestination}". Try clearing your search query or selecting "All Destinations".
+                            No institutions matched your search filters. Try clearing your search query or selecting a different study destination.
                         </p>
+                        {hasFilters && onResetFilters && (
+                            <div className="pt-2">
+                                <button
+                                    type="button"
+                                    onClick={onResetFilters}
+                                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-colors cursor-pointer inline-flex items-center gap-1.5"
+                                >
+                                    <RotateCcw className="w-3.5 h-3.5" />
+                                    <span>Clear all filters</span>
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 3. INSTANT 0MS CLIENT-SIDE PAGINATION CONTROLS */}
+                {totalPages > 1 && (
+                    <div className="mt-14 flex justify-center items-center gap-2 flex-wrap">
+                        {/* Previous Button */}
+                        <button
+                            type="button"
+                            disabled={currentPage === 1}
+                            onClick={() => handlePageClick(currentPage - 1)}
+                            className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                                currentPage === 1
+                                    ? 'bg-slate-100 dark:bg-slate-800/40 text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800 cursor-not-allowed opacity-50'
+                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-2xs'
+                            }`}
+                        >
+                            <ChevronLeft className="w-3.5 h-3.5" />
+                            <span>Previous</span>
+                        </button>
+
+                        {/* Page Numbers */}
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                            <button
+                                key={pageNum}
+                                type="button"
+                                onClick={() => handlePageClick(pageNum)}
+                                className={`w-10 h-10 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center ${
+                                    pageNum === currentPage
+                                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-2xs'
+                                }`}
+                            >
+                                {pageNum}
+                            </button>
+                        ))}
+
+                        {/* Next Button */}
+                        <button
+                            type="button"
+                            disabled={currentPage === totalPages}
+                            onClick={() => handlePageClick(currentPage + 1)}
+                            className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                                currentPage === totalPages
+                                    ? 'bg-slate-100 dark:bg-slate-800/40 text-slate-400 dark:text-slate-600 border border-slate-200 dark:border-slate-800 cursor-not-allowed opacity-50'
+                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 shadow-2xs'
+                            }`}
+                        >
+                            <span>Next</span>
+                            <ChevronRight className="w-3.5 h-3.5" />
+                        </button>
                     </div>
                 )}
 

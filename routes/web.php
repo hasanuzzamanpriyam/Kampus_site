@@ -33,9 +33,7 @@ Route::get('/services', function () {
     return Inertia::render('Services'); 
 });
 
-Route::get('/universities', function () {
-    return Inertia::render('Universities'); 
-});
+Route::get('/universities', [PublicUniversityController::class, 'index'])->name('universities.index');
 
 Route::get('/destinations/{slug}', [PublicDestinationController::class, 'show'])->name('destinations.show');
 Route::get('/universities/{slug}', [PublicUniversityController::class, 'show'])->name('universities.show');
