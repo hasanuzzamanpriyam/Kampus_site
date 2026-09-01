@@ -73,12 +73,12 @@ export default function Layout({ children }) {
 
     const staticNavLinks = [
         { name: 'Home', href: '/' },
-        { name: 'About', href: '/about' },
         { name: 'Services', href: '/services' },
         { name: 'Universities', href: '/universities' },
         { name: 'Courses', href: '/courses' },
         { name: 'Blog', href: '/blog' },
         { name: 'Contact', href: '/contact' },
+        { name: 'About', href: '/about' },
     ];
 
     // Combine static nav links with dynamic navbar pages enabled by Admin

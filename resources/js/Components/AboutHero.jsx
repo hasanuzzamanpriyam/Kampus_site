@@ -62,12 +62,6 @@ export default function AboutHero() {
                 
                 {/* HERO HEADER & TYPOGRAPHY */}
                 <div className="max-w-3xl space-y-5 text-left">
-                    
-                    {/* Small Top Badge */}
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-100/90 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-200/70 dark:border-blue-800 shadow-2xs backdrop-blur-md">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>About us</span>
-                    </div>
 
                     {/* Main Heading */}
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
