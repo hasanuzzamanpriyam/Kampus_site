@@ -36,13 +36,6 @@ export default function BlogHero({
                 
                 {/* 1. SECTION TYPOGRAPHY & HEADER */}
                 <div className="text-center max-w-3xl mx-auto space-y-4">
-                    <div>
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest border border-blue-200/80 dark:border-blue-800 shadow-2xs backdrop-blur-md">
-                            <BookOpen className="w-3.5 h-3.5" />
-                            <span>OUR BLOG</span>
-                        </span>
-                    </div>
-
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
                         Study abroad <br className="hidden sm:inline" />
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">

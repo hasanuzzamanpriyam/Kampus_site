@@ -32,14 +32,6 @@ export default function UniversitiesHero({ onSearch, initialSearch = '', initial
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
-                
-                {/* 1. Top Badge */}
-                <div>
-                    <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest border border-blue-200/80 dark:border-blue-800 shadow-2xs backdrop-blur-md">
-                        <Building2 className="w-3.5 h-3.5" />
-                        <span>PARTNER UNIVERSITIES</span>
-                    </span>
-                </div>
 
                 {/* 2. Main Heading */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
