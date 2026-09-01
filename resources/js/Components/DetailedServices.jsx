@@ -97,11 +97,6 @@ export default function DetailedServices() {
                 
                 {/* SECTION HEADER */}
                 <div className="text-center max-w-3xl mx-auto mb-20 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200/60 dark:border-blue-800">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>In-Depth Service Breakdown</span>
-                    </div>
-
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         Tailored consultancy services for your journey
                     </h2>
