@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Search,
     MapPin,
-    Filter,
+    ChevronDown,
+    Check,
     X
 } from 'lucide-react';
 
@@ -13,6 +14,28 @@ export default function UniversitiesHero({
     onSearchChange,
     onDestinationChange
 }) {
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef(null);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Get active destination label
+    const activeDestination = destinations.find(
+        (d) => d.name.toLowerCase() === destination.toLowerCase()
+    );
+    const destinationLabel = activeDestination
+        ? `${activeDestination.name} ${activeDestination.country_code ? `(${activeDestination.country_code})` : ''}`
+        : (destination === 'All' ? 'All Destinations' : destination);
+
     return (
         <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors text-center">
             
@@ -40,12 +63,12 @@ export default function UniversitiesHero({
                     Explore our verified network of partner institutions. Filter by destination country to find the perfect match for your academic ambition.
                 </p>
 
-                {/* 3. INSTANT LIVE SEARCH & FILTER BAR (ZERO LATENCY) */}
+                {/* 3. INSTANT LIVE SEARCH & CUSTOM COMPACT SCROLLABLE DROPDOWN */}
                 <div className="pt-4">
                     <div className="max-w-3xl mx-auto rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800 shadow-2xl p-3 sm:p-3.5 transition-all duration-300">
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
                             
-                            {/* Input 1: Instant live keystroke search input with clear button */}
+                            {/* Input 1: Live search input with clear button */}
                             <div className="sm:col-span-7 relative">
                                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                     <Search className="w-5 h-5 text-blue-500" />
@@ -69,26 +92,67 @@ export default function UniversitiesHero({
                                 )}
                             </div>
 
-                            {/* Input 2: Dynamic Destination Dropdown */}
-                            <div className="sm:col-span-5 relative">
-                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            {/* Input 2: Compact Custom Scrollable Destination Dropdown */}
+                            <div className="sm:col-span-5 relative" ref={dropdownRef}>
+                                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 z-10">
                                     <MapPin className="w-4 h-4 text-blue-500" />
                                 </div>
-                                <select
-                                    value={destination}
-                                    onChange={(e) => onDestinationChange && onDestinationChange(e.target.value)}
-                                    className="w-full pl-10 pr-8 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-colors appearance-none cursor-pointer font-medium"
+                                
+                                <button
+                                    type="button"
+                                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    className="w-full pl-10 pr-9 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all flex items-center justify-between text-left font-medium cursor-pointer shadow-2xs"
                                 >
-                                    <option value="All">All Destinations</option>
-                                    {destinations.map((d) => (
-                                        <option key={d.id} value={d.name}>
-                                            {d.name} {d.country_code ? `(${d.country_code})` : ''}
-                                        </option>
-                                    ))}
-                                </select>
-                                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-                                    <Filter className="w-4 h-4" />
-                                </div>
+                                    <span className="truncate">{destinationLabel}</span>
+                                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                                        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180 text-blue-500' : ''}`} />
+                                    </div>
+                                </button>
+
+                                {/* Compact Custom Scrollable Dropdown Menu */}
+                                {isDropdownOpen && (
+                                    <div className="absolute z-50 mt-2 left-0 right-0 max-h-52 overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-1.5 space-y-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 text-left">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (onDestinationChange) onDestinationChange('All');
+                                                setIsDropdownOpen(false);
+                                            }}
+                                            className={`w-full px-3 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                                                destination === 'All'
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                            }`}
+                                        >
+                                            <span>All Destinations</span>
+                                            {destination === 'All' && <Check className="w-3.5 h-3.5" />}
+                                        </button>
+
+                                        {destinations.map((d) => {
+                                            const isSelected = destination.toLowerCase() === d.name.toLowerCase();
+                                            return (
+                                                <button
+                                                    key={d.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        if (onDestinationChange) onDestinationChange(d.name);
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                    className={`w-full px-3 py-2 text-xs font-semibold rounded-xl transition-colors flex items-center justify-between cursor-pointer ${
+                                                        isSelected
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                                    }`}
+                                                >
+                                                    <span className="truncate">
+                                                        {d.name} {d.country_code ? `(${d.country_code})` : ''}
+                                                    </span>
+                                                    {isSelected && <Check className="w-3.5 h-3.5 shrink-0" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
                         </div>
