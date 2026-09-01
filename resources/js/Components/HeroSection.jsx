@@ -109,15 +109,6 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
                     {/* LEFT COLUMN: HERO CONTENT */}
                     <div className="lg:col-span-7 space-y-6 text-left">
                         
-                        {/* Top Badge */}
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 text-xs font-semibold tracking-wide border border-blue-200/80 dark:border-blue-700/60 shadow-xs backdrop-blur-md">
-                            <span className="flex h-2 w-2 relative">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-                            </span>
-                            <span>{badgeText}</span>
-                        </div>
-
                         {/* Main Headline */}
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
                             {heading}

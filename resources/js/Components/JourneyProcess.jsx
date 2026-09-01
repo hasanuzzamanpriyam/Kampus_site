@@ -68,11 +68,6 @@ export default function JourneyProcess() {
                 
                 {/* SECTION HEADER */}
                 <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200/60 dark:border-blue-800">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Simple 5-Step Admission Roadmap</span>
-                    </div>
-
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         From dreams to degrees, <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">in five steps</span>
                     </h2>
