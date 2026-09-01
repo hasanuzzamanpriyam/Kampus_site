@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Head } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import Layout from '../Layouts/Layout';
 import UniversitiesHero from '../Components/UniversitiesHero';
 import UniversitiesGrid from '../Components/UniversitiesGrid';
@@ -7,57 +7,52 @@ import UniversityStatsBanner from '../Components/UniversityStatsBanner';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
-export default function Universities({ universities = [], destinations = [], filters = {} }) {
-    // 100% Instant Client-Side State with ZERO page reload and ZERO loading
-    const [searchQuery, setSearchQuery] = useState(filters.search || '');
-    const [destinationFilter, setDestinationFilter] = useState(filters.destination || 'All');
-    const [currentPage, setCurrentPage] = useState(1);
+export default function Universities() {
+    const { universities = {}, destinations = [], filters = {} } = usePage().props;
 
-    const allUniversities = useMemo(() => {
-        if (Array.isArray(universities)) {
-            return universities;
-        }
-        return universities?.data || [];
-    }, [universities]);
+    const [search, setSearch] = useState(filters.search || '');
+    const [country, setCountry] = useState(filters.country || 'All');
+    const isFirstMount = useRef(true);
 
-    // Live Instant Client-side filtering (0ms latency, no network call)
-    const filteredUniversities = useMemo(() => {
-        return allUniversities.filter((uni) => {
-            // Match Destination / Country
-            const matchesDestination =
-                destinationFilter === 'All' ||
-                (uni.country?.name && uni.country.name.toLowerCase() === destinationFilter.toLowerCase()) ||
-                (uni.country?.country_code && uni.country.country_code.toLowerCase() === destinationFilter.toLowerCase()) ||
-                (uni.location && uni.location.toLowerCase().includes(destinationFilter.toLowerCase()));
-
-            // Match Search Query
-            const query = searchQuery.trim().toLowerCase();
-            const matchesQuery =
-                !query ||
-                uni.name?.toLowerCase().includes(query) ||
-                uni.location?.toLowerCase().includes(query) ||
-                uni.country?.name?.toLowerCase().includes(query) ||
-                (Array.isArray(uni.features) && uni.features.some((f) => f.toLowerCase().includes(query)));
-
-            return matchesDestination && matchesQuery;
+    // Inertia SPA visit handler with preserveState and preserveScroll
+    const fetchResults = (searchQuery, countryCode) => {
+        const url = typeof route === 'function' ? route('universities.index') : '/universities';
+        
+        router.get(url, {
+            search: searchQuery || undefined,
+            country: countryCode === 'All' ? undefined : countryCode
+        }, {
+            preserveState: true, // Prevents losing focus on search input
+            preserveScroll: true, // Prevents scroll jumping
+            replace: true // Replaces history state so the back button works cleanly
         });
-    }, [allUniversities, searchQuery, destinationFilter]);
-
-    // Instant Filter/Search Handlers
-    const handleSearchChange = (val) => {
-        setSearchQuery(val);
-        setCurrentPage(1);
     };
 
-    const handleDestinationChange = (val) => {
-        setDestinationFilter(val);
-        setCurrentPage(1);
+    // 300ms Search Debouncer
+    useEffect(() => {
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchResults(search, country);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    // Handle country dropdown and quick filter badges click
+    const handleCountryChange = (newCountry) => {
+        setCountry(newCountry);
+        fetchResults(search, newCountry);
     };
 
+    // Handle reset filters
     const handleResetFilters = () => {
-        setSearchQuery('');
-        setDestinationFilter('All');
-        setCurrentPage(1);
+        setSearch('');
+        setCountry('All');
+        fetchResults('', 'All');
     };
 
     return (
@@ -66,22 +61,20 @@ export default function Universities({ universities = [], destinations = [], fil
 
             {/* MAIN UNIVERSITIES PAGE CONTAINER */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
-                {/* 1. UNIVERSITIES HERO WITH LIVE SEARCH & DESTINATIONS */}
+                {/* 1. UNIVERSITIES HERO WITH CONTROLLED SEARCH & DYNAMIC COUNTRY DROPDOWN */}
                 <UniversitiesHero
                     destinations={destinations}
-                    searchTerm={searchQuery}
-                    destination={destinationFilter}
-                    onSearchChange={handleSearchChange}
-                    onDestinationChange={handleDestinationChange}
+                    searchTerm={search}
+                    destination={country}
+                    onSearchChange={setSearch}
+                    onDestinationChange={handleCountryChange}
                 />
 
-                {/* 2. INSTANT FILTERED & PAGINATED UNIVERSITIES GRID (NO RELOAD / NO LOADING) */}
+                {/* 2. DYNAMIC PAGINATED UNIVERSITIES GRID (INERTIA SPA) */}
                 <UniversitiesGrid
-                    universities={filteredUniversities}
-                    currentPage={currentPage}
-                    onPageChange={setCurrentPage}
-                    searchQuery={searchQuery}
-                    selectedDestination={destinationFilter}
+                    universities={universities}
+                    searchQuery={search}
+                    selectedDestination={country}
                     onResetFilters={handleResetFilters}
                 />
 
