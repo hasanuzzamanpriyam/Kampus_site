@@ -36,27 +36,38 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const currentUser = props?.auth?.user;
     const adminName = currentUser?.name || 'Administrator';
     const adminEmail = currentUser?.email || 'admin@kampusedu.com';
-    const isSuperAdmin = props?.auth?.user?.role === 'super_admin' || !props?.auth?.user?.role;
+    const isSuperAdmin = currentUser?.is_super_admin || currentUser?.roles?.includes('Super Admin') || currentUser?.id === 1;
+    const userPermissions = currentUser?.permissions || [];
+    const primaryRole = currentUser?.roles?.[0] || (isSuperAdmin ? 'Super Admin' : 'Staff');
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-        { name: 'Global Settings', href: '/admin/settings', icon: Settings },
-        { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
+        { name: 'Global Settings', href: '/admin/settings', icon: Settings, permission: 'manage-settings' },
+        { name: 'Pages & SEO', href: '/admin/pages', icon: FileText, permission: 'manage-pages' },
         { name: 'Services', href: '/admin/services', icon: Layers },
-        { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
-        { name: 'Global Branches', href: '/admin/branches', icon: Globe2 },
-        { name: 'Countries', href: '/admin/countries', icon: Globe },
-        { name: 'Universities', href: '/admin/universities', icon: Building2 },
-        { name: 'Courses', href: '/admin/courses', icon: BookOpen },
-        { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper },
-        { name: 'Partner Applications', href: '/admin/partners', icon: Handshake },
-        { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail },
+        { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, permission: 'manage-pages' },
+        { name: 'Global Branches', href: '/admin/branches', icon: Globe2, permission: 'manage-pages' },
+        { name: 'Countries', href: '/admin/countries', icon: Globe, permission: 'manage-countries' },
+        { name: 'Universities', href: '/admin/universities', icon: Building2, permission: 'manage-universities' },
+        { name: 'Courses', href: '/admin/courses', icon: BookOpen, permission: 'manage-courses' },
+        { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper, permission: 'manage-blogs' },
+        { name: 'Partner Applications', href: '/admin/partners', icon: Handshake, permission: 'manage-partners' },
+        { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail, permission: 'manage-inquiries' },
     ];
 
     const accessControlLinks = [
-        { name: 'User Management', href: '/admin/users', icon: Users },
-        { name: 'Roles & Permissions', href: '/admin/roles', icon: ShieldCheck },
+        { name: 'User Management', href: '/admin/users', icon: Users, permission: 'manage-users' },
+        { name: 'Roles & Permissions', href: '/admin/roles', icon: ShieldCheck, permission: 'manage-roles' },
     ];
+
+    const visibleSidebarLinks = sidebarLinks.filter(link => {
+        if (!link.permission) return true;
+        return isSuperAdmin || userPermissions.includes(link.permission);
+    });
+
+    const visibleAccessLinks = accessControlLinks.filter(link => {
+        return isSuperAdmin || userPermissions.includes(link.permission);
+    });
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -65,12 +76,11 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
     return (
         <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors">
-            
+
             {/* 1. FIXED LEFT SIDEBAR (DARK THEME) */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800 transition-transform duration-300 transform ${
-                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-                }`}
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                    }`}
             >
                 <div>
                     {/* Brand Header */}
@@ -99,21 +109,20 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                     {/* Navigation Menu Links */}
                     <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Core Management
+                            Menu
                         </div>
 
-                        {sidebarLinks.map((link) => {
+                        {visibleSidebarLinks.map((link) => {
                             const IconComp = link.icon;
                             const isActive = url.startsWith(link.href);
                             return (
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                                        isActive
-                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                                    }`}
+                                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isActive
+                                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                        }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -125,23 +134,22 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                         })}
 
                         {/* Access Control Navigation Section */}
-                        {isSuperAdmin && (
+                        {visibleAccessLinks.length > 0 && (
                             <>
                                 <div className="px-3 py-2 pt-4 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-t border-slate-800/80 mt-2">
                                     Access Control
                                 </div>
-                                {accessControlLinks.map((link) => {
+                                {visibleAccessLinks.map((link) => {
                                     const IconComp = link.icon;
                                     const isActive = url.startsWith(link.href);
                                     return (
                                         <Link
                                             key={link.name}
                                             href={link.href}
-                                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                                                isActive
-                                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                                            }`}
+                                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isActive
+                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -183,10 +191,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
             {/* 2. RIGHT WRAPPER (TOP HEADER + MAIN CONTENT) */}
             <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-                
+
                 {/* TOP HEADER */}
                 <header className="sticky top-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs transition-colors">
-                    
+
                     {/* Left: Mobile Hamburger & Page Title */}
                     <div className="flex items-center gap-3">
                         <button
@@ -202,7 +210,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
                     {/* Right: Theme Toggle, Admin User Profile & Logout */}
                     <div className="flex items-center gap-3 sm:gap-4">
-                        
+
                         {/* Notification Bell */}
                         <button className="p-2 rounded-full text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative">
                             <Bell className="w-5 h-5" />
@@ -231,9 +239,14 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 <UserCircle className="w-5 h-5" />
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
-                                    {adminName}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                                        {adminName}
+                                    </span>
+                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                                        {primaryRole}
+                                    </span>
+                                </div>
                                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                                     {adminEmail}
                                 </span>

@@ -24,6 +24,7 @@ class SettingSeeder extends Seeder
             'contact_email' => 'apply@kampusedu.com',
             'contact_bd_hotline' => '+880 1812713814',
             'operating_hours' => 'Mon - Sat: 9:00 AM - 7:00 PM',
+            'partner_modal_paragraph' => 'Join our global higher education network. Register your agency below to collaborate with top universities worldwide and streamline student admissions.',
             'facebook_url' => 'https://facebook.com/kampusedu',
             'linkedin_url' => 'https://linkedin.com/company/kampusedu',
             'instagram_url' => 'https://instagram.com/kampusedu',

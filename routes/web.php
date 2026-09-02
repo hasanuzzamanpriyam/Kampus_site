@@ -104,21 +104,47 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     })->name('admin.dashboard');
 
     // Global Settings Routes
-    Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
-    Route::post('/settings', [SettingController::class, 'store'])->name('admin.settings.store');
-    Route::post('/settings/update', [SettingController::class, 'store'])->name('admin.settings.update');
+    Route::middleware('can:manage-settings')->group(function () {
+        Route::get('/settings', [SettingController::class, 'index'])->name('admin.settings.index');
+        Route::post('/settings', [SettingController::class, 'store'])->name('admin.settings.store');
+        Route::post('/settings/update', [SettingController::class, 'store'])->name('admin.settings.update');
+    });
 
     // Pages & SEO Routes
-    Route::get('/pages', [PageController::class, 'index'])->name('admin.pages.index');
-    Route::get('/pages/create', [PageController::class, 'create'])->name('admin.pages.create');
-    Route::post('/pages', [PageController::class, 'store'])->name('admin.pages.store');
-    Route::post('/pages/upload-image', [PageController::class, 'uploadImage'])->name('admin.pages.upload-image');
-    Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('admin.pages.edit');
-    Route::put('/pages/{id}', [PageController::class, 'update'])->name('admin.pages.update');
-    Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('admin.pages.destroy');
+    Route::middleware('can:manage-pages')->group(function () {
+        Route::get('/pages', [PageController::class, 'index'])->name('admin.pages.index');
+        Route::get('/pages/create', [PageController::class, 'create'])->name('admin.pages.create');
+        Route::post('/pages', [PageController::class, 'store'])->name('admin.pages.store');
+        Route::post('/pages/upload-image', [PageController::class, 'uploadImage'])->name('admin.pages.upload-image');
+        Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('admin.pages.edit');
+        Route::put('/pages/{id}', [PageController::class, 'update'])->name('admin.pages.update');
+        Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('admin.pages.destroy');
+
+        // FAQs CRUD Routes
+        Route::resource('faqs', FaqController::class)->names([
+            'index' => 'admin.faqs.index',
+            'create' => 'admin.faqs.create',
+            'store' => 'admin.faqs.store',
+            'edit' => 'admin.faqs.edit',
+            'update' => 'admin.faqs.update',
+            'destroy' => 'admin.faqs.destroy',
+        ]);
+        Route::patch('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('admin.faqs.toggle-status');
+
+        // Global Branches CRUD Routes
+        Route::resource('branches', BranchController::class)->names([
+            'index' => 'admin.branches.index',
+            'create' => 'admin.branches.create',
+            'store' => 'admin.branches.store',
+            'edit' => 'admin.branches.edit',
+            'update' => 'admin.branches.update',
+            'destroy' => 'admin.branches.destroy',
+        ]);
+        Route::patch('/branches/{branch}/toggle-status', [BranchController::class, 'toggleStatus'])->name('admin.branches.toggle-status');
+    });
 
     // Countries CRUD Routes
-    Route::resource('countries', CountryController::class)->names([
+    Route::resource('countries', CountryController::class)->middleware('can:manage-countries')->names([
         'index' => 'admin.countries.index',
         'create' => 'admin.countries.create',
         'store' => 'admin.countries.store',
@@ -128,7 +154,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     ]);
 
     // Universities CRUD Routes
-    Route::resource('universities', UniversityController::class)->names([
+    Route::resource('universities', UniversityController::class)->middleware('can:manage-universities')->names([
         'index' => 'admin.universities.index',
         'create' => 'admin.universities.create',
         'store' => 'admin.universities.store',
@@ -138,7 +164,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     ]);
 
     // Courses CRUD Routes
-    Route::resource('courses', CourseController::class)->names([
+    Route::resource('courses', CourseController::class)->middleware('can:manage-courses')->names([
         'index' => 'admin.courses.index',
         'create' => 'admin.courses.create',
         'store' => 'admin.courses.store',
@@ -148,6 +174,17 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     ]);
 
     // Blog Posts CRUD Routes
+    Route::middleware('can:manage-blogs')->group(function () {
+        Route::resource('blog', BlogController::class)->names([
+            'index' => 'admin.blog.index',
+            'create' => 'admin.blog.create',
+            'store' => 'admin.blog.store',
+            'edit' => 'admin.blog.edit',
+            'update' => 'admin.blog.update',
+            'destroy' => 'admin.blog.destroy',
+        ]);
+        Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
+    });
     Route::resource('blog', BlogController::class)->names([
         'index' => 'admin.blog.index',
         'create' => 'admin.blog.create',
@@ -190,21 +227,24 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::patch('/branches/{branch}/toggle-status', [BranchController::class, 'toggleStatus'])->name('admin.branches.toggle-status');
 
     // Partner Applications Routes (admin management)
-    Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([
-        'index' => 'admin.partners.index',
-        'update' => 'admin.partners.update',
-        'destroy' => 'admin.partners.destroy',
-    ]);
+    Route::middleware('can:manage-partners')->group(function () {
+        Route::post('/partners/popup-paragraph', [PartnerController::class, 'updatePopupParagraph'])->name('admin.partners.update-popup-paragraph');
+        Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([
+            'index' => 'admin.partners.index',
+            'update' => 'admin.partners.update',
+            'destroy' => 'admin.partners.destroy',
+        ]);
+    });
 
     // Inquiries & Contact Messages Routes (admin management)
-    Route::resource('inquiries', InquiryController::class)->only(['index', 'update', 'destroy'])->names([
+    Route::resource('inquiries', InquiryController::class)->middleware('can:manage-inquiries')->only(['index', 'update', 'destroy'])->names([
         'index' => 'admin.inquiries.index',
         'update' => 'admin.inquiries.update',
         'destroy' => 'admin.inquiries.destroy',
     ]);
 
     // Roles & Permissions Management Routes
-    Route::resource('roles', RoleController::class)->except(['create', 'show', 'edit'])->names([
+    Route::resource('roles', RoleController::class)->middleware('can:manage-roles')->except(['create', 'show', 'edit'])->names([
         'index' => 'admin.roles.index',
         'store' => 'admin.roles.store',
         'update' => 'admin.roles.update',
@@ -212,7 +252,7 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     ]);
 
     // User Management Routes
-    Route::resource('users', UserController::class)->only(['index', 'update', 'destroy'])->names([
+    Route::resource('users', UserController::class)->middleware('can:manage-users')->only(['index', 'update', 'destroy'])->names([
         'index' => 'admin.users.index',
         'update' => 'admin.users.update',
         'destroy' => 'admin.users.destroy',
