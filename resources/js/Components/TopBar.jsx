@@ -5,8 +5,11 @@ import { Search, Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Glo
 export default function TopBar({ onSearch }) {
     const { props } = usePage();
     const hotline = props?.globalSettings?.contact_bd_hotline || '+880 1812713814';
+    const partnerModalParagraph = props?.globalSettings?.partner_modal_paragraph 
+        || 'Join our global higher education network. Register your agency below to collaborate with top universities worldwide and streamline student admissions.';
     const [searchQuery, setSearchQuery] = useState('');
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+    const [isIntroDismissed, setIsIntroDismissed] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [formData, setFormData] = useState({
         companyName: '',
@@ -137,7 +140,7 @@ export default function TopBar({ onSearch }) {
                         </button>
 
                         {/* MODAL HEADER */}
-                        <div className="flex items-center gap-3 mb-6">
+                        <div className="flex items-center gap-3 mb-4">
                             <div className="p-3 rounded-2xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400">
                                 <Handshake className="w-7 h-7" />
                             </div>
@@ -145,11 +148,27 @@ export default function TopBar({ onSearch }) {
                                 <h3 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                     Become a Kampus Partner
                                 </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Join our global higher education network. Register your agency below.
+                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                    Global Higher Education Network
                                 </p>
                             </div>
                         </div>
+
+                        {/* CONFIGURABLE INTRO PARAGRAPH (EDITABLE VIA ADMIN PANEL & DISMISSIBLE) */}
+                        {partnerModalParagraph && !isIntroDismissed && (
+                            <div className="relative mb-5 p-3.5 pr-8 rounded-2xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-100/80 dark:border-purple-900/40 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300 animate-in fade-in duration-150">
+                                <p className="whitespace-pre-line">{partnerModalParagraph}</p>
+                                <button
+                                    type="button"
+                                    onClick={() => setIsIntroDismissed(true)}
+                                    className="absolute top-2.5 right-2.5 p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors cursor-pointer"
+                                    aria-label="Dismiss message"
+                                    title="Dismiss message"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        )}
 
                         {/* PARTNER REGISTRATION FORM */}
                         <form onSubmit={handleFormSubmit} className="space-y-4">

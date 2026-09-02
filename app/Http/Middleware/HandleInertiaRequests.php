@@ -36,7 +36,11 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? array_merge($request->user()->toArray(), [
+                    'roles' => $request->user()->roles->pluck('name')->toArray(),
+                    'permissions' => $request->user()->getAllPermissions()->pluck('name')->toArray(),
+                    'is_super_admin' => $request->user()->id === 1 || $request->user()->hasRole('Super Admin'),
+                ]) : null,
             ],
             'nav_pages' => fn () => Page::where('is_active', true)
                 ->where('show_in_navbar', true)

@@ -49,6 +49,15 @@ class RoleController extends Controller
 
             $editor = Role::create(['name' => 'Editor', 'guard_name' => 'web']);
             $editor->syncPermissions(['manage-pages', 'manage-blogs', 'manage-universities', 'manage-courses']);
+
+            $partner = Role::create(['name' => 'Partner', 'guard_name' => 'web']);
+            $partner->syncPermissions(['manage-universities', 'manage-courses']);
+        } else {
+            // Ensure Partner role exists if roles already exist
+            $partnerRole = Role::firstOrCreate(['name' => 'Partner', 'guard_name' => 'web']);
+            if ($partnerRole->wasRecentlyCreated) {
+                $partnerRole->syncPermissions(['manage-universities', 'manage-courses']);
+            }
         }
 
         $roles = Role::with('permissions')->orderBy('id', 'asc')->get();

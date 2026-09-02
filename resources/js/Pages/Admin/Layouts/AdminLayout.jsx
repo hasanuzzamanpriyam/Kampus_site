@@ -35,26 +35,37 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const currentUser = props?.auth?.user;
     const adminName = currentUser?.name || 'Administrator';
     const adminEmail = currentUser?.email || 'admin@kampusedu.com';
-    const isSuperAdmin = props?.auth?.user?.role === 'super_admin' || !props?.auth?.user?.role;
+    const isSuperAdmin = currentUser?.is_super_admin || currentUser?.roles?.includes('Super Admin') || currentUser?.id === 1;
+    const userPermissions = currentUser?.permissions || [];
+    const primaryRole = currentUser?.roles?.[0] || (isSuperAdmin ? 'Super Admin' : 'Staff');
 
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
-        { name: 'Global Settings', href: '/admin/settings', icon: Settings },
-        { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
-        { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
-        { name: 'Global Branches', href: '/admin/branches', icon: Globe2 },
-        { name: 'Countries', href: '/admin/countries', icon: Globe },
-        { name: 'Universities', href: '/admin/universities', icon: Building2 },
-        { name: 'Courses', href: '/admin/courses', icon: BookOpen },
-        { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper },
-        { name: 'Partner Applications', href: '/admin/partners', icon: Handshake },
-        { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail },
+        { name: 'Global Settings', href: '/admin/settings', icon: Settings, permission: 'manage-settings' },
+        { name: 'Pages & SEO', href: '/admin/pages', icon: FileText, permission: 'manage-pages' },
+        { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, permission: 'manage-pages' },
+        { name: 'Global Branches', href: '/admin/branches', icon: Globe2, permission: 'manage-pages' },
+        { name: 'Countries', href: '/admin/countries', icon: Globe, permission: 'manage-countries' },
+        { name: 'Universities', href: '/admin/universities', icon: Building2, permission: 'manage-universities' },
+        { name: 'Courses', href: '/admin/courses', icon: BookOpen, permission: 'manage-courses' },
+        { name: 'Blog Posts', href: '/admin/blog', icon: Newspaper, permission: 'manage-blogs' },
+        { name: 'Partner Applications', href: '/admin/partners', icon: Handshake, permission: 'manage-partners' },
+        { name: 'Inquiries & Messages', href: '/admin/inquiries', icon: Mail, permission: 'manage-inquiries' },
     ];
 
     const accessControlLinks = [
-        { name: 'User Management', href: '/admin/users', icon: Users },
-        { name: 'Roles & Permissions', href: '/admin/roles', icon: ShieldCheck },
+        { name: 'User Management', href: '/admin/users', icon: Users, permission: 'manage-users' },
+        { name: 'Roles & Permissions', href: '/admin/roles', icon: ShieldCheck, permission: 'manage-roles' },
     ];
+
+    const visibleSidebarLinks = sidebarLinks.filter(link => {
+        if (!link.permission) return true;
+        return isSuperAdmin || userPermissions.includes(link.permission);
+    });
+
+    const visibleAccessLinks = accessControlLinks.filter(link => {
+        return isSuperAdmin || userPermissions.includes(link.permission);
+    });
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -97,10 +108,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                     {/* Navigation Menu Links */}
                     <nav className="p-4 space-y-1.5 overflow-y-auto max-h-[calc(100vh-140px)]">
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Core Management
+                            Menu
                         </div>
 
-                        {sidebarLinks.map((link) => {
+                        {visibleSidebarLinks.map((link) => {
                             const IconComp = link.icon;
                             const isActive = url.startsWith(link.href);
                             return (
@@ -123,12 +134,12 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                         })}
 
                         {/* Access Control Navigation Section */}
-                        {isSuperAdmin && (
+                        {visibleAccessLinks.length > 0 && (
                             <>
                                 <div className="px-3 py-2 pt-4 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-t border-slate-800/80 mt-2">
                                     Access Control
                                 </div>
-                                {accessControlLinks.map((link) => {
+                                {visibleAccessLinks.map((link) => {
                                     const IconComp = link.icon;
                                     const isActive = url.startsWith(link.href);
                                     return (
@@ -229,9 +240,14 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 <UserCircle className="w-5 h-5" />
                             </div>
                             <div className="flex flex-col text-left">
-                                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
-                                    {adminName}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                                        {adminName}
+                                    </span>
+                                    <span className="px-1.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-blue-600 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                                        {primaryRole}
+                                    </span>
+                                </div>
                                 <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
                                     {adminEmail}
                                 </span>

@@ -16,13 +16,42 @@ import {
     Phone,
     Globe,
     Sparkles,
-    Calendar
+    Calendar,
+    Save,
+    FileText,
+    Eye
 } from 'lucide-react';
 
-export default function Index({ applications = [] }) {
+export default function Index({ applications = [], partnerModalParagraph: initialParagraph = '' }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('All');
     const [messageModal, setMessageModal] = useState(null);
+    const [modalParagraph, setModalParagraph] = useState(initialParagraph);
+    const [isSavingText, setIsSavingText] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+
+    const handleSaveParagraph = (e) => {
+        e.preventDefault();
+        setIsSavingText(true);
+        setSaveSuccess(false);
+
+        router.post('/admin/partners/popup-paragraph', {
+            partner_modal_paragraph: modalParagraph,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setSaveSuccess(true);
+                setTimeout(() => setSaveSuccess(false), 4000);
+            },
+            onError: () => {
+                alert('Failed to save the partner popup paragraph. Please try again.');
+            },
+            onFinish: () => {
+                setIsSavingText(false);
+            }
+        });
+    };
 
     const filteredApplications = applications.filter(a => {
         const matchesSearch =
@@ -101,6 +130,100 @@ export default function Index({ applications = [] }) {
                             <span>{applications.filter(a => a.status === 'approved').length} Approved</span>
                         </div>
                     </div>
+                </div>
+
+                {/* EDITABLE POPUP INTRO PARAGRAPH SETTINGS CARD */}
+                <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 rounded-2xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 border border-purple-200/50 dark:border-purple-800/50">
+                                <FileText className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                                    "Become a Kampus Partner" Popup Intro Paragraph
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    This paragraph is displayed on the public homepage popup, directly beneath the title and above the first form field.
+                                </p>
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => setShowPreview(!showPreview)}
+                            className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors cursor-pointer"
+                        >
+                            <Eye className="w-3.5 h-3.5" />
+                            <span>{showPreview ? 'Hide Preview' : 'Live Preview'}</span>
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSaveParagraph} className="space-y-4">
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                Intro Paragraph Content
+                            </label>
+                            <textarea
+                                rows={3}
+                                value={modalParagraph}
+                                onChange={(e) => setModalParagraph(e.target.value)}
+                                placeholder="Enter the introductory text that appears inside the Become a Partner popup modal..."
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none transition-all placeholder:text-slate-400"
+                            />
+                            <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1.5 px-1">
+                                <span>Shown to prospective agencies and institutional sub-agents when opening the popup.</span>
+                                <span>{modalParagraph?.length || 0} characters</span>
+                            </div>
+                        </div>
+
+                        {/* LIVE PREVIEW BOX */}
+                        {showPreview && (
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-purple-300 dark:border-purple-800/60 animate-in fade-in duration-150">
+                                <div className="text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400 mb-2 flex items-center gap-1.5">
+                                    <Sparkles className="w-3 h-3" />
+                                    <span>Live Popup Preview</span>
+                                </div>
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 max-w-md shadow-xs">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-950 text-purple-600">
+                                            <Handshake className="w-4 h-4" />
+                                        </div>
+                                        <h4 className="font-extrabold text-sm text-slate-900 dark:text-white">
+                                            Become a Kampus Partner
+                                        </h4>
+                                    </div>
+                                    <div className="relative text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line bg-purple-50/50 dark:bg-purple-950/20 p-2.5 pr-7 rounded-lg border border-purple-100/50 dark:border-purple-900/30">
+                                        <p>{modalParagraph || <span className="italic text-slate-400">No intro paragraph specified.</span>}</p>
+                                        <div className="absolute top-2 right-2 p-0.5 text-slate-400">
+                                            <X className="w-3 h-3" />
+                                        </div>
+                                    </div>
+                                    <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 text-[10px] text-slate-400 font-medium">
+                                        [ Agency Name Input Field Follows Here... ]
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                            {saveSuccess && (
+                                <div className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-200 dark:border-emerald-800 animate-in fade-in">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span>Paragraph saved successfully!</span>
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={isSavingText}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs shadow-md shadow-purple-600/20 hover:scale-[1.01] transition-all cursor-pointer disabled:opacity-50"
+                            >
+                                <Save className="w-3.5 h-3.5" />
+                                <span>{isSavingText ? 'Saving Changes...' : 'Save Intro Paragraph'}</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
                 {/* SEARCH & FILTER BAR */}

@@ -23,9 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        // Implicitly grant User ID 1 ("Super Admin") all permissions
+        // Implicitly grant Super Admin all permissions
         Gate::before(function ($user, $ability) {
-            return $user->id === 1 ? true : null;
+            return ($user->id === 1 || $user->hasRole('Super Admin')) ? true : null;
         });
     }
 }
