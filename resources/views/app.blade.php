@@ -18,7 +18,8 @@
         <!-- Inline Theme Script (Default: Light Mode; Separated Admin vs Public themes) -->
         <script>
             (function () {
-                var isAdmin = window.location.pathname.startsWith('/admin');
+                var path = window.location.pathname;
+                var isAdmin = path.startsWith('/admin') || path.startsWith('/profile');
                 var storageKey = isAdmin ? 'admin_theme' : 'public_theme';
                 if (localStorage.getItem(storageKey) === 'dark') {
                     document.documentElement.classList.add('dark');

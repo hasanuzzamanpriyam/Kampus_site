@@ -234,6 +234,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class]
         'update' => 'admin.users.update',
         'destroy' => 'admin.users.destroy',
     ]);
+
+    // Profile Settings Route (Inside Admin)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile.edit');
 });
 
 // Profile Management Routes

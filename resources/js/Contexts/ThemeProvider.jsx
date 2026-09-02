@@ -12,7 +12,7 @@ const ThemeContext = createContext({
 
 export function ThemeProvider({ children }) {
     const checkIsAdmin = (pathname) => {
-        return typeof pathname === 'string' && pathname.startsWith('/admin');
+        return typeof pathname === 'string' && (pathname.startsWith('/admin') || pathname.startsWith('/profile'));
     };
 
     const [currentPath, setCurrentPath] = useState(() => {
