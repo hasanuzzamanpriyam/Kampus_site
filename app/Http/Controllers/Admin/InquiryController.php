@@ -52,22 +52,81 @@ class InquiryController extends Controller
     }
 
     /**
-     * Store a new contact message from the public-facing form.
+     * Store a new contact or consultation message from public-facing forms.
      */
     public function store(Request $request)
     {
+        // Handle name if split into firstName / lastName
+        $name = $request->input('name');
+        if (!$name && ($request->filled('firstName') || $request->filled('lastName'))) {
+            $name = trim($request->input('firstName', '') . ' ' . $request->input('lastName', ''));
+        }
+
+        // Handle phone if split into dialCode / mobile
+        $phone = $request->input('phone');
+        if (!$phone && $request->filled('mobile')) {
+            $phone = trim($request->input('dialCode', '') . ' ' . $request->input('mobile', ''));
+        }
+
+        // Handle topic
+        $topic = $request->input('topic');
+        if (!$topic) {
+            if ($request->filled('subject')) {
+                $topic = 'Consultation: ' . $request->input('subject') . ($request->filled('studyLevel') ? ' (' . $request->input('studyLevel') . ')' : '');
+            } else {
+                $topic = 'Expert Consultation Request';
+            }
+        }
+
+        // Handle message construction if not explicitly provided
+        $message = $request->input('message');
+        if (!$message) {
+            $details = [];
+            if ($request->filled('country')) {
+                $details[] = "Country of Residence: " . $request->input('country');
+            }
+            if ($request->filled('studyLevel')) {
+                $details[] = "Study Level: " . $request->input('studyLevel');
+            }
+            if ($request->filled('subject')) {
+                $details[] = "Subject of Interest: " . $request->input('subject');
+            }
+            if ($request->filled('article_title')) {
+                $details[] = "Source Article: " . $request->input('article_title');
+            }
+            if ($request->filled('notes')) {
+                $details[] = "Notes: " . $request->input('notes');
+            }
+
+            $message = !empty($details)
+                ? "Free Expert Consultation Request:\n" . implode("\n", $details)
+                : "Free Consultation Request submitted from website.";
+        }
+
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:255',
-            'topic' => 'nullable|string|max:255',
-            'message' => 'required|string|max:5000',
         ]);
 
-        ContactMessage::create([
-            ...$validated,
+        if (empty($name)) {
+            $name = 'Prospective Student';
+        }
+
+        $contactMessage = ContactMessage::create([
+            'name' => $name,
+            'email' => $validated['email'],
+            'phone' => $phone,
+            'topic' => $topic,
+            'message' => $message,
             'is_read' => false,
         ]);
+
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Thank you for reaching out! A counselor will respond within 24 hours.',
+                'data' => $contactMessage,
+            ]);
+        }
 
         return back()->with('success', 'Thank you for reaching out! A counselor will respond within 24 hours.');
     }
