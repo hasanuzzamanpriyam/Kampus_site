@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class PartnerController extends Controller
@@ -110,7 +111,7 @@ class PartnerController extends Controller
                     ));
                     $feedbackMessage = "Partner approved! Magic activation link queued for delivery to {$targetEmail}.";
                 } catch (\Throwable $e) {
-                    \Log::error('Failed to queue partner approval email: ' . $e->getMessage());
+                    Log::error('Failed to queue partner approval email: ' . $e->getMessage());
                     $feedbackMessage = "Partner approved and user account created (role: Partner), but queuing email failed.";
                 }
             } else {

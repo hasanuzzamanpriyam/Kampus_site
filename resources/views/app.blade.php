@@ -15,9 +15,9 @@
         <link rel="icon" type="image/x-icon" href="{{ $favicon }}">
         <title inertia>{{ $siteName }}</title>
 
-        <!-- Inline Theme Script (Prevents Dark Mode Flash) -->
+        <!-- Inline Theme Script (Default: Light Mode; Dark only if chosen by user) -->
         <script>
-            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (localStorage.getItem('theme') === 'dark') {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
