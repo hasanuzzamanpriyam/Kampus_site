@@ -91,7 +91,7 @@ export default function TopbarSearch({ onSearch }) {
                         }
                     }}
                     placeholder="Search for universities & courses..."
-                    className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-xs sm:text-sm font-medium rounded-full pl-5 pr-16 py-2.5 shadow-sm border border-transparent focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                    className="w-full bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 text-xs sm:text-sm font-medium rounded-full pl-5 pr-16 py-2.5 shadow-sm border border-slate-200/60 dark:border-slate-700/60 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                 />
 
                 <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -124,55 +124,55 @@ export default function TopbarSearch({ onSearch }) {
                 </div>
             </form>
 
-            {/* LIVE SEARCH RESULTS DROPDOWN */}
+            {/* LIVE SEARCH RESULTS DROPDOWN MODAL */}
             {isOpen && query.trim().length >= 2 && (
-                <div className="absolute top-full left-0 w-full mt-2 bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-slate-100 max-h-[80vh] flex flex-col">
+                <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-slate-900 dark:text-slate-100 max-h-[80vh] flex flex-col">
                     
                     {/* 1. LOADING INDICATOR SKELETON */}
                     {isSearching && !hasResults && (
-                        <div className="p-6 flex items-center justify-center gap-2 text-xs text-slate-400">
-                            <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                        <div className="p-6 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                            <Loader2 className="w-4 h-4 text-purple-600 dark:text-purple-400 animate-spin" />
                             <span>Searching universities & programmes with AI Scout...</span>
                         </div>
                     )}
 
                     {/* 2. RESULTS CONTAINER */}
-                    <div className="overflow-y-auto divide-y divide-slate-800 custom-scrollbar">
+                    <div className="overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 custom-scrollbar">
                         
                         {/* SECTION A: UNIVERSITIES */}
                         {hasUniversities && (
                             <div>
-                                <div className="px-4 py-2 bg-slate-800/80 border-b border-slate-700/60 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                     <span className="flex items-center gap-1.5">
-                                        <Building2 className="w-3.5 h-3.5 text-purple-400" />
+                                        <Building2 className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                                         <span>Universities ({results.universities.length})</span>
                                     </span>
                                 </div>
 
-                                <div className="divide-y divide-slate-800/60">
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                                     {results.universities.map((uni) => (
                                         <Link
                                             key={uni.id}
                                             href={`/universities/${uni.slug}`}
                                             onClick={() => setIsOpen(false)}
-                                            className="px-4 py-3 hover:bg-slate-800/80 transition-colors flex items-center justify-between group cursor-pointer"
+                                            className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group cursor-pointer"
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-purple-950/80 border border-purple-800/50 text-purple-300 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
+                                                <div className="w-9 h-9 rounded-xl bg-purple-100/80 dark:bg-purple-950/80 border border-purple-200 dark:border-purple-800/50 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
                                                     <Building2 className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <div className="font-bold text-sm text-white group-hover:text-purple-300 transition-colors truncate">
+                                                    <div className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors truncate">
                                                         {uni.name}
                                                     </div>
-                                                    <div className="text-xs text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
-                                                        <MapPin className="w-3 h-3 text-slate-500" />
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5 mt-0.5">
+                                                        <MapPin className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                                                         <span>{uni.location || uni.country?.name || 'International'}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-purple-900/40 text-purple-300 border border-purple-700/50 shrink-0 ml-3">
+                                            <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-purple-50 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700/50 shrink-0 ml-3">
                                                 {uni.courses_count || 0} courses available
                                             </span>
                                         </Link>
@@ -184,38 +184,38 @@ export default function TopbarSearch({ onSearch }) {
                         {/* SECTION B: COURSES */}
                         {hasCourses && (
                             <div>
-                                <div className="px-4 py-2 bg-slate-800/80 border-b border-slate-700/60 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-400">
+                                <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-extrabold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                                     <span className="flex items-center gap-1.5">
-                                        <GraduationCap className="w-3.5 h-3.5 text-blue-400" />
+                                        <GraduationCap className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                                         <span>Courses ({results.courses.length})</span>
                                     </span>
                                 </div>
 
-                                <div className="divide-y divide-slate-800/60">
+                                <div className="divide-y divide-slate-100 dark:divide-slate-800/60">
                                     {results.courses.map((course) => (
                                         <Link
                                             key={course.id}
                                             href={course.university?.slug ? `/universities/${course.university.slug}` : `/courses?search=${encodeURIComponent(course.title)}`}
                                             onClick={() => setIsOpen(false)}
-                                            className="px-4 py-3 hover:bg-slate-800/80 transition-colors flex items-center justify-between group cursor-pointer"
+                                            className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group cursor-pointer"
                                         >
                                             <div className="flex items-center gap-3 min-w-0">
-                                                <div className="w-9 h-9 rounded-xl bg-blue-950/80 border border-blue-800/50 text-blue-300 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
+                                                <div className="w-9 h-9 rounded-xl bg-blue-100/80 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800/50 text-blue-700 dark:text-blue-300 flex items-center justify-center font-bold text-xs shrink-0 group-hover:scale-105 transition-transform">
                                                     <BookOpen className="w-4 h-4" />
                                                 </div>
                                                 <div className="min-w-0">
-                                                    <div className="font-bold text-sm text-white group-hover:text-blue-300 transition-colors truncate">
+                                                    <div className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors truncate">
                                                         {course.title}
                                                     </div>
-                                                    <div className="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1">
-                                                        <Building2 className="w-3 h-3 text-slate-500" />
+                                                    <div className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                                                        <Building2 className="w-3 h-3 text-slate-400 dark:text-slate-500" />
                                                         <span>{course.university?.name || 'Partner University'}</span>
                                                     </div>
                                                 </div>
                                             </div>
 
                                             {course.level && (
-                                                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-900/40 text-blue-300 border border-blue-700/50 shrink-0 ml-3">
+                                                <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50 shrink-0 ml-3">
                                                     {course.level}
                                                 </span>
                                             )}
@@ -228,10 +228,10 @@ export default function TopbarSearch({ onSearch }) {
                         {/* NO RESULTS FOUND */}
                         {!isSearching && !hasResults && (
                             <div className="py-8 px-6 text-center space-y-1.5">
-                                <div className="text-sm font-semibold text-slate-300">
-                                    No matches found for <span className="text-white font-bold">"{query}"</span>
+                                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                    No matches found for <span className="text-slate-900 dark:text-white font-bold">"{query}"</span>
                                 </div>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
                                     Try checking for spelling errors or searching by subject/city keyword.
                                 </p>
                             </div>
@@ -241,14 +241,14 @@ export default function TopbarSearch({ onSearch }) {
 
                     {/* 3. VIEW ALL RESULTS ACTION FOOTER */}
                     {hasResults && (
-                        <div className="p-3 bg-slate-950/90 border-t border-slate-800 flex items-center justify-between">
-                            <span className="text-xs text-slate-400">
+                        <div className="p-3 bg-slate-50 dark:bg-slate-950/90 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
                                 Showing top {results.universities.length + results.courses.length} matches
                             </span>
                             <button
                                 type="button"
                                 onClick={handleFormSubmit}
-                                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-400 hover:text-purple-300 transition-colors cursor-pointer"
+                                className="inline-flex items-center gap-1.5 text-xs font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors cursor-pointer"
                             >
                                 <span>View all results</span>
                                 <ArrowRight className="w-3.5 h-3.5" />

@@ -97,6 +97,11 @@ Route::post('/api/course-matcher-lead', [FrontendController::class, 'saveMatcher
 // Global Index Search API (Laravel Scout)
 Route::get('/api/global-search', [SearchController::class, 'search'])->name('api.global-search');
 
+// General Dashboard Redirect Route (Aliases 'dashboard' to 'admin.dashboard')
+Route::get('/dashboard', function () {
+    return redirect()->route('admin.dashboard');
+})->middleware(['auth'])->name('dashboard');
+
 // SECURED ADMIN CMS ROUTES (Protected by 'auth' and 'EnsurePartnerPasswordSet' middleware)
 Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {

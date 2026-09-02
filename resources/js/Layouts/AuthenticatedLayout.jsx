@@ -25,8 +25,8 @@ export default function AuthenticatedLayout({ header, children }) {
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                    href={route().has('admin.dashboard') ? route('admin.dashboard') : (route().has('dashboard') ? route('dashboard') : '/admin/dashboard')}
+                                    active={route().has('admin.dashboard') ? route().current('admin.dashboard') : (route().has('dashboard') ? route().current('dashboard') : false)}
                                 >
                                     Dashboard
                                 </NavLink>
@@ -129,8 +129,8 @@ export default function AuthenticatedLayout({ header, children }) {
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            href={route().has('admin.dashboard') ? route('admin.dashboard') : (route().has('dashboard') ? route('dashboard') : '/admin/dashboard')}
+                            active={route().has('admin.dashboard') ? route().current('admin.dashboard') : (route().has('dashboard') ? route().current('dashboard') : false)}
                         >
                             Dashboard
                         </ResponsiveNavLink>

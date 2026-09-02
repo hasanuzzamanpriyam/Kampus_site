@@ -15,13 +15,17 @@
         <link rel="icon" type="image/x-icon" href="{{ $favicon }}">
         <title inertia>{{ $siteName }}</title>
 
-        <!-- Inline Theme Script (Default: Light Mode; Dark only if chosen by user) -->
+        <!-- Inline Theme Script (Default: Light Mode; Separated Admin vs Public themes) -->
         <script>
-            if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
+            (function () {
+                var isAdmin = window.location.pathname.startsWith('/admin');
+                var storageKey = isAdmin ? 'admin_theme' : 'public_theme';
+                if (localStorage.getItem(storageKey) === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            })();
         </script>
 
         <!-- Fonts -->
