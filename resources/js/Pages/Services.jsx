@@ -7,7 +7,7 @@ import JourneyProcess from '../Components/JourneyProcess';
 import ServicesCta from '../Components/ServicesCta';
 import FaqSection from '../Components/FaqSection';
 
-export default function Services() {
+export default function Services({ services = [], faqs = [] }) {
     const handleOpenBookCall = () => {
         const allButtons = Array.from(document.querySelectorAll('button'));
         const callBtn = allButtons.find(b => b.textContent.includes('Book a Call') || b.textContent.includes('Book a Free Call'));
@@ -28,7 +28,7 @@ export default function Services() {
                 <ServicesHero />
 
                 {/* 2. DETAILED ZIG-ZAG SERVICES BREAKDOWN */}
-                <DetailedServices />
+                <DetailedServices services={services} />
 
                 {/* 3. 5-STEP ADMISSION ROADMAP */}
                 <JourneyProcess />
@@ -37,7 +37,7 @@ export default function Services() {
                 <ServicesCta onOpenBookCall={handleOpenBookCall} />
 
                 {/* 5. FREQUENTLY ASKED QUESTIONS */}
-                <FaqSection />
+                <FaqSection faqs={faqs} />
             </div>
         </Layout>
     );

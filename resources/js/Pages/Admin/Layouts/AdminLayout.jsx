@@ -24,7 +24,8 @@ import {
     Globe2,
     Users,
     ShieldCheck,
-    HelpCircle
+    HelpCircle,
+    Layers
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
@@ -41,6 +42,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings },
         { name: 'Pages & SEO', href: '/admin/pages', icon: FileText },
+        { name: 'Services', href: '/admin/services', icon: Layers },
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle },
         { name: 'Global Branches', href: '/admin/branches', icon: Globe2 },
         { name: 'Countries', href: '/admin/countries', icon: Globe },

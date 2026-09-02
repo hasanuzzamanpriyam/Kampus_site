@@ -43,13 +43,12 @@ export default function UniversityDetails({ university = null, slug = 'universit
     const currentUniversity = university ? {
         name: university.name,
         location: university.location || (university.country ? university.country.name : 'United Kingdom'),
-        website: university.website || 'https://www.kampusedu.com',
+        website: university.website || '',
         ranking: university.ranking || 'Top Ranked Global Institution',
         coverImage: university.cover_image || 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1600&q=80',
         logoText: university.name ? university.name.split(' ').map(w => w[0]).join('').substring(0, 3) : 'UN',
         logoBg: 'bg-blue-900 text-white',
         established: 'Est. Partner Campus',
-        type: 'Public Research Institution',
         description: university.description || 'World-renowned partner institution providing top-tier academic degrees, research facilities, and global career prospects.',
         courses: (university.courses && university.courses.length > 0) ? university.courses.map(c => ({
             code: c.slug ? c.slug.substring(0, 6).toUpperCase() : 'CRS',

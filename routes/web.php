@@ -12,6 +12,8 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\PublicServiceController;
 use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
@@ -31,9 +33,7 @@ Route::get('/about', function () {
     return Inertia::render('About'); 
 });
 
-Route::get('/services', function () {
-    return Inertia::render('Services'); 
-});
+Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
 
 Route::get('/universities', [PublicUniversityController::class, 'index'])->name('universities.index');
 
@@ -156,7 +156,16 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         'update' => 'admin.blog.update',
         'destroy' => 'admin.blog.destroy',
     ]);
-    Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
+    // Services CRUD Routes
+    Route::resource('services', ServiceController::class)->names([
+        'index' => 'admin.services.index',
+        'create' => 'admin.services.create',
+        'store' => 'admin.services.store',
+        'edit' => 'admin.services.edit',
+        'update' => 'admin.services.update',
+        'destroy' => 'admin.services.destroy',
+    ]);
+    Route::patch('/services/{service}/toggle-status', [ServiceController::class, 'toggleStatus'])->name('admin.services.toggle-status');
 
     // FAQs CRUD Routes
     Route::resource('faqs', FaqController::class)->names([

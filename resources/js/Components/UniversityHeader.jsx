@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
     MapPin,
     ExternalLink,
-    Download,
-    Send,
+    PhoneCall,
     Award,
-    CheckCircle2,
-    Building2,
-    X,
     Sparkles,
     GraduationCap
 } from 'lucide-react';
@@ -25,7 +21,15 @@ export default function UniversityHeader({
         type: 'Public Research University'
     }
 }) {
-    const [applyModalOpen, setApplyModalOpen] = useState(false);
+    const handleOpenBookCall = () => {
+        const allButtons = Array.from(document.querySelectorAll('button'));
+        const callBtn = allButtons.find(b => b.textContent.includes('Book a Call') || b.textContent.includes('Book a Free Call'));
+        if (callBtn) {
+            callBtn.click();
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    };
 
     return (
         <div className="w-full bg-slate-50 dark:bg-slate-950 transition-colors">
@@ -42,12 +46,14 @@ export default function UniversityHeader({
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/30 to-transparent" />
 
                 {/* Top Ranking Badge */}
-                <div className="absolute top-6 right-6">
-                    <span className="px-4 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-400 text-xs font-extrabold uppercase tracking-wider border border-emerald-500/30 shadow-md flex items-center gap-1.5">
-                        <Award className="w-4 h-4" />
-                        <span>{university.ranking}</span>
-                    </span>
-                </div>
+                {university.ranking && (
+                    <div className="absolute top-6 right-6">
+                        <span className="px-4 py-1.5 rounded-full bg-slate-900/80 backdrop-blur-md text-emerald-400 text-xs font-extrabold uppercase tracking-wider border border-emerald-500/30 shadow-md flex items-center gap-1.5">
+                            <Award className="w-4 h-4" />
+                            <span>{university.ranking}</span>
+                        </span>
+                    </div>
+                )}
             </div>
 
             {/* 2. OVERLAPPING CONTENT CONTAINER */}
@@ -62,7 +68,7 @@ export default function UniversityHeader({
                             {/* SQUARE PROFILE / LOGO IMAGE WITH PRONOUNCED OVERLAP & SHADOW */}
                             <div className="-mt-14 sm:-mt-16 shrink-0">
                                 <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-white dark:bg-slate-800 p-2 shadow-2xl border-4 border-white dark:border-slate-800 flex items-center justify-center overflow-hidden">
-                                    <div className={`w-full h-full rounded-xl ${university.logoBg} flex flex-col items-center justify-center font-extrabold text-2xl tracking-wider shadow-inner`}>
+                                    <div className={`w-full h-full rounded-xl ${university.logoBg || 'bg-blue-900 text-white'} flex flex-col items-center justify-center font-extrabold text-2xl tracking-wider shadow-inner`}>
                                         <span>{university.logoText}</span>
                                         <span className="text-[9px] font-medium text-blue-200 uppercase tracking-widest mt-0.5">
                                             {university.established}
@@ -73,12 +79,6 @@ export default function UniversityHeader({
 
                             {/* TEXT DETAILS */}
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[11px] font-bold uppercase tracking-wider">
-                                        {university.type}
-                                    </span>
-                                </div>
-
                                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                     {university.name}
                                 </h1>
@@ -89,120 +89,38 @@ export default function UniversityHeader({
                                         <span>{university.location}</span>
                                     </div>
 
-                                    <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
-
-                                    <a
-                                        href={university.website}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                                    >
-                                        <span>Official Website</span>
-                                        <ExternalLink className="w-3.5 h-3.5" />
-                                    </a>
+                                    {university.website && (
+                                        <>
+                                            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">•</span>
+                                            <a
+                                                href={university.website.startsWith('http') ? university.website : `https://${university.website}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                                            >
+                                                <span>Official Website</span>
+                                                <ExternalLink className="w-3.5 h-3.5" />
+                                            </a>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         </div>
 
-                        {/* RIGHT SIDE: ACTION BUTTONS */}
+                        {/* RIGHT SIDE: BOOK A CALL BUTTON */}
                         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100 dark:border-slate-800">
-                            
-                            {/* Secondary Button: Download Brochure */}
-                            <a
-                                href="#brochure"
-                                onClick={(e) => { e.preventDefault(); alert('University brochure download started!'); }}
-                                className="px-6 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white font-bold text-sm border border-slate-200 dark:border-slate-700 flex items-center justify-center gap-2 transition-all"
-                            >
-                                <Download className="w-4 h-4 text-slate-600 dark:text-slate-300" />
-                                <span>Download Brochure</span>
-                            </a>
-
-                            {/* Primary Button: Apply Now */}
                             <button
-                                onClick={() => setApplyModalOpen(true)}
-                                className="px-7 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                                onClick={handleOpenBookCall}
+                                className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
                             >
-                                <Send className="w-4 h-4" />
-                                <span>Apply Now</span>
+                                <PhoneCall className="w-4 h-4" />
+                                <span>Book a Call</span>
                             </button>
                         </div>
 
                     </div>
                 </div>
             </div>
-
-            {/* DIRECT APPLICATION MODAL */}
-            {applyModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
-                        <button
-                            onClick={() => setApplyModalOpen(false)}
-                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                                <GraduationCap className="w-6 h-6" />
-                            </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Apply to {university.name}</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Fast-track official application submission</p>
-                            </div>
-                        </div>
-
-                        <form onSubmit={(e) => { e.preventDefault(); alert(`Application to ${university.name} submitted successfully!`); setApplyModalOpen(false); }} className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
-                                <input
-                                    type="text"
-                                    required
-                                    placeholder="Your Name"
-                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        placeholder="email@example.com"
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone (WhatsApp)</label>
-                                    <input
-                                        type="tel"
-                                        required
-                                        placeholder="+880 1700 000 000"
-                                        className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Intended Degree Level</label>
-                                <select className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                    <option value="Bachelors">Undergraduate (Bachelor's Degree)</option>
-                                    <option value="Masters">Postgraduate (Master's Degree / MSc / MA)</option>
-                                    <option value="PhD">Doctorate / PhD Research</option>
-                                </select>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-transform"
-                            >
-                                Submit Official Application
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
