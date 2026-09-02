@@ -91,18 +91,18 @@ class PartnerController extends Controller
                 $user->assignRole($partnerRole);
             }
 
-            // Dispatch welcome approval email
+            // Dispatch welcome approval email to queue
             try {
-                Mail::to($user->email)->send(new PartnerApprovedMail(
+                Mail::to($user->email)->queue(new PartnerApprovedMail(
                     $application,
                     $user,
                     $plainPassword,
                     $isNewAccount
                 ));
-                $feedbackMessage = "Partner approved! User account created and login credentials emailed to {$user->email}.";
+                $feedbackMessage = "Partner approved! User account created and login credentials queued for delivery to {$user->email}.";
             } catch (\Throwable $e) {
-                \Log::error('Failed to send partner approval email: ' . $e->getMessage());
-                $feedbackMessage = "Partner approved and user account created (role: Partner), but email dispatch failed.";
+                \Log::error('Failed to queue partner approval email: ' . $e->getMessage());
+                $feedbackMessage = "Partner approved and user account created (role: Partner), but queuing email failed.";
             }
         }
 
