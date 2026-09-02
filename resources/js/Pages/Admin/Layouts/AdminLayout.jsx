@@ -44,7 +44,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings, permission: 'manage-settings' },
         { name: 'Pages & SEO', href: '/admin/pages', icon: FileText, permission: 'manage-pages' },
-        { name: 'Services', href: '/admin/services', icon: Layers },
+        { name: 'Services', href: '/admin/services', icon: Layers, permission: 'manage-pages' },
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, permission: 'manage-pages' },
         { name: 'Global Branches', href: '/admin/branches', icon: Globe2, permission: 'manage-pages' },
         { name: 'Countries', href: '/admin/countries', icon: Globe, permission: 'manage-countries' },
@@ -91,10 +91,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-extrabold text-base tracking-tight text-white">
-                                    Kampus <span className="text-blue-400">CMS</span>
+                                    Kampus <span className="text-blue-400">{primaryRole === 'Partner' ? 'Partner' : 'CMS'}</span>
                                 </span>
                                 <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
-                                    Admin Panel
+                                    {primaryRole === 'Partner' ? 'Partner Portal' : 'Admin Panel'}
                                 </span>
                             </div>
                         </Link>
@@ -253,6 +253,16 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                             </div>
                         </div>
 
+                        {/* Profile Settings Link */}
+                        <Link
+                            href="/profile"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition-colors cursor-pointer"
+                            title="Profile & Password Settings"
+                        >
+                            <Settings className="w-3.5 h-3.5 text-slate-500" />
+                            <span className="hidden md:inline">Profile</span>
+                        </Link>
+
                         {/* Logout Button */}
                         <button
                             onClick={handleLogout}
@@ -268,6 +278,23 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
                 {/* 3. MAIN CONTENT AREA WITH SOFT BACKGROUND */}
                 <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-slate-50 dark:bg-slate-950">
+                    {/* Flash Notifications */}
+                    {props?.flash?.success && (
+                        <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-sm font-semibold">
+                            {props.flash.success}
+                        </div>
+                    )}
+                    {props?.flash?.status && (
+                        <div className="mb-6 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/30 text-blue-700 dark:text-blue-300 text-sm font-semibold">
+                            {props.flash.status}
+                        </div>
+                    )}
+                    {props?.flash?.error && (
+                        <div className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-sm font-semibold">
+                            {props.flash.error}
+                        </div>
+                    )}
+
                     {children}
                 </main>
 

@@ -5,19 +5,33 @@ namespace App\Mail;
 use App\Models\PartnerApplication;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PartnerApprovedMail extends Mailable
+class PartnerApprovedMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    /**
+     * The number of times the job may be attempted.
+     *
+     * @var int
+     */
+    public $tries = 3;
+
+    /**
+     * The number of seconds to wait before retrying the job.
+     *
+     * @var int
+     */
+    public $backoff = 60;
+
     public PartnerApplication $application;
     public User $user;
-    public ?string $plainPassword;
-    public bool $isNewAccount;
+    public ?string $magicLoginUrl;
 
     /**
      * Create a new message instance.
@@ -25,13 +39,11 @@ class PartnerApprovedMail extends Mailable
     public function __construct(
         PartnerApplication $application,
         User $user,
-        ?string $plainPassword = null,
-        bool $isNewAccount = true
+        ?string $magicLoginUrl = null
     ) {
         $this->application = $application;
         $this->user = $user;
-        $this->plainPassword = $plainPassword;
-        $this->isNewAccount = $isNewAccount;
+        $this->magicLoginUrl = $magicLoginUrl;
     }
 
     /**
@@ -49,15 +61,23 @@ class PartnerApprovedMail extends Mailable
      */
     public function content(): Content
     {
+        $magicLoginUrl = $this->magicLoginUrl ?: \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'partner.magic-login',
+            now()->addDays(7),
+            ['user' => $this->user->id]
+        );
+
+        $displayEmail = (!empty($this->user->email) && !str_ends_with($this->user->email, '@placeholder.local'))
+            ? $this->user->email
+            : $this->application->email;
+
         return new Content(
             view: 'emails.partner-approved',
             with: [
                 'companyName' => $this->application->company_name,
                 'contactPerson' => $this->application->contact_person,
-                'email' => $this->user->email,
-                'plainPassword' => $this->plainPassword,
-                'isNewAccount' => $this->isNewAccount,
-                'loginUrl' => route('login'),
+                'email' => $displayEmail,
+                'magicLoginUrl' => $magicLoginUrl,
             ],
         );
     }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import {
     Search,
     Building2,
@@ -69,7 +69,7 @@ export default function TopbarSearch({ onSearch }) {
         if (onSearch) {
             onSearch(trimmed);
         } else {
-            window.location.href = `/universities?search=${encodeURIComponent(trimmed)}`;
+            router.visit(`/universities?search=${encodeURIComponent(trimmed)}`);
         }
     };
 

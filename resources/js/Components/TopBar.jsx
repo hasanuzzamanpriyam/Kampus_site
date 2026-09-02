@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
-import { Phone, Handshake, X, Send, Sparkles, Building2, User, Mail, Globe } from 'lucide-react';
+import { Phone, Handshake, X, Send } from 'lucide-react';
 import TopbarSearch from './TopbarSearch';
 
 export default function TopBar({ onSearch }) {
@@ -8,7 +8,6 @@ export default function TopBar({ onSearch }) {
     const hotline = props?.globalSettings?.contact_bd_hotline || '+880 1812713814';
     const partnerModalParagraph = props?.globalSettings?.partner_modal_paragraph
         || 'Join our global higher education network. Register your agency below to collaborate with top universities worldwide and streamline student admissions.';
-    const [searchQuery, setSearchQuery] = useState('');
     const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
     const [isIntroDismissed, setIsIntroDismissed] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);

@@ -64,20 +64,18 @@ class PartnerController extends Controller
 
         $feedbackMessage = "Application status updated to \"{$validated['status']}\".";
 
-        // If newly approved, automatically provision user account and send welcome credentials email
+        // If newly approved, automatically provision user account and send magic activation link email
         if ($validated['status'] === 'approved' && $previousStatus !== 'approved') {
-            $user = User::where('email', $application->email)->first();
-            $plainPassword = null;
-            $isNewAccount = false;
+            $email = $application->email;
+            $user = !empty($email) ? User::where('email', $email)->first() : null;
 
             if (!$user) {
-                $plainPassword = Str::password(10);
                 $user = User::create([
                     'name' => $application->contact_person ?: $application->company_name,
-                    'email' => $application->email,
-                    'password' => Hash::make($plainPassword),
+                    'email' => !empty($email) ? $email : 'partner-' . $application->id . '@placeholder.local',
+                    'password' => Hash::make(Str::random(32)),
+                    'password_set_at' => null, // Requires permanent password setup upon login
                 ]);
-                $isNewAccount = true;
             }
 
             // Ensure 'Partner' role exists with standard limited permissions
@@ -86,23 +84,37 @@ class PartnerController extends Controller
                 $partnerRole->syncPermissions(['manage-universities', 'manage-courses']);
             }
 
-            // Assign Partner role if user has no existing roles
-            if ($user->roles()->count() === 0) {
+            // Assign Partner role if not already assigned
+            if (! $user->hasRole('Partner') && ! $user->hasRole('Super Admin')) {
                 $user->assignRole($partnerRole);
             }
 
-            // Dispatch welcome approval email
-            try {
-                Mail::to($user->email)->send(new PartnerApprovedMail(
-                    $application,
-                    $user,
-                    $plainPassword,
-                    $isNewAccount
-                ));
-                $feedbackMessage = "Partner approved! User account created and login credentials emailed to {$user->email}.";
-            } catch (\Throwable $e) {
-                \Log::error('Failed to send partner approval email: ' . $e->getMessage());
-                $feedbackMessage = "Partner approved and user account created (role: Partner), but email dispatch failed.";
+            // Generate secure 7-day one-click magic login URL using current host
+            $magicLoginUrl = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                'partner.magic-login',
+                now()->addDays(7),
+                ['user' => $user->id]
+            );
+
+            // Dispatch welcome approval email to queue
+            $targetEmail = (!empty($user->email) && !str_ends_with($user->email, '@placeholder.local'))
+                ? $user->email
+                : $application->email;
+
+            if (!empty($targetEmail) && !str_ends_with($targetEmail, '@placeholder.local')) {
+                try {
+                    Mail::to($targetEmail)->queue(new PartnerApprovedMail(
+                        $application,
+                        $user,
+                        $magicLoginUrl
+                    ));
+                    $feedbackMessage = "Partner approved! Magic activation link queued for delivery to {$targetEmail}.";
+                } catch (\Throwable $e) {
+                    \Log::error('Failed to queue partner approval email: ' . $e->getMessage());
+                    $feedbackMessage = "Partner approved and user account created (role: Partner), but queuing email failed.";
+                }
+            } else {
+                $feedbackMessage = "Partner approved! No email was found on this application. Activation URL: {$magicLoginUrl}";
             }
         }
 

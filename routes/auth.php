@@ -9,7 +9,14 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\PartnerLoginController;
+use App\Http\Controllers\Auth\PartnerSetupController;
 use Illuminate\Support\Facades\Route;
+
+// Partner Magic One-Click Login (Protected by cryptographic signature and throttle)
+Route::get('partner-login/{user}', [PartnerLoginController::class, 'magicLogin'])
+    ->name('partner.magic-login')
+    ->middleware(['throttle:10,1']);
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -36,6 +43,11 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    // Partner Initial Password & Email Setup
+    Route::get('partner/setup-account', [PartnerSetupController::class, 'show'])
+        ->name('partner.setup.show');
+    Route::post('partner/setup-account', [PartnerSetupController::class, 'store'])
+        ->name('partner.setup.store');
     Route::get('verify-email', EmailVerificationPromptController::class)
         ->name('verification.notice');
 
