@@ -97,8 +97,8 @@ Route::post('/api/course-matcher-lead', [FrontendController::class, 'saveMatcher
 // Global Index Search API (Laravel Scout)
 Route::get('/api/global-search', [SearchController::class, 'search'])->name('api.global-search');
 
-// SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
-Route::middleware(['auth'])->prefix('admin')->group(function () {
+// SECURED ADMIN CMS ROUTES (Protected by 'auth' and 'EnsurePartnerPasswordSet' middleware)
+Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('admin.dashboard');
@@ -185,46 +185,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         ]);
         Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
     });
-    Route::resource('blog', BlogController::class)->names([
-        'index' => 'admin.blog.index',
-        'create' => 'admin.blog.create',
-        'store' => 'admin.blog.store',
-        'edit' => 'admin.blog.edit',
-        'update' => 'admin.blog.update',
-        'destroy' => 'admin.blog.destroy',
-    ]);
     // Services CRUD Routes
-    Route::resource('services', ServiceController::class)->names([
-        'index' => 'admin.services.index',
-        'create' => 'admin.services.create',
-        'store' => 'admin.services.store',
-        'edit' => 'admin.services.edit',
-        'update' => 'admin.services.update',
-        'destroy' => 'admin.services.destroy',
-    ]);
-    Route::patch('/services/{service}/toggle-status', [ServiceController::class, 'toggleStatus'])->name('admin.services.toggle-status');
-
-    // FAQs CRUD Routes
-    Route::resource('faqs', FaqController::class)->names([
-        'index' => 'admin.faqs.index',
-        'create' => 'admin.faqs.create',
-        'store' => 'admin.faqs.store',
-        'edit' => 'admin.faqs.edit',
-        'update' => 'admin.faqs.update',
-        'destroy' => 'admin.faqs.destroy',
-    ]);
-    Route::patch('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('admin.faqs.toggle-status');
-
-    // Global Branches CRUD Routes
-    Route::resource('branches', BranchController::class)->names([
-        'index' => 'admin.branches.index',
-        'create' => 'admin.branches.create',
-        'store' => 'admin.branches.store',
-        'edit' => 'admin.branches.edit',
-        'update' => 'admin.branches.update',
-        'destroy' => 'admin.branches.destroy',
-    ]);
-    Route::patch('/branches/{branch}/toggle-status', [BranchController::class, 'toggleStatus'])->name('admin.branches.toggle-status');
+    Route::middleware('can:manage-pages')->group(function () {
+        Route::resource('services', ServiceController::class)->names([
+            'index' => 'admin.services.index',
+            'create' => 'admin.services.create',
+            'store' => 'admin.services.store',
+            'edit' => 'admin.services.edit',
+            'update' => 'admin.services.update',
+            'destroy' => 'admin.services.destroy',
+        ]);
+        Route::patch('/services/{service}/toggle-status', [ServiceController::class, 'toggleStatus'])->name('admin.services.toggle-status');
+    });
 
     // Partner Applications Routes (admin management)
     Route::middleware('can:manage-partners')->group(function () {

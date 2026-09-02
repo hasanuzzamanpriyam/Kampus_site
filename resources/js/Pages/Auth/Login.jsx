@@ -3,9 +3,12 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import GuestLayout from '../../Layouts/GuestLayout';
 import { Mail, Lock, LogIn, ArrowRight, ShieldCheck, KeyRound } from 'lucide-react';
 
-export default function Login({ status, canResetPassword }) {
+export default function Login({ status, canResetPassword, prefilledEmail = '' }) {
+    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const initialEmail = prefilledEmail || (urlParams ? urlParams.get('email') || '' : '');
+
     const { data, setData, post, processing, errors, reset } = useForm({
-        email: '',
+        email: initialEmail,
         password: '',
         remember: false,
     });

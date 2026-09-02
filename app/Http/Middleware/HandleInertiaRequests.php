@@ -57,6 +57,11 @@ class HandleInertiaRequests extends Middleware
                 ->orderBy('sort_order', 'asc')
                 ->get(),
             'globalSettings' => fn () => Setting::pluck('value', 'key')->toArray(),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'status' => fn () => $request->session()->get('status'),
+            ],
         ];
     }
 }

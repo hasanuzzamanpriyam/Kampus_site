@@ -139,38 +139,36 @@
             </p>
 
             <div class="credentials-card">
-                <div class="credentials-title">Your Portal Login Credentials</div>
+                <div class="credentials-title">Partner Account Details</div>
                 <div class="cred-row">
-                    <span class="cred-label">Login URL:</span>
-                    <span class="cred-value">{{ $loginUrl }}</span>
+                    <span class="cred-label">Agency / Institution:</span>
+                    <span class="cred-value">{{ $companyName }}</span>
                 </div>
                 <div class="cred-row">
-                    <span class="cred-label">Email Address:</span>
-                    <span class="cred-value">{{ $email }}</span>
+                    <span class="cred-label">Contact Person:</span>
+                    <span class="cred-value">{{ $contactPerson }}</span>
                 </div>
-                @if($isNewAccount && $plainPassword)
                 <div class="cred-row">
-                    <span class="cred-label">Temporary Password:</span>
-                    <span class="cred-value">{{ $plainPassword }}</span>
+                    <span class="cred-label">Registered Email:</span>
+                    <span class="cred-value">{{ $email ?: 'To be confirmed on activation' }}</span>
                 </div>
-                @else
                 <div class="cred-row">
-                    <span class="cred-label">Password:</span>
-                    <span class="cred-value" style="font-family: inherit;">Use your existing account password</span>
+                    <span class="cred-label">Access Level:</span>
+                    <span class="cred-value">Official Partner Portal</span>
                 </div>
-                @endif
             </div>
 
             <div class="button-wrapper">
-                <a href="{{ $loginUrl }}" class="btn">Log In to Partner Portal</a>
+                <a href="{{ $magicLoginUrl }}" class="btn">Activate Account & Set Password</a>
             </div>
 
             <div class="security-notice">
-                @if($isNewAccount)
-                <strong>Next Step:</strong> For security reasons, please update your temporary password after your initial login from your profile settings.
-                @else
-                You can access the portal anytime using your registered credentials.
-                @endif
+                <p style="margin: 0 0 6px 0;">
+                    <strong>Security Notice:</strong> To protect your agency account, login is only available via the secure 1-click magic link above.
+                </p>
+                <p style="margin: 0;">
+                    Upon clicking the button, you will be automatically signed in and asked to choose your permanent password (and verify your email if required). This link is cryptographically signed and active for 7 days.
+                </p>
             </div>
         </div>
         <div class="footer">

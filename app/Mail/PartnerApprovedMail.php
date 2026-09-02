@@ -31,8 +31,7 @@ class PartnerApprovedMail extends Mailable implements ShouldQueue
 
     public PartnerApplication $application;
     public User $user;
-    public ?string $plainPassword;
-    public bool $isNewAccount;
+    public ?string $magicLoginUrl;
 
     /**
      * Create a new message instance.
@@ -40,13 +39,11 @@ class PartnerApprovedMail extends Mailable implements ShouldQueue
     public function __construct(
         PartnerApplication $application,
         User $user,
-        ?string $plainPassword = null,
-        bool $isNewAccount = true
+        ?string $magicLoginUrl = null
     ) {
         $this->application = $application;
         $this->user = $user;
-        $this->plainPassword = $plainPassword;
-        $this->isNewAccount = $isNewAccount;
+        $this->magicLoginUrl = $magicLoginUrl;
     }
 
     /**
@@ -64,15 +61,23 @@ class PartnerApprovedMail extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
+        $magicLoginUrl = $this->magicLoginUrl ?: \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'partner.magic-login',
+            now()->addDays(7),
+            ['user' => $this->user->id]
+        );
+
+        $displayEmail = (!empty($this->user->email) && !str_ends_with($this->user->email, '@placeholder.local'))
+            ? $this->user->email
+            : $this->application->email;
+
         return new Content(
             view: 'emails.partner-approved',
             with: [
                 'companyName' => $this->application->company_name,
                 'contactPerson' => $this->application->contact_person,
-                'email' => $this->user->email,
-                'plainPassword' => $this->plainPassword,
-                'isNewAccount' => $this->isNewAccount,
-                'loginUrl' => route('login'),
+                'email' => $displayEmail,
+                'magicLoginUrl' => $magicLoginUrl,
             ],
         );
     }

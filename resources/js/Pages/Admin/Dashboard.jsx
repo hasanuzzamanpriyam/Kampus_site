@@ -1,5 +1,5 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, usePage, Link } from '@inertiajs/react';
 import AdminLayout from './Layouts/AdminLayout';
 import {
     Building2,
@@ -11,20 +11,37 @@ import {
     ArrowUpRight,
     Sparkles,
     FileText,
-    Settings
+    Settings,
+    ShieldCheck,
+    CheckCircle2,
+    Compass
 } from 'lucide-react';
 
 export default function Dashboard() {
-    const stats = [
+    const { props } = usePage();
+    const currentUser = props?.auth?.user;
+    const isSuperAdmin = currentUser?.is_super_admin;
+    const isPartner = currentUser?.roles?.includes('Partner') && !isSuperAdmin;
+
+    const adminStats = [
         { title: 'Total Universities', value: '150+', change: '+12 this month', icon: Building2, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950' },
         { title: 'Active Courses', value: '1,240', change: '+45 added', icon: BookOpen, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-950' },
         { title: 'Partner Applications', value: '84', change: '12 pending review', icon: Handshake, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-950' },
         { title: 'Inquiries Received', value: '342', change: '+24 today', icon: Mail, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950' },
     ];
 
+    const partnerStats = [
+        { title: 'Participating Universities', value: '150+', change: 'Global Network', icon: Building2, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950' },
+        { title: 'Available Courses', value: '1,240', change: 'Updated Weekly', icon: BookOpen, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-950' },
+        { title: 'Partnership Status', value: 'Active', change: 'Official Partner', icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950' },
+        { title: 'Directory Access', value: 'Full Access', change: 'Institutions & Courses', icon: ShieldCheck, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-950' },
+    ];
+
+    const stats = isPartner ? partnerStats : adminStats;
+
     return (
-        <AdminLayout title="CMS Overview & Dashboard">
-            <Head title="Admin Dashboard — Kampus CMS" />
+        <AdminLayout title={isPartner ? 'Partner Portal Dashboard' : 'CMS Overview & Dashboard'}>
+            <Head title={isPartner ? 'Partner Portal — Kampus' : 'Admin Dashboard — Kampus CMS'} />
 
             <div className="space-y-8">
                 
@@ -33,13 +50,15 @@ export default function Dashboard() {
                     <div className="relative z-10 space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase border border-blue-500/30">
                             <Sparkles className="w-3.5 h-3.5" />
-                            <span>Kampus CMS v2.4</span>
+                            <span>{isPartner ? 'OFFICIAL PARTNER PORTAL' : 'Kampus CMS v2.4'}</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
-                            Welcome to your Management Dashboard
+                            {isPartner ? `Welcome back, ${currentUser?.name || 'Partner'}` : 'Welcome to your Management Dashboard'}
                         </h2>
                         <p className="text-slate-300 text-sm max-w-2xl">
-                            Manage global settings, dynamic pages, universities, courses, partner applications, and student inquiries in real time.
+                            {isPartner
+                                ? 'Access verified university information, course listings, tuition details, and entry criteria to support and guide your prospective international students.'
+                                : 'Manage global settings, dynamic pages, universities, courses, partner applications, and student inquiries in real time.'}
                         </p>
                     </div>
                 </div>
@@ -74,23 +93,28 @@ export default function Dashboard() {
                     })}
                 </div>
 
-                {/* RECENT ACTIVITY & QUICK ACTIONS */}
+                {/* SHORTCUTS & GUIDANCE */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
                     {/* Quick Management Shortcuts */}
                     <div className="lg:col-span-7 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                            Quick Management Shortcuts
+                            {isPartner ? 'Partner Quick Shortcuts' : 'Quick Management Shortcuts'}
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {[
+                            {(isPartner ? [
+                                { name: 'Universities Directory', desc: 'Browse institutions, locations & requirements', href: '/admin/universities', icon: Building2 },
+                                { name: 'Course Catalog', desc: 'Tuition fees, intakes, degrees & eligibility', href: '/admin/courses', icon: BookOpen },
+                                { name: 'My Profile & Credentials', desc: 'Change password and account details', href: '/profile', icon: Settings },
+                                { name: 'Study Destinations', desc: 'Explore partner countries and campuses', href: '/admin/universities', icon: Compass },
+                            ] : [
                                 { name: 'Edit Global Site Settings', desc: 'Logos, phone numbers & footers', href: '/admin/settings', icon: Settings },
                                 { name: 'Manage SEO & Pages', desc: 'Hero titles, meta tags & content', href: '/admin/pages', icon: FileText },
                                 { name: 'Manage Universities', desc: 'Add or update campus details', href: '/admin/universities', icon: Building2 },
                                 { name: 'Manage Courses', desc: 'Tuition fees, intakes & degrees', href: '/admin/courses', icon: BookOpen },
-                            ].map((short, i) => (
-                                <a
+                            ]).map((short, i) => (
+                                <Link
                                     key={i}
                                     href={short.href}
                                     className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-blue-500 transition-colors space-y-1 block group"
@@ -105,31 +129,48 @@ export default function Dashboard() {
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
                                         {short.desc}
                                     </p>
-                                </a>
+                                </Link>
                             ))}
                         </div>
                     </div>
 
-                    {/* System Status Panel */}
+                    {/* System / Partner Info Panel */}
                     <div className="lg:col-span-5 p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-4">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                            System Status & Database
+                            {isPartner ? 'Partner Support & Guidelines' : 'System Status & Database'}
                         </h3>
 
-                        <div className="space-y-3 text-xs">
-                            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                                <span className="text-slate-600 dark:text-slate-300 font-medium">Laravel Database Status</span>
-                                <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded">Connected</span>
+                        {isPartner ? (
+                            <div className="space-y-3 text-xs">
+                                <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-1 border border-slate-200 dark:border-slate-700">
+                                    <span className="font-bold text-slate-900 dark:text-white block">Official Partner Representative</span>
+                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        As a registered agency partner, you can query available university slots, check admissions criteria, and advise students directly.
+                                    </p>
+                                </div>
+                                <div className="p-3.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200/60 dark:border-blue-800/50 space-y-1">
+                                    <span className="font-bold text-blue-700 dark:text-blue-300 block">Need Assistance or Co-Representation?</span>
+                                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        For fast-track application processing or institutional inquiries, reach out to <a href="mailto:partners@kampus.com" className="text-blue-600 dark:text-blue-400 underline font-semibold">partners@kampus.com</a>.
+                                    </p>
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                                <span className="text-slate-600 dark:text-slate-300 font-medium">Inertia.js Frontend Adapter</span>
-                                <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded">Active</span>
+                        ) : (
+                            <div className="space-y-3 text-xs">
+                                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                                    <span className="text-slate-600 dark:text-slate-300 font-medium">Laravel Database Status</span>
+                                    <span className="font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950 px-2 py-0.5 rounded">Connected</span>
+                                </div>
+                                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                                    <span className="text-slate-600 dark:text-slate-300 font-medium">Inertia.js Frontend Adapter</span>
+                                    <span className="font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950 px-2 py-0.5 rounded">Active</span>
+                                </div>
+                                <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+                                    <span className="text-slate-600 dark:text-slate-300 font-medium">Dark / Light Mode Provider</span>
+                                    <span className="font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950 px-2 py-0.5 rounded">Synced</span>
+                                </div>
                             </div>
-                            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                                <span className="text-slate-600 dark:text-slate-300 font-medium">Dark / Light Mode Provider</span>
-                                <span className="font-bold text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-950 px-2 py-0.5 rounded">Synced</span>
-                            </div>
-                        </div>
+                        )}
                     </div>
 
                 </div>
