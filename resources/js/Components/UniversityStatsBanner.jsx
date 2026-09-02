@@ -2,8 +2,7 @@ import React from 'react';
 import {
     Building2,
     Globe,
-    CheckCircle2,
-    Sparkles
+    CheckCircle2
 } from 'lucide-react';
 
 export default function UniversityStatsBanner() {
@@ -41,11 +40,6 @@ export default function UniversityStatsBanner() {
                 
                 {/* CENTERED HEADING */}
                 <div className="text-center max-w-2xl mx-auto space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-800 text-blue-400 text-xs font-bold uppercase tracking-wider border border-slate-700">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Proven Track Record</span>
-                    </div>
-
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                         A growing global network
                     </h2>
