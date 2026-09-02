@@ -64,11 +64,6 @@ export default function ServicesGrid() {
 
                 {/* SECTION HEADER */}
                 <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200 dark:border-slate-700">
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>Comprehensive Student Services</span>
-                    </div>
-
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         How we help — <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">End-to-end support</span>, every step of the way
                     </h2>

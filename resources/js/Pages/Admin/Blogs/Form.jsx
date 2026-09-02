@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
+import QuillEditor from '../../../Components/QuillEditor';
 import AdminLayout from '../Layouts/AdminLayout';
 import {
     Save,
@@ -11,17 +12,19 @@ import {
     Tag,
     FileText,
     Image,
-    CheckSquare
+    CheckSquare,
+    Plus,
+    X
 } from 'lucide-react';
 
-export default function Form({ blog = null }) {
+export default function Form({ blog = null, existingCategories = [] }) {
     const isEdit = !!blog;
     const fileInputRef = useRef(null);
 
     const { data, setData, processing, errors } = useForm({
         title: blog?.title || '',
         slug: blog?.slug || '',
-        category: blog?.category || 'Study Abroad',
+        category: blog?.category || (existingCategories && existingCategories.length > 0 ? existingCategories[0] : 'Study Abroad'),
         excerpt: blog?.excerpt || '',
         content: blog?.content || '',
         image: null,
@@ -31,7 +34,24 @@ export default function Form({ blog = null }) {
 
     const [imagePreview, setImagePreview] = React.useState(blog?.image || '');
 
-    const categories = ['Study Abroad', 'Destinations', 'Career Outcomes', 'Academic Writing'];
+    const defaultCategories = ['Study Abroad', 'Destinations', 'Career Outcomes', 'Academic Writing', 'Scholarships', 'Visa Guide', 'Success Stories'];
+    const initialCategories = Array.from(new Set([...defaultCategories, ...(existingCategories || []), ...(blog?.category ? [blog.category] : [])]));
+
+    const [categoriesList, setCategoriesList] = React.useState(initialCategories);
+    const [showNewCategoryInput, setShowNewCategoryInput] = React.useState(false);
+    const [newCategoryName, setNewCategoryName] = React.useState('');
+
+    const handleAddNewCategory = (e) => {
+        if (e) e.preventDefault();
+        const trimmed = newCategoryName.trim();
+        if (!trimmed) return;
+        if (!categoriesList.includes(trimmed)) {
+            setCategoriesList((prev) => [...prev, trimmed]);
+        }
+        setData('category', trimmed);
+        setNewCategoryName('');
+        setShowNewCategoryInput(false);
+    };
 
     const handleTitleChange = (e) => {
         const val = e.target.value;
@@ -157,24 +177,78 @@ export default function Form({ blog = null }) {
                             {errors.slug && <span className="text-xs text-rose-500 font-semibold">{errors.slug}</span>}
                         </div>
 
-                        {/* Category */}
+                        {/* Category Select / Add */}
                         <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Category *
-                            </label>
-                            <div className="relative">
-                                <select
-                                    required
-                                    value={data.category}
-                                    onChange={(e) => setData('category', e.target.value)}
-                                    className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer"
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    Category *
+                                </label>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
+                                    className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 cursor-pointer transition-colors"
                                 >
-                                    {categories.map((cat) => (
-                                        <option key={cat} value={cat}>{cat}</option>
-                                    ))}
-                                </select>
-                                <Tag className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span>{showNewCategoryInput ? 'Choose from list' : '+ Add New Category'}</span>
+                                </button>
                             </div>
+
+                            {showNewCategoryInput ? (
+                                <div className="flex items-center gap-2">
+                                    <div className="relative flex-1">
+                                        <input
+                                            type="text"
+                                            autoFocus
+                                            value={newCategoryName}
+                                            onChange={(e) => setNewCategoryName(e.target.value)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleAddNewCategory();
+                                                }
+                                            }}
+                                            placeholder="Type new category name (e.g. Student Life, IELTS)..."
+                                            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-blue-500 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        />
+                                        <Tag className="w-4 h-4 text-blue-500 absolute left-3.5 top-3.5" />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleAddNewCategory}
+                                        className="px-4 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer shrink-0"
+                                    >
+                                        Add & Select
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowNewCategoryInput(false)}
+                                        className="px-3.5 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-xs font-bold cursor-pointer shrink-0"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="relative">
+                                    <select
+                                        required
+                                        value={data.category}
+                                        onChange={(e) => {
+                                            if (e.target.value === '__NEW__') {
+                                                setShowNewCategoryInput(true);
+                                            } else {
+                                                setData('category', e.target.value);
+                                            }
+                                        }}
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer"
+                                    >
+                                        {categoriesList.map((cat) => (
+                                            <option key={cat} value={cat}>{cat}</option>
+                                        ))}
+                                        <option value="__NEW__">+ Add Custom Category...</option>
+                                    </select>
+                                    <Tag className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
+                                </div>
+                            )}
                             {errors.category && <span className="text-xs text-rose-500 font-semibold">{errors.category}</span>}
                         </div>
 
@@ -193,20 +267,19 @@ export default function Form({ blog = null }) {
                             />
                         </div>
 
-                        {/* Full Content */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Full Article Content *
+                        {/* Full Article Content with Quill WYSIWYG */}
+                        <div className="mt-6">
+                            <label className="block mb-2 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                Full Article Content <span className="text-red-500">*</span>
                             </label>
-                            <textarea
-                                rows={12}
-                                required
-                                value={data.content}
-                                onChange={(e) => setData('content', e.target.value)}
-                                placeholder="Write your full blog post content here. You can use plain text or HTML formatting..."
-                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                            
+                            <QuillEditor
+                                value={data.content || ''}
+                                onChange={(value) => setData('content', value)}
+                                placeholder="Write your full blog post content here..."
                             />
-                            {errors.content && <span className="text-xs text-rose-500 font-semibold">{errors.content}</span>}
+                            
+                            {errors.content && <p className="mt-2 text-sm text-red-500">{errors.content}</p>}
                         </div>
                     </div>
 

@@ -6,9 +6,14 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\PublicDestinationController;
 use App\Http\Controllers\PublicUniversityController;
+use App\Http\Controllers\PublicCourseController;
+use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\PageController;
+use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\PublicServiceController;
 use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\UniversityController;
 use App\Http\Controllers\Admin\SettingController;
@@ -28,34 +33,21 @@ Route::get('/about', function () {
     return Inertia::render('About'); 
 });
 
-Route::get('/services', function () {
-    return Inertia::render('Services'); 
-});
+Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
 
-Route::get('/universities', function () {
-    return Inertia::render('Universities'); 
-});
+Route::get('/universities', [PublicUniversityController::class, 'index'])->name('universities.index');
 
 Route::get('/destinations/{slug}', [PublicDestinationController::class, 'show'])->name('destinations.show');
 Route::get('/universities/{slug}', [PublicUniversityController::class, 'show'])->name('universities.show');
 
-Route::get('/blog', function () {
-    return Inertia::render('Blog'); 
-})->name('blog.index');
-
-Route::get('/blog/{slug}', function ($slug) {
-    return Inertia::render('BlogPostDetails', [
-        'slug' => $slug
-    ]);
-})->name('blog.show');
+Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact'); 
 });
 
-Route::get('/courses', function () {
-    return Inertia::render('Courses'); 
-});
+Route::get('/courses', [PublicCourseController::class, 'index'])->name('courses.index');
 
 Route::get('/partner', function () {
     return Inertia::render('PartnerWithUs'); 
@@ -101,6 +93,9 @@ Route::post('/book-call', [FrontendController::class, 'bookCall'])->name('book-c
 // AI Course Matcher API Routes
 Route::post('/api/course-matcher', [FrontendController::class, 'matchCourses'])->name('api.course-matcher');
 Route::post('/api/course-matcher-lead', [FrontendController::class, 'saveMatcherLead'])->name('api.course-matcher-lead');
+
+// Global Index Search API (Laravel Scout)
+Route::get('/api/global-search', [SearchController::class, 'search'])->name('api.global-search');
 
 // SECURED ADMIN CMS ROUTES (Protected by 'auth' middleware)
 Route::middleware(['auth'])->prefix('admin')->group(function () {
@@ -190,6 +185,46 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         ]);
         Route::patch('/blogs/{blog}/toggle-featured', [BlogController::class, 'toggleFeatured'])->name('admin.blogs.toggle-featured');
     });
+    Route::resource('blog', BlogController::class)->names([
+        'index' => 'admin.blog.index',
+        'create' => 'admin.blog.create',
+        'store' => 'admin.blog.store',
+        'edit' => 'admin.blog.edit',
+        'update' => 'admin.blog.update',
+        'destroy' => 'admin.blog.destroy',
+    ]);
+    // Services CRUD Routes
+    Route::resource('services', ServiceController::class)->names([
+        'index' => 'admin.services.index',
+        'create' => 'admin.services.create',
+        'store' => 'admin.services.store',
+        'edit' => 'admin.services.edit',
+        'update' => 'admin.services.update',
+        'destroy' => 'admin.services.destroy',
+    ]);
+    Route::patch('/services/{service}/toggle-status', [ServiceController::class, 'toggleStatus'])->name('admin.services.toggle-status');
+
+    // FAQs CRUD Routes
+    Route::resource('faqs', FaqController::class)->names([
+        'index' => 'admin.faqs.index',
+        'create' => 'admin.faqs.create',
+        'store' => 'admin.faqs.store',
+        'edit' => 'admin.faqs.edit',
+        'update' => 'admin.faqs.update',
+        'destroy' => 'admin.faqs.destroy',
+    ]);
+    Route::patch('/faqs/{faq}/toggle-status', [FaqController::class, 'toggleStatus'])->name('admin.faqs.toggle-status');
+
+    // Global Branches CRUD Routes
+    Route::resource('branches', BranchController::class)->names([
+        'index' => 'admin.branches.index',
+        'create' => 'admin.branches.create',
+        'store' => 'admin.branches.store',
+        'edit' => 'admin.branches.edit',
+        'update' => 'admin.branches.update',
+        'destroy' => 'admin.branches.destroy',
+    ]);
+    Route::patch('/branches/{branch}/toggle-status', [BranchController::class, 'toggleStatus'])->name('admin.branches.toggle-status');
 
     // Partner Applications Routes (admin management)
     Route::middleware('can:manage-partners')->group(function () {

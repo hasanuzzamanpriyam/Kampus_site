@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import Layout from '../Layouts/Layout';
 import UniversitiesHero from '../Components/UniversitiesHero';
 import UniversitiesGrid from '../Components/UniversitiesGrid';
@@ -8,33 +8,74 @@ import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
 export default function Universities() {
-    // State management for search input and destination filter
-    const [searchQuery, setSearchQuery] = useState('');
-    const [destinationFilter, setDestinationFilter] = useState('All');
+    const { universities = {}, destinations = [], filters = {} } = usePage().props;
 
-    // Handler when user submits search or selects destination in UniversitiesHero
-    const handleSearchUpdate = ({ searchTerm, destination }) => {
-        setSearchQuery(searchTerm);
-        setDestinationFilter(destination);
+    const [search, setSearch] = useState(filters.search || '');
+    const [country, setCountry] = useState(filters.country || 'All');
+    const isFirstMount = useRef(true);
+
+    // Inertia SPA visit handler with preserveState and preserveScroll
+    const fetchResults = (searchQuery, countryCode) => {
+        const url = typeof route === 'function' ? route('universities.index') : '/universities';
+        
+        router.get(url, {
+            search: searchQuery || undefined,
+            country: countryCode === 'All' ? undefined : countryCode
+        }, {
+            preserveState: true, // Prevents losing focus on search input
+            preserveScroll: true, // Prevents scroll jumping
+            replace: true // Replaces history state so the back button works cleanly
+        });
+    };
+
+    // 300ms Search Debouncer
+    useEffect(() => {
+        if (isFirstMount.current) {
+            isFirstMount.current = false;
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            fetchResults(search, country);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    // Handle country dropdown and quick filter badges click
+    const handleCountryChange = (newCountry) => {
+        setCountry(newCountry);
+        fetchResults(search, newCountry);
+    };
+
+    // Handle reset filters
+    const handleResetFilters = () => {
+        setSearch('');
+        setCountry('All');
+        fetchResults('', 'All');
     };
 
     return (
         <Layout>
             <Head title="Partner Universities — Kampus EduConsult" />
 
-            {/* MAIN UNIVERSITIES PAGE CONTAINER WITH TAILWIND SECTION SPACING */}
+            {/* MAIN UNIVERSITIES PAGE CONTAINER */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
-                {/* 1. UNIVERSITIES HERO WITH CONTROLLED SEARCH & DESTINATION DROPDOWN */}
+                {/* 1. UNIVERSITIES HERO WITH CONTROLLED SEARCH & DYNAMIC COUNTRY DROPDOWN */}
                 <UniversitiesHero
-                    initialSearch={searchQuery}
-                    initialDestination={destinationFilter}
-                    onSearch={handleSearchUpdate}
+                    destinations={destinations}
+                    searchTerm={search}
+                    destination={country}
+                    onSearchChange={setSearch}
+                    onDestinationChange={handleCountryChange}
                 />
 
-                {/* 2. FILTERED UNIVERSITIES RESPONSIVE GRID */}
+                {/* 2. DYNAMIC PAGINATED UNIVERSITIES GRID (INERTIA SPA) */}
                 <UniversitiesGrid
-                    searchQuery={searchQuery}
-                    selectedDestination={destinationFilter}
+                    universities={universities}
+                    searchQuery={search}
+                    selectedDestination={country}
+                    onResetFilters={handleResetFilters}
                 />
 
                 {/* 3. DARK SLATE GLOBAL NETWORK STATS BANNER */}

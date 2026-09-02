@@ -36,13 +36,6 @@ export default function ServicesCta({ onOpenBookCall }) {
                     </svg>
 
                     <div className="relative z-10 max-w-3xl space-y-6">
-                        
-                        {/* Top Badge */}
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900/60 text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-700/50 backdrop-blur-md">
-                            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-                            <span>Start Your Global Future</span>
-                        </div>
-
                         {/* Heading */}
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
                             Ready to start your journey?

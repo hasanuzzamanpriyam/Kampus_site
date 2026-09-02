@@ -55,11 +55,6 @@ export default function SuccessStories({ stories = [] }) {
                 {/* SECTION HEADER */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                     <div className="space-y-3 max-w-2xl text-left">
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider border border-blue-200/80 dark:border-blue-800">
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>INSPIRING JOURNEYS</span>
-                        </div>
-
                         <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                             Student Success Stories
                         </h2>

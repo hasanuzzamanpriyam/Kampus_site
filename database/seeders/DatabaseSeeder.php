@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
             CourseMatcherSeeder::class,
             FaqSeeder::class,
             SettingSeeder::class,
+            CountryUniversityCourseSeeder::class,
+            BlogSeeder::class,
         ]);
     }
 }

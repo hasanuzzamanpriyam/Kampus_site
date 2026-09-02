@@ -24,7 +24,8 @@ import {
     Globe2,
     Users,
     ShieldCheck,
-    HelpCircle
+    HelpCircle,
+    Layers
 } from 'lucide-react';
 
 export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
@@ -43,6 +44,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings, permission: 'manage-settings' },
         { name: 'Pages & SEO', href: '/admin/pages', icon: FileText, permission: 'manage-pages' },
+        { name: 'Services', href: '/admin/services', icon: Layers },
         { name: 'FAQs', href: '/admin/faqs', icon: HelpCircle, permission: 'manage-pages' },
         { name: 'Global Branches', href: '/admin/branches', icon: Globe2, permission: 'manage-pages' },
         { name: 'Countries', href: '/admin/countries', icon: Globe, permission: 'manage-countries' },
@@ -74,12 +76,11 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
     return (
         <div className="min-h-screen flex bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors">
-            
+
             {/* 1. FIXED LEFT SIDEBAR (DARK THEME) */}
             <aside
-                className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800 transition-transform duration-300 transform ${
-                    isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-                }`}
+                className={`fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-white flex flex-col justify-between border-r border-slate-800 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                    }`}
             >
                 <div>
                     {/* Brand Header */}
@@ -118,11 +119,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 <Link
                                     key={link.name}
                                     href={link.href}
-                                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                                        isActive
-                                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                                            : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                                    }`}
+                                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isActive
+                                        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                        }`}
                                 >
                                     <div className="flex items-center gap-3">
                                         <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -146,11 +146,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                         <Link
                                             key={link.name}
                                             href={link.href}
-                                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                                                isActive
-                                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                                                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                                            }`}
+                                            className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${isActive
+                                                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                                                : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <IconComp className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -192,10 +191,10 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
             {/* 2. RIGHT WRAPPER (TOP HEADER + MAIN CONTENT) */}
             <div className="flex-1 lg:pl-64 flex flex-col min-w-0">
-                
+
                 {/* TOP HEADER */}
                 <header className="sticky top-0 z-30 h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 sm:px-6 lg:px-8 flex items-center justify-between shadow-xs transition-colors">
-                    
+
                     {/* Left: Mobile Hamburger & Page Title */}
                     <div className="flex items-center gap-3">
                         <button
@@ -211,7 +210,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
                     {/* Right: Theme Toggle, Admin User Profile & Logout */}
                     <div className="flex items-center gap-3 sm:gap-4">
-                        
+
                         {/* Notification Bell */}
                         <button className="p-2 rounded-full text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 relative">
                             <Bell className="w-5 h-5" />
