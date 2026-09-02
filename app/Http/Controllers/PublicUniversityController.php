@@ -34,7 +34,7 @@ class PublicUniversityController extends Controller
                 });
             })
             ->latest()
-            ->paginate(6)
+            ->paginate(12)
             ->withQueryString(); // Crucial for keeping filters during pagination
 
         // Fetch dynamic destination countries from the database
