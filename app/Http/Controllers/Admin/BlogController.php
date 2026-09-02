@@ -27,8 +27,16 @@ class BlogController extends Controller
      */
     public function create()
     {
+        $categories = Blog::distinct()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->pluck('category')
+            ->values()
+            ->all();
+
         return Inertia::render('Admin/Blogs/Form', [
             'blog' => null,
+            'existingCategories' => $categories,
         ]);
     }
 
@@ -70,9 +78,16 @@ class BlogController extends Controller
     public function edit($id)
     {
         $blog = Blog::findOrFail($id);
+        $categories = Blog::distinct()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->pluck('category')
+            ->values()
+            ->all();
 
         return Inertia::render('Admin/Blogs/Form', [
             'blog' => $blog,
+            'existingCategories' => $categories,
         ]);
     }
 
