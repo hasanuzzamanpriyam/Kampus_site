@@ -1,15 +1,60 @@
 import React, { useState } from 'react';
+import { usePage, router } from '@inertiajs/react';
 import {
     PhoneCall,
     ClipboardCheck,
     Sparkles,
     ArrowRight,
     GraduationCap,
-    X
+    X,
+    Send
 } from 'lucide-react';
 
 export default function ServicesCta({ onOpenBookCall }) {
+    const { props } = usePage();
+    const countries = (props?.globalCountries && props.globalCountries.length > 0)
+        ? props.globalCountries
+        : [
+            { id: 1, name: 'United Kingdom', country_code: 'GB' },
+            { id: 2, name: 'United States', country_code: 'US' },
+            { id: 3, name: 'Canada', country_code: 'CA' },
+            { id: 4, name: 'Australia', country_code: 'AU' },
+        ];
+
     const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
+    const [fullName, setFullName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [targetCountry, setTargetCountry] = useState(countries[0]?.name || 'United Kingdom');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const selectedCountry = targetCountry || countries[0]?.name || 'United Kingdom';
+        setIsSubmitting(true);
+
+        router.post('/contact/submit', {
+            name: fullName,
+            email: 'assessment@kampusedu.com',
+            phone: phone,
+            country: selectedCountry,
+            topic: `Free Assessment for ${selectedCountry}`,
+            message: `Free Assessment request submitted.\nTarget Country: ${selectedCountry}\nCandidate: ${fullName}\nPhone/WhatsApp: ${phone}`,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                alert(`Thank you, ${fullName}! Your assessment request for ${selectedCountry} has been received. Our counselor will contact you via WhatsApp shortly.`);
+                setFullName('');
+                setPhone('');
+                setAssessmentModalOpen(false);
+            },
+            onError: () => {
+                alert('Something went wrong. Please check your details and try again.');
+            },
+            onFinish: () => {
+                setIsSubmitting(false);
+            }
+        });
+    };
 
     return (
         <section className="py-16 lg:py-20 bg-slate-50 dark:bg-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
@@ -61,7 +106,7 @@ export default function ServicesCta({ onOpenBookCall }) {
                             {/* Secondary Button (Outline button, White border, White text) */}
                             <button
                                 onClick={() => setAssessmentModalOpen(true)}
-                                className="px-8 py-4 rounded-full bg-transparent hover:bg-white/10 border-2 border-white/80 hover:border-white text-white font-bold text-base shadow-xs transition-all flex items-center justify-center gap-2"
+                                className="px-8 py-4 rounded-full bg-transparent hover:bg-white/10 border-2 border-white/80 hover:border-white text-white font-bold text-base shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer"
                             >
                                 <ClipboardCheck className="w-5 h-5 text-blue-300" />
                                 <span>Take Free Assessment</span>
@@ -75,11 +120,17 @@ export default function ServicesCta({ onOpenBookCall }) {
 
             {/* FREE ASSESSMENT MODAL */}
             {assessmentModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200"
+                    onClick={(e) => {
+                        if (e.target === e.currentTarget) setAssessmentModalOpen(false);
+                    }}
+                >
                     <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
                         <button
                             onClick={() => setAssessmentModalOpen(false)}
-                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg"
+                            className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-lg cursor-pointer"
+                            aria-label="Close modal"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -90,16 +141,20 @@ export default function ServicesCta({ onOpenBookCall }) {
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Take Free Assessment</h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400">Evaluate your profile for UK, USA, Canada & Australia</p>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Evaluate your profile for {countries.slice(0, 4).map(c => c.name).join(', ')}{countries.length > 4 ? ' & more' : ''}
+                                </p>
                             </div>
                         </div>
 
-                        <form onSubmit={(e) => { e.preventDefault(); alert('Assessment submitted successfully! An advisor will reach out shortly.'); setAssessmentModalOpen(false); }} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     required
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
                                     placeholder="Your Name"
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 />
@@ -110,6 +165,8 @@ export default function ServicesCta({ onOpenBookCall }) {
                                 <input
                                     type="tel"
                                     required
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
                                     placeholder="+880 1700 000 000"
                                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                 />
@@ -117,19 +174,25 @@ export default function ServicesCta({ onOpenBookCall }) {
 
                             <div>
                                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Target Country</label>
-                                <select className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                                    <option value="UK">United Kingdom</option>
-                                    <option value="USA">United States</option>
-                                    <option value="Canada">Canada</option>
-                                    <option value="Australia">Australia</option>
+                                <select 
+                                    value={targetCountry}
+                                    onChange={(e) => setTargetCountry(e.target.value)}
+                                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                >
+                                    {countries.map((country) => (
+                                        <option key={country.id || country.name} value={country.name}>
+                                            {country.name}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-sm shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-transform"
+                                disabled={isSubmitting}
+                                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-sm shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-transform cursor-pointer disabled:opacity-50"
                             >
-                                Submit Free Assessment
+                                {isSubmitting ? 'Submitting Assessment...' : 'Submit Free Assessment'}
                             </button>
                         </form>
                     </div>

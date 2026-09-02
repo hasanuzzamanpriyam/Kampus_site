@@ -56,6 +56,9 @@ class HandleInertiaRequests extends Middleware
             'globalBranches' => fn () => Branch::where('is_active', true)
                 ->orderBy('sort_order', 'asc')
                 ->get(),
+            'globalCountries' => fn () => \App\Models\Country::orderBy('name', 'asc')
+                ->select('id', 'name', 'slug', 'country_code', 'is_featured')
+                ->get(),
             'globalSettings' => fn () => Setting::pluck('value', 'key')->toArray(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { usePage } from '@inertiajs/react';
 import {
     X,
     Calendar,
@@ -18,6 +19,22 @@ import {
 export default function BookCallModal({ isOpen, onClose }) {
     if (!isOpen) return null;
 
+    const { props } = usePage();
+    const globalCountries = props?.globalCountries || [];
+
+    const destinationOptions = globalCountries.length > 0
+        ? globalCountries.map(c => ({ id: c.name, code: c.country_code || 'GL', name: c.name }))
+        : [
+            { id: 'United Kingdom', code: 'GB', name: 'United Kingdom' },
+            { id: 'United States', code: 'US', name: 'United States' },
+            { id: 'Finland', code: 'FI', name: 'Finland' },
+            { id: 'United Arab Emirates', code: 'AE', name: 'Dubai / UAE' }
+        ];
+
+    const residenceCountries = globalCountries.length > 0
+        ? globalCountries.map(c => c.name)
+        : ['Bangladesh', 'United Kingdom', 'United States', 'India', 'Pakistan', 'Nigeria', 'United Arab Emirates'];
+
     const [step, setStep] = useState(1);
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
@@ -26,14 +43,14 @@ export default function BookCallModal({ isOpen, onClose }) {
     const todayStr = new Date().toISOString().split('T')[0];
 
     const [formData, setFormData] = useState({
-        destination: 'UK',
+        destination: destinationOptions[0]?.id || 'United Kingdom',
         level_of_study: 'Postgraduate (Masters Degree / MSc / MBA)',
         date: todayStr,
         time: 'Morning (09:00 AM - 12:00 PM)',
         name: '',
         email: '',
         phone: '',
-        country: 'Bangladesh',
+        country: residenceCountries[0] || 'Bangladesh',
     });
 
     const handleFieldChange = (field, value) => {
@@ -160,12 +177,7 @@ export default function BookCallModal({ isOpen, onClose }) {
                                     PREFERRED STUDY DESTINATION
                                 </label>
                                 <div className="grid grid-cols-2 gap-3">
-                                    {[
-                                        { id: 'UK', code: 'GB', name: 'United Kingdom' },
-                                        { id: 'USA', code: 'US', name: 'United States' },
-                                        { id: 'Finland', code: 'FI', name: 'Finland' },
-                                        { id: 'UAE', code: 'AE', name: 'Dubai / UAE' }
-                                    ].map((item) => {
+                                    {destinationOptions.slice(0, 6).map((item) => {
                                         const isSelected = formData.destination === item.id;
                                         return (
                                             <button
@@ -358,13 +370,11 @@ export default function BookCallModal({ isOpen, onClose }) {
                                         onChange={(e) => handleFieldChange('country', e.target.value)}
                                         className="w-full pl-11 pr-8 py-2.5 sm:py-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs sm:text-sm font-semibold focus:ring-2 focus:ring-blue-500 focus:outline-none"
                                     >
-                                        <option value="Bangladesh">Bangladesh</option>
-                                        <option value="United Kingdom">United Kingdom</option>
-                                        <option value="United States">United States</option>
-                                        <option value="India">India</option>
-                                        <option value="Pakistan">Pakistan</option>
-                                        <option value="Nigeria">Nigeria</option>
-                                        <option value="United Arab Emirates">United Arab Emirates</option>
+                                        {residenceCountries.map((cName) => (
+                                            <option key={cName} value={cName}>
+                                                {cName}
+                                            </option>
+                                        ))}
                                         <option value="Other">Other Country</option>
                                     </select>
                                     <Globe className="w-5 h-5 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
