@@ -7,6 +7,7 @@ use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\PublicDestinationController;
 use App\Http\Controllers\PublicUniversityController;
 use App\Http\Controllers\PublicCourseController;
+use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ProfileController;
@@ -39,15 +40,8 @@ Route::get('/universities', [PublicUniversityController::class, 'index'])->name(
 Route::get('/destinations/{slug}', [PublicDestinationController::class, 'show'])->name('destinations.show');
 Route::get('/universities/{slug}', [PublicUniversityController::class, 'show'])->name('universities.show');
 
-Route::get('/blog', function () {
-    return Inertia::render('Blog'); 
-})->name('blog.index');
-
-Route::get('/blog/{slug}', function ($slug) {
-    return Inertia::render('BlogPostDetails', [
-        'slug' => $slug
-    ]);
-})->name('blog.show');
+Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 Route::get('/contact', function () {
     return Inertia::render('Contact'); 

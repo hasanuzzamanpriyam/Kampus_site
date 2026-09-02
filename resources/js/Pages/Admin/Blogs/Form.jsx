@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { Head, useForm, router, Link } from '@inertiajs/react';
+import QuillEditor from '../../../Components/QuillEditor';
 import AdminLayout from '../Layouts/AdminLayout';
 import {
     Save,
@@ -193,20 +194,19 @@ export default function Form({ blog = null }) {
                             />
                         </div>
 
-                        {/* Full Content */}
-                        <div>
-                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                Full Article Content *
+                        {/* Full Article Content with Quill WYSIWYG */}
+                        <div className="mt-6">
+                            <label className="block mb-2 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                Full Article Content <span className="text-red-500">*</span>
                             </label>
-                            <textarea
-                                rows={12}
-                                required
-                                value={data.content}
-                                onChange={(e) => setData('content', e.target.value)}
-                                placeholder="Write your full blog post content here. You can use plain text or HTML formatting..."
-                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-mono"
+                            
+                            <QuillEditor
+                                value={data.content || ''}
+                                onChange={(value) => setData('content', value)}
+                                placeholder="Write your full blog post content here..."
                             />
-                            {errors.content && <span className="text-xs text-rose-500 font-semibold">{errors.content}</span>}
+                            
+                            {errors.content && <p className="mt-2 text-sm text-red-500">{errors.content}</p>}
                         </div>
                     </div>
 
