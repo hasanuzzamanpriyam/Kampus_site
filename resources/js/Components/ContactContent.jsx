@@ -67,9 +67,6 @@ export default function ContactContent() {
                     {/* LEFT COLUMN: CONTACT FORM (7 COLS ON DESKTOP) */}
                     <div className="lg:col-span-7 space-y-6">
                         <div>
-                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest bg-blue-50 dark:bg-blue-950 px-3 py-1 rounded-full">
-                                Direct Inquiry
-                            </span>
                             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">
                                 Send us a message
                             </h2>

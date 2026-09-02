@@ -45,12 +45,6 @@ export default function AboutCommitment() {
                     
                     {/* LEFT COLUMN: TEXT & HEADINGS */}
                     <div className="lg:col-span-6 space-y-6">
-                        {/* Top Label */}
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-900/60 text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-700/50 backdrop-blur-md">
-                            <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
-                            <span>Ethics & Compliance</span>
-                        </div>
-
                         {/* Heading */}
                         <div className="space-y-2">
                             <h3 className="text-xs font-bold text-blue-400 uppercase tracking-widest">
