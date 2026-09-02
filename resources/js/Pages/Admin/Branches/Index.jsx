@@ -144,11 +144,34 @@ export default function Index({ branches = [] }) {
                                                 </div>
                                             </td>
 
-                                            {/* Cities */}
+                                            {/* Cities & Address */}
                                             <td className="py-4 px-6 text-slate-700 dark:text-slate-300">
-                                                <div className="flex items-center gap-1.5 font-medium">
-                                                    <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                                                    <span>{branch.cities}</span>
+                                                <div className="space-y-1">
+                                                    <div className="flex items-center gap-1.5 font-bold text-slate-900 dark:text-white text-xs">
+                                                        <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                                                        <span>{branch.cities}</span>
+                                                    </div>
+                                                    {branch.address && (
+                                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 max-w-xs">
+                                                            {branch.address}
+                                                        </p>
+                                                    )}
+                                                    <div className="flex items-center gap-2 pt-0.5">
+                                                        {branch.map_iframe ? (
+                                                            <span className="inline-flex items-center gap-1 text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
+                                                                ✓ Map Configured
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[10px] text-slate-400">
+                                                                Auto Location Map
+                                                            </span>
+                                                        )}
+                                                        {branch.phone && (
+                                                            <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                                                                📞 {branch.phone}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </td>
 

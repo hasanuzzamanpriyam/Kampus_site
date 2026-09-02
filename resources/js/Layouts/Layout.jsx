@@ -4,6 +4,7 @@ import { useTheme } from '../Contexts/ThemeProvider';
 import TopBar from '../Components/TopBar';
 import BookCallModal from '../Components/BookCallModal';
 import AiCourseMatcher from '../Components/AiCourseMatcher';
+import BranchDetailsModal from '../Components/BranchDetailsModal';
 import {
     GraduationCap,
     Globe,
@@ -41,6 +42,7 @@ export default function Layout({ children }) {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isAiSearchOpen, setIsAiSearchOpen] = useState(false);
     const [isBookCallOpen, setIsBookCallOpen] = useState(false);
+    const [selectedBranch, setSelectedBranch] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
     const [scrolled, setScrolled] = useState(false);
 
@@ -58,12 +60,18 @@ export default function Layout({ children }) {
         window.addEventListener('open-book-call-modal', handleOpenModal);
 
         const handleOpenAiMatcher = () => setIsAiSearchOpen(true);
-        window.addEventListener('open-ai-course-matcher', handleOpenAiMatcher);
+        window.addEventListener('open-ai-matcher-modal', handleOpenAiMatcher);
+
+        const handleOpenBranchModal = (e) => {
+            if (e.detail) setSelectedBranch(e.detail);
+        };
+        window.addEventListener('open-branch-modal', handleOpenBranchModal);
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('open-book-call-modal', handleOpenModal);
-            window.removeEventListener('open-ai-course-matcher', handleOpenAiMatcher);
+            window.removeEventListener('open-ai-matcher-modal', handleOpenAiMatcher);
+            window.removeEventListener('open-branch-modal', handleOpenBranchModal);
         };
     }, []);
 
@@ -323,13 +331,15 @@ export default function Layout({ children }) {
                                     {globalBranches.map((branch) => (
                                         <div 
                                             key={branch.id} 
-                                            className="flex items-center justify-between p-3 border border-slate-700/50 rounded-xl bg-slate-800/30 hover:bg-slate-800/60 transition-colors shrink-0"
+                                            onClick={() => setSelectedBranch(branch)}
+                                            className="flex items-center justify-between p-3 border border-slate-700/50 rounded-xl bg-slate-800/30 hover:bg-slate-800/80 hover:border-slate-600 transition-all cursor-pointer shrink-0 group"
+                                            title={`Click to view ${branch.country_name} branch location and map`}
                                         >
                                             <div className="flex items-center space-x-3 min-w-0">
-                                                <span className="font-bold text-slate-100 shrink-0">{branch.country_code}</span>
-                                                <span className="text-slate-300 text-sm truncate">{branch.country_name}</span>
+                                                <span className="font-bold text-slate-100 group-hover:text-blue-400 transition-colors shrink-0">{branch.country_code}</span>
+                                                <span className="text-slate-300 text-sm truncate group-hover:text-white transition-colors">{branch.country_name}</span>
                                             </div>
-                                            <span className="text-xs px-2 py-1 rounded-full border border-teal-500/30 text-teal-400 bg-teal-500/10 shrink-0 ml-2">
+                                            <span className="text-xs px-2 py-1 rounded-full border border-teal-500/30 text-teal-400 bg-teal-500/10 shrink-0 ml-2 group-hover:bg-teal-500/20 transition-colors">
                                                 {branch.status_text}
                                             </span>
                                         </div>
@@ -386,6 +396,9 @@ export default function Layout({ children }) {
 
             {/* Multi-Step Book a Call Modal */}
             <BookCallModal isOpen={isBookCallOpen} onClose={() => setIsBookCallOpen(false)} />
+
+            {/* Global Branch Location & Map Modal */}
+            <BranchDetailsModal branch={selectedBranch} onClose={() => setSelectedBranch(null)} />
         </div>
     );
 }

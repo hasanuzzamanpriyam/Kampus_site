@@ -3,14 +3,9 @@ import { usePage } from '@inertiajs/react';
 import {
     Globe,
     MapPin,
-    Phone,
-    Mail,
-    Building2,
-    X,
-    Sparkles,
-    ArrowRight,
-    Clock
+    ArrowRight
 } from 'lucide-react';
+import BranchDetailsModal from './BranchDetailsModal';
 
 export default function ContactBranches() {
     const { props } = usePage();
@@ -38,11 +33,6 @@ export default function ContactBranches() {
                 
                 {/* CENTERED HEADING */}
                 <div className="text-center max-w-2xl mx-auto space-y-3">
-                    <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider border border-blue-200 dark:border-blue-800">
-                        <Globe className="w-3.5 h-3.5" />
-                        <span>GLOBAL ADVISORY NETWORK</span>
-                    </div>
-
                     <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                         Our Global Branches
                     </h2>
@@ -87,57 +77,11 @@ export default function ContactBranches() {
 
             </div>
 
-            {/* BRANCH DETAILS MODAL */}
-            {selectedBranch && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-7 shadow-2xl border border-slate-200 dark:border-slate-800 relative">
-                        <button
-                            type="button"
-                            onClick={() => setSelectedBranch(null)}
-                            className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl bg-slate-100 dark:bg-slate-800 cursor-pointer"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-
-                        <div className="flex items-center gap-3.5 mb-6">
-                            <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                                {selectedBranch.country_code}
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Regional Office</span>
-                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">{selectedBranch.country_name}</h3>
-                                <p className="text-xs text-slate-500">{selectedBranch.cities}</p>
-                            </div>
-                        </div>
-
-                        <div className="space-y-4 text-xs font-medium text-slate-600 dark:text-slate-300 pb-4 border-b border-slate-100 dark:border-slate-800">
-                            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-2.5">
-                                <div className="flex items-center gap-2">
-                                    <MapPin className="w-4 h-4 text-blue-500 shrink-0" />
-                                    <span>{selectedBranch.cities} Regional Center</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4 text-teal-500 shrink-0" />
-                                    <span className="text-teal-600 dark:text-teal-400 font-bold">{selectedBranch.status_text || 'Open Now'}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-4">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setSelectedBranch(null);
-                                    window.dispatchEvent(new CustomEvent('open-book-call-modal'));
-                                }}
-                                className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md cursor-pointer"
-                            >
-                                Book Consultation for {selectedBranch.country_name}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* BRANCH DETAILS MODAL WITH MAP LOCATION */}
+            <BranchDetailsModal
+                branch={selectedBranch}
+                onClose={() => setSelectedBranch(null)}
+            />
         </section>
     );
 }

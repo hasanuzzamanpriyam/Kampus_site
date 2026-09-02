@@ -9,8 +9,18 @@ import {
     MapPin,
     Building2,
     Tag,
-    Clock
+    Clock,
+    Phone,
+    Mail,
+    Map,
+    Calendar
 } from 'lucide-react';
+
+const extractMapUrl = (input) => {
+    if (!input) return '';
+    const match = input.match(/src=["']([^"']+)["']/);
+    return match ? match[1] : input;
+};
 
 export default function Form({ branch = null }) {
     const isEdit = Boolean(branch);
@@ -19,6 +29,11 @@ export default function Form({ branch = null }) {
         country_code: branch?.country_code || '',
         country_name: branch?.country_name || '',
         cities: branch?.cities || '',
+        address: branch?.address || '',
+        phone: branch?.phone || '',
+        email: branch?.email || '',
+        map_iframe: branch?.map_iframe || '',
+        booking_url: branch?.booking_url || '',
         status_text: branch?.status_text || 'Open Now',
         sort_order: branch?.sort_order ?? 0,
         is_active: branch ? Boolean(branch.is_active) : true,
@@ -32,6 +47,8 @@ export default function Form({ branch = null }) {
             post('/admin/branches');
         }
     };
+
+    const mapPreviewSrc = extractMapUrl(data.map_iframe);
 
     return (
         <AdminLayout title={isEdit ? `Edit Branch: ${branch.country_name}` : 'Create Global Branch'}>
@@ -196,44 +213,217 @@ export default function Form({ branch = null }) {
 
                     </div>
 
-                    {/* LIVE CARD PREVIEW */}
+                    {/* SECTION 2: PHYSICAL ADDRESS & CONTACT INFO */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                                <Building2 className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Branch Contact Details
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Displayed in the branch popup modal when students click on this branch
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Detailed Street Address */}
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                Physical Address / Regional Center
+                            </label>
+                            <textarea
+                                rows={2}
+                                value={data.address}
+                                onChange={(e) => setData('address', e.target.value)}
+                                placeholder="e.g. 1st Floor, Botanical Works, 2 Jubilee Street, London E1 3FU"
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                            <p className="text-[11px] text-slate-400 mt-1">
+                                If empty, the popup will default to showing "{data.cities || 'Regional'} Regional Center".
+                            </p>
+                            {errors.address && <p className="text-xs font-semibold text-rose-500 mt-1">{errors.address}</p>}
+                        </div>
+
+                        {/* Phone & Email Grid */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                    Phone / WhatsApp Number
+                                </label>
+                                <div className="relative">
+                                    <Phone className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                                    <input
+                                        type="text"
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        placeholder="+44 20 7423 9333"
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                                {errors.phone && <p className="text-xs font-semibold text-rose-500 mt-1">{errors.phone}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                    Contact Email
+                                </label>
+                                <div className="relative">
+                                    <Mail className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        placeholder="admissions@kampus-group.com"
+                                        className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                                {errors.email && <p className="text-xs font-semibold text-rose-500 mt-1">{errors.email}</p>}
+                            </div>
+                        </div>
+
+                        {/* Booking URL */}
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                Custom Consultation / Appointment URL (Optional)
+                            </label>
+                            <div className="relative">
+                                <Calendar className="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    value={data.booking_url}
+                                    onChange={(e) => setData('booking_url', e.target.value)}
+                                    placeholder="https://calendly.com/... (leave empty to use standard consultation popup)"
+                                    className="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+                            {errors.booking_url && <p className="text-xs font-semibold text-rose-500 mt-1">{errors.booking_url}</p>}
+                        </div>
+
+                    </div>
+
+                    {/* SECTION 3: MAP LOCATION EMBED */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
+                                <Map className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Google Map Location
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Embed an interactive map that appears directly inside the branch details popup
+                                </p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+                                Google Maps Embed (URL or &lt;iframe&gt; Code)
+                            </label>
+                            <textarea
+                                rows={3}
+                                value={data.map_iframe}
+                                onChange={(e) => setData('map_iframe', e.target.value)}
+                                placeholder="Paste Google Maps embed URL (https://www.google.com/maps/embed?...) or complete <iframe> HTML code from Google Maps"
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                            <p className="text-[11px] text-slate-400 mt-1">
+                                Tip: On Google Maps, search for the branch location, click "Share" → "Embed a map" → copy and paste it here.
+                            </p>
+                            {errors.map_iframe && <p className="text-xs font-semibold text-rose-500 mt-1">{errors.map_iframe}</p>}
+                        </div>
+
+                        {/* Live Map Preview inside the card */}
+                        {mapPreviewSrc ? (
+                            <div className="space-y-2">
+                                <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                    Interactive Map Preview:
+                                </div>
+                                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-44 bg-slate-900">
+                                    <iframe
+                                        title="Branch Map Preview"
+                                        src={mapPreviewSrc}
+                                        className="w-full h-full border-0"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-300 dark:border-slate-700 text-center text-xs text-slate-400">
+                                Paste a Google Maps embed URL or &lt;iframe&gt; to preview the interactive map location here.
+                            </div>
+                        )}
+
+                    </div>
+
+                    {/* LIVE POPUP MODAL PREVIEW */}
                     <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 text-white space-y-4 shadow-md">
                         <div className="flex items-center justify-between">
                             <span className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-                                Live Component Preview
+                                Live Student Popup Modal Preview
                             </span>
-                            <span className="text-[10px] bg-blue-600/30 text-blue-300 px-2 py-0.5 rounded-full font-bold">
-                                Preview
+                            <span className="text-[10px] bg-blue-600/30 text-blue-300 px-2.5 py-0.5 rounded-full font-bold">
+                                Exactly as shown to users
                             </span>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* 1. Footer Marquee Card Preview */}
-                            <div className="flex items-center justify-between p-3 border border-slate-700/50 rounded-xl bg-slate-800/30">
-                                <div className="flex items-center space-x-3">
-                                    <span className="font-bold text-slate-100">{data.country_code || 'GB'}</span>
-                                    <span className="text-slate-300 text-sm">{data.country_name || 'United Kingdom'}</span>
+                        <div className="max-w-md mx-auto bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl p-6 shadow-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                            <div className="flex items-center gap-3.5">
+                                <div className="w-14 h-14 rounded-2xl bg-blue-600 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-600/30 shrink-0">
+                                    {data.country_code || 'BD'}
                                 </div>
-                                <span className="text-xs px-2 py-1 rounded-full border border-teal-500/30 text-teal-400 bg-teal-500/10">
-                                    {data.status_text || 'Open Now'}
-                                </span>
+                                <div className="min-w-0">
+                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Regional Office</span>
+                                    <h3 className="text-xl font-extrabold truncate">{data.country_name || 'Bangladesh'}</h3>
+                                    <p className="text-xs text-slate-500 truncate">{data.cities || 'Dhaka & Sylhet'}</p>
+                                </div>
                             </div>
 
-                            {/* 2. Grid Card Preview */}
-                            <div className="bg-slate-800 rounded-2xl p-4 flex items-center justify-between border border-slate-700/60">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-700/80 flex items-center justify-center font-black text-sm text-white">
-                                        {data.country_code || 'GB'}
+                            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 space-y-2 text-xs font-medium text-slate-600 dark:text-slate-300">
+                                <div className="flex items-start gap-2">
+                                    <MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                    <span className="leading-snug">{data.address || `${data.cities || 'Dhaka & Sylhet'} Regional Center`}</span>
+                                </div>
+                                {data.phone && (
+                                    <div className="flex items-center gap-2">
+                                        <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
+                                        <span>{data.phone}</span>
                                     </div>
-                                    <div>
-                                        <div className="font-bold text-white text-sm">{data.country_name || 'United Kingdom'}</div>
-                                        <div className="text-xs text-slate-400 flex items-center gap-1">
-                                            <MapPin className="w-3 h-3 text-blue-400" />
-                                            <span>{data.cities || 'London (HQ)'}</span>
-                                        </div>
+                                )}
+                                {data.email && (
+                                    <div className="flex items-center gap-2">
+                                        <Mail className="w-4 h-4 text-indigo-500 shrink-0" />
+                                        <span>{data.email}</span>
                                     </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-teal-500 shrink-0" />
+                                    <span className="text-teal-600 dark:text-teal-400 font-bold">{data.status_text || 'Open Now'}</span>
                                 </div>
                             </div>
+
+                            {/* Map Preview in Modal */}
+                            {mapPreviewSrc && (
+                                <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 h-36 bg-slate-900">
+                                    <iframe
+                                        title="Modal Map Preview"
+                                        src={mapPreviewSrc}
+                                        className="w-full h-full border-0"
+                                        loading="lazy"
+                                    />
+                                </div>
+                            )}
+
+                            <button
+                                type="button"
+                                className="w-full py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-md cursor-default pointer-events-none"
+                            >
+                                Book Consultation for {data.country_name || 'Bangladesh'}
+                            </button>
                         </div>
                     </div>
 

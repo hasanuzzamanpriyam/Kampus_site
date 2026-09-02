@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, usePage } from '@inertiajs/react';
 import {
     MapPin,
     Mail,
@@ -11,7 +11,24 @@ import {
     Building2
 } from 'lucide-react';
 
+const extractMapUrl = (input) => {
+    if (!input) return 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.915783307521!2d-0.05716182337775242!3d51.51478190950346!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4876033580555555%3A0x123456789abcdef!2sJubilee%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk';
+    const match = input.match(/src=["']([^"']+)["']/);
+    return match ? match[1] : input;
+};
+
 export default function ContactContent() {
+    const { props } = usePage();
+    const globalSettings = props?.globalSettings || {};
+
+    const contactTitle = globalSettings.contact_info_title || 'Contact Information';
+    const contactSubtitle = globalSettings.contact_info_subtitle || 'London Global HQ & Regional Advisory Center';
+    const contactAddress = globalSettings.contact_info_address || '1st Floor, Botanical Works, 2 Jubilee Street, London E1 3FU';
+    const contactEmail = globalSettings.contact_info_email || globalSettings.contact_email || 'info@kampus-group.com';
+    const contactPhone = globalSettings.contact_info_phone || '020 7423 9333';
+    const contactHours = globalSettings.contact_info_hours || globalSettings.operating_hours || 'Monday - Friday: 9:00 AM - 6:00 PM GMT';
+    const mapSrc = extractMapUrl(globalSettings.contact_map_iframe);
+
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -58,45 +75,42 @@ export default function ContactContent() {
     };
 
     return (
-        <section className="py-16 lg:py-24 bg-white dark:bg-slate-900 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
+        <section className="py-16 sm:py-20 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 
-                {/* TWO-COLUMN GRID (LEFT: CONTACT FORM, RIGHT: CONTACT INFO & GOOGLE MAPS) */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
                     
-                    {/* LEFT COLUMN: CONTACT FORM (7 COLS ON DESKTOP) */}
-                    <div className="lg:col-span-7 space-y-6">
+                    {/* LEFT COLUMN: THE INQUIRY FORM (7 COLS ON DESKTOP) */}
+                    <div className="lg:col-span-7 bg-slate-50 dark:bg-slate-800/60 p-7 sm:p-10 rounded-3xl border border-slate-200/80 dark:border-slate-700/60 shadow-xs space-y-8">
                         <div>
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-2 tracking-tight">
+                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                                 Send us a message
                             </h2>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
-                                Fill out the form below and our advisors will respond within 24 hours.
+                            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5">
+                                Have questions about application deadlines, university rankings, or visa criteria? Drop your inquiry below.
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-6">
                             
-                            {/* Full Name */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                                    Full Name <span className="text-blue-600">*</span>
-                                </label>
-                                <input
-                                    type="text"
-                                    name="fullName"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="John Doe"
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                />
-                            </div>
-
-                            {/* Email & Phone Grid */}
+                            {/* Full Name & Email */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Full Name <span className="text-blue-600">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="fullName"
+                                        value={formData.fullName}
+                                        onChange={handleChange}
+                                        required
+                                        placeholder="e.g. Tanvir Ahmed"
+                                        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
                                         Email Address <span className="text-blue-600">*</span>
                                     </label>
                                     <input
@@ -105,14 +119,17 @@ export default function ContactContent() {
                                         value={formData.email}
                                         onChange={handleChange}
                                         required
-                                        placeholder="email@example.com"
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        placeholder="tanvir@example.com"
+                                        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
                                     />
                                 </div>
+                            </div>
 
+                            {/* Phone Number & Topic */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                                        Phone Number <span className="text-blue-600">*</span>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Phone / WhatsApp <span className="text-blue-600">*</span>
                                     </label>
                                     <input
                                         type="tel"
@@ -120,35 +137,35 @@ export default function ContactContent() {
                                         value={formData.phone}
                                         onChange={handleChange}
                                         required
-                                        placeholder="+44 20 7423 9333"
-                                        className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                        placeholder="+880 1712 345678"
+                                        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Inquiry Category
+                                    </label>
+                                    <select
+                                        name="topic"
+                                        value={formData.topic}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
+                                    >
+                                        <option value="General Inquiry">General Study Abroad Inquiry</option>
+                                        <option value="UK Admissions">UK University Admissions</option>
+                                        <option value="USA Admissions">USA Admissions & STEM OPT</option>
+                                        <option value="Canada Admissions">Canada Universities & Permits</option>
+                                        <option value="Finland/Europe Admissions">Finland & EU Admissions</option>
+                                        <option value="Visa & Compliance">Student Visa & Compliance</option>
+                                        <option value="Institutional Partnership">B2B Institutional Partnership</option>
+                                    </select>
                                 </div>
                             </div>
 
-                            {/* Topic Select */}
+                            {/* Message Area */}
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                                    Topic of Interest
-                                </label>
-                                <select
-                                    name="topic"
-                                    value={formData.topic}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                                >
-                                    <option value="General Inquiry">General Inquiry</option>
-                                    <option value="University Admission">University Admission</option>
-                                    <option value="Visa & UKVI Compliance">Visa & UKVI Compliance</option>
-                                    <option value="Scholarship Guidance">Scholarship Guidance</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            {/* Message Textarea */}
-                            <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                                    Message <span className="text-blue-600">*</span>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Your Message / Specific Question <span className="text-blue-600">*</span>
                                 </label>
                                 <textarea
                                     name="message"
@@ -156,24 +173,25 @@ export default function ContactContent() {
                                     value={formData.message}
                                     onChange={handleChange}
                                     required
-                                    placeholder="Tell us about your educational background and desired country..."
-                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                                    placeholder="Please share details about your target study level, budget, or preferred intake..."
+                                    className="w-full px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors"
                                 />
                             </div>
 
-                            {/* Solid Brand-Colored Send Message Button */}
+                            {/* Submit Button */}
                             <button
                                 type="submit"
                                 disabled={isSubmitted}
-                                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                                className="w-full py-4 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:shadow-xl hover:scale-[1.01] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                             >
                                 <Send className="w-4 h-4" />
-                                <span>{isSubmitted ? 'Sending Message...' : 'Send Message'}</span>
+                                <span>{isSubmitted ? 'Sending Your Message...' : 'Submit Inquiry'}</span>
                             </button>
+
                         </form>
                     </div>
 
-                    {/* RIGHT COLUMN: CONTACT INFORMATION & GOOGLE MAPS PLACEHOLDER (5 COLS ON DESKTOP) */}
+                    {/* RIGHT COLUMN: CONTACT INFORMATION & GOOGLE MAPS (5 COLS ON DESKTOP) */}
                     <div className="lg:col-span-5 space-y-6">
                         
                         {/* DISTINCT CARD CONTAINER */}
@@ -181,81 +199,93 @@ export default function ContactContent() {
                             
                             <div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                                    Contact Information
+                                    {contactTitle}
                                 </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                    London Global HQ & Regional Advisory Center
-                                </p>
+                                {contactSubtitle && (
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                        {contactSubtitle}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-5 text-sm">
                                 
                                 {/* Address */}
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                                        <MapPin className="w-5 h-5" />
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <div className="text-xs font-bold uppercase text-slate-400">HQ Address</div>
-                                        <div className="font-semibold text-slate-900 dark:text-white leading-snug">
-                                            1st Floor, Botanical Works, 2 Jubilee Street, London E1 3FU
+                                {contactAddress && (
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                            <MapPin className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <div className="text-xs font-bold uppercase text-slate-400">HQ Address</div>
+                                            <div className="font-semibold text-slate-900 dark:text-white leading-snug whitespace-pre-line">
+                                                {contactAddress}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Email */}
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                                        <Mail className="w-5 h-5" />
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <div className="text-xs font-bold uppercase text-slate-400">Email Us</div>
-                                        <a href="mailto:info@kampus-group.com" className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
-                                            info@kampus-group.com
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Phone */}
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                                        <Phone className="w-5 h-5" />
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <div className="text-xs font-bold uppercase text-slate-400">Call Us</div>
-                                        <a href="tel:02074239333" className="font-semibold text-slate-900 dark:text-white hover:text-blue-600">
-                                            020 7423 9333
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {/* Office Hours */}
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
-                                        <Clock className="w-5 h-5" />
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        <div className="text-xs font-bold uppercase text-slate-400">Office Hours</div>
-                                        <div className="font-semibold text-slate-900 dark:text-white">
-                                            Monday - Friday: 9:00 AM - 6:00 PM GMT
+                                {contactEmail && (
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                                            <Mail className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <div className="text-xs font-bold uppercase text-slate-400">Email Us</div>
+                                            <a href={`mailto:${contactEmail}`} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                                                {contactEmail}
+                                            </a>
                                         </div>
                                     </div>
-                                </div>
+                                )}
+
+                                {/* Phone */}
+                                {contactPhone && (
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                            <Phone className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <div className="text-xs font-bold uppercase text-slate-400">Call Us</div>
+                                            <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="font-semibold text-slate-900 dark:text-white hover:text-blue-600">
+                                                {contactPhone}
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Office Hours */}
+                                {contactHours && (
+                                    <div className="flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                                            <Clock className="w-5 h-5" />
+                                        </div>
+                                        <div className="space-y-0.5">
+                                            <div className="text-xs font-bold uppercase text-slate-400">Office Hours</div>
+                                            <div className="font-semibold text-slate-900 dark:text-white">
+                                                {contactHours}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
 
                             </div>
                         </div>
 
-                        {/* GOOGLE MAPS EMBEDDED IFRAME PLACEHOLDER */}
-                        <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200/80 dark:border-slate-800 h-52 bg-slate-900 relative">
-                            <iframe
-                                title="London HQ Location"
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.915783307521!2d-0.05716182337775242!3d51.51478190950346!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4876033580555555%3A0x123456789abcdef!2sJubilee%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk"
-                                className="w-full h-full border-0 opacity-90 filter grayscale-[20%] contrast-105"
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                            />
-                        </div>
+                        {/* GOOGLE MAPS EMBEDDED IFRAME */}
+                        {mapSrc && (
+                            <div className="rounded-3xl overflow-hidden shadow-md border border-slate-200/80 dark:border-slate-800 h-52 bg-slate-900 relative">
+                                <iframe
+                                    title={contactTitle || 'Location Map'}
+                                    src={mapSrc}
+                                    className="w-full h-full border-0 opacity-90 filter grayscale-[20%] contrast-105"
+                                    allowFullScreen=""
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                />
+                            </div>
+                        )}
 
                     </div>
 

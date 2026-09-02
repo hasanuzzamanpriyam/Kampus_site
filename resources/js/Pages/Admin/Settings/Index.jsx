@@ -52,7 +52,22 @@ export default function Index({ settings = {} }) {
         linkedin_url: settings.linkedin_url || 'https://linkedin.com/company/kampusedu',
         instagram_url: settings.instagram_url || 'https://instagram.com/kampusedu',
         youtube_url: settings.youtube_url || 'https://youtube.com/c/kampusedu',
+
+        // Contact Us Page Information & Google Maps
+        contact_info_title: settings.contact_info_title || 'Contact Information',
+        contact_info_subtitle: settings.contact_info_subtitle || 'London Global HQ & Regional Advisory Center',
+        contact_info_address: settings.contact_info_address || '1st Floor, Botanical Works, 2 Jubilee Street, London E1 3FU',
+        contact_info_email: settings.contact_info_email || 'info@kampus-group.com',
+        contact_info_phone: settings.contact_info_phone || '020 7423 9333',
+        contact_info_hours: settings.contact_info_hours || 'Monday - Friday: 9:00 AM - 6:00 PM GMT',
+        contact_map_iframe: settings.contact_map_iframe || 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2482.915783307521!2d-0.05716182337775242!3d51.51478190950346!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4876033580555555%3A0x123456789abcdef!2sJubilee%20St%2C%20London!5e0!3m2!1sen!2suk!4v1700000000000!5m2!1sen!2suk',
     });
+
+    const extractMapUrl = (input) => {
+        if (!input) return '';
+        const match = input.match(/src=["']([^"']+)["']/);
+        return match ? match[1] : input;
+    };
 
     const handleFileChange = (field, file, previewSetter) => {
         setData(field, file);
@@ -481,6 +496,140 @@ export default function Index({ settings = {} }) {
                                     className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-pink-500 focus:outline-none"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    {/* SECTION 6: CONTACT US PAGE DETAILS & GOOGLE MAP */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                                <MapPin className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Contact Page Details & Google Map
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Configure the "Contact Information" card and Google Map embed rendered on the public Contact Us page (/contact)
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Card Title
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.contact_info_title}
+                                        onChange={(e) => setData('contact_info_title', e.target.value)}
+                                        placeholder="e.g. Contact Information"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Card Subtitle
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.contact_info_subtitle}
+                                        onChange={(e) => setData('contact_info_subtitle', e.target.value)}
+                                        placeholder="e.g. London Global HQ & Regional Advisory Center"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    HQ Address
+                                </label>
+                                <textarea
+                                    rows={2}
+                                    value={data.contact_info_address}
+                                    onChange={(e) => setData('contact_info_address', e.target.value)}
+                                    placeholder="e.g. 1st Floor, Botanical Works, 2 Jubilee Street, London E1 3FU"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Email Address
+                                    </label>
+                                    <input
+                                        type="email"
+                                        value={data.contact_info_email}
+                                        onChange={(e) => setData('contact_info_email', e.target.value)}
+                                        placeholder="info@kampus-group.com"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Phone Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.contact_info_phone}
+                                        onChange={(e) => setData('contact_info_phone', e.target.value)}
+                                        placeholder="020 7423 9333"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                        Office Hours
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={data.contact_info_hours}
+                                        onChange={(e) => setData('contact_info_hours', e.target.value)}
+                                        placeholder="Monday - Friday: 9:00 AM - 6:00 PM GMT"
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Google Maps Embed (URL or Full &lt;iframe&gt; Code)
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={data.contact_map_iframe}
+                                    onChange={(e) => setData('contact_map_iframe', e.target.value)}
+                                    placeholder="Paste Google Maps embed URL (https://www.google.com/maps/embed?...) or the complete <iframe> embed code from Google Maps"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">
+                                    Tip: In Google Maps, click "Share" → "Embed a map" → copy the HTML or embed URL and paste it here.
+                                </p>
+                            </div>
+
+                            {/* Live Map Preview */}
+                            {extractMapUrl(data.contact_map_iframe) && (
+                                <div className="space-y-2">
+                                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                                        Map Live Preview:
+                                    </div>
+                                    <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700 h-48 bg-slate-900">
+                                        <iframe
+                                            title="Admin Map Preview"
+                                            src={extractMapUrl(data.contact_map_iframe)}
+                                            className="w-full h-full border-0"
+                                            loading="lazy"
+                                        />
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
