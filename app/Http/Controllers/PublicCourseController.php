@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use App\Models\Course;
+use App\Models\CourseSearch;
 use App\Models\University;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -21,7 +22,7 @@ class PublicCourseController extends Controller
             'university.country:id,name,slug,country_code',
         ]);
 
-        // 1. Search Query Filter
+        // 1. Search Query Filter & Popularity Tracking
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
@@ -38,6 +39,16 @@ class PublicCourseController extends Controller
                         });
                   });
             });
+
+            // Track search keyword and course search frequency in real-time
+            if (strlen($search) >= 2) {
+                $searchRecord = CourseSearch::firstOrNew(['keyword' => $search]);
+                $searchRecord->search_count = ($searchRecord->search_count ?? 0) + 1;
+                $searchRecord->updated_at = now();
+                $searchRecord->save();
+
+                Course::where('title', 'like', "%{$search}%")->increment('search_count');
+            }
         }
 
         // 2. Study Level Filter (Supports single value or array/comma-separated)
@@ -109,11 +120,32 @@ class PublicCourseController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'country_id']);
 
+        // Dynamic most recent and most searched popular course tags (max 10)
+        $mostSearched = CourseSearch::orderByDesc('search_count')
+            ->latest('updated_at')
+            ->take(10)
+            ->pluck('keyword')
+            ->toArray();
+
+        $recentCourses = Course::latest('created_at')
+            ->take(10)
+            ->pluck('title')
+            ->toArray();
+
+        $popularSearches = collect(array_merge($mostSearched, $recentCourses))
+            ->map(fn ($item) => trim($item))
+            ->filter()
+            ->unique(fn ($item) => strtolower($item))
+            ->take(10)
+            ->values()
+            ->all();
+
         return Inertia::render('Courses', [
             'courses' => $courses,
             'destinations' => $destinations,
             'levels' => $levels,
             'universities' => $universities,
+            'popularSearches' => $popularSearches,
             'filters' => [
                 'search' => $request->input('search', ''),
                 'level' => $request->input('level', ''),

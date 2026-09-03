@@ -9,7 +9,7 @@ import FaqSection from '../Components/FaqSection';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
 export default function Courses() {
-    const { courses = {}, destinations = [], levels = [], filters = {} } = usePage().props;
+    const { courses = {}, destinations = [], levels = [], popularSearches = [], filters = {} } = usePage().props;
 
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const [selectedLevels, setSelectedLevels] = useState(
@@ -87,9 +87,10 @@ export default function Courses() {
             {/* MAIN COURSES PAGE CONTAINER WITH TAILWIND SECTION SPACING */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
                 
-                {/* 1. COURSES HERO WITH GLOBAL SEARCH BAR */}
+                {/* 1. COURSES HERO WITH GLOBAL SEARCH BAR & POPULAR SEARCHES */}
                 <CoursesHero
                     initialSearch={searchQuery}
+                    popularSearches={popularSearches}
                     onSearchChange={setSearchQuery}
                     onSearchSubmit={(val) => {
                         setSearchQuery(val);

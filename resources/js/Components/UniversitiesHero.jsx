@@ -4,8 +4,7 @@ import {
     MapPin,
     ChevronDown,
     Check,
-    X,
-    TrendingUp
+    X
 } from 'lucide-react';
 
 export default function UniversitiesHero({

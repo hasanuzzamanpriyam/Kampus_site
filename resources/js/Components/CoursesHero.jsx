@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Search,
     BookOpen,
@@ -9,10 +9,15 @@ import {
 
 export default function CoursesHero({
     initialSearch = '',
+    popularSearches = [],
     onSearchChange,
     onSearchSubmit
 }) {
     const [searchTerm, setSearchTerm] = useState(initialSearch);
+
+    useEffect(() => {
+        setSearchTerm(initialSearch);
+    }, [initialSearch]);
 
     const handleInputChange = (e) => {
         const value = e.target.value;
@@ -85,23 +90,34 @@ export default function CoursesHero({
                         </button>
                     </form>
 
-                    {/* Popular Quick Searches */}
+                    {/* Popular Quick Searches (Most Recent & Most Searched, Max 10) */}
                     <div className="flex items-center justify-center gap-2 flex-wrap pt-4 text-xs text-slate-500 dark:text-slate-400">
-                        <span className="font-semibold text-slate-400">Popular:</span>
-                        {['Computer Science', 'MBA', 'Data Science & AI', 'Law', 'Engineering', 'Psychology'].map((keyword) => (
-                            <button
-                                key={keyword}
-                                type="button"
-                                onClick={() => {
-                                    setSearchTerm(keyword);
-                                    if (onSearchChange) onSearchChange(keyword);
-                                    if (onSearchSubmit) onSearchSubmit(keyword);
-                                }}
-                                className="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-950 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium border border-slate-200/60 dark:border-slate-700/60"
-                            >
-                                {keyword}
-                            </button>
-                        ))}
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">Popular:</span>
+                        {(popularSearches && popularSearches.length > 0
+                            ? popularSearches
+                            : ['Computer Science', 'MBA', 'Data Science & AI', 'Law', 'Engineering', 'Psychology']
+                        ).slice(0, 10).map((keyword) => {
+                            const isSelected = searchTerm && searchTerm.toLowerCase() === keyword.toLowerCase();
+                            return (
+                                <button
+                                    key={keyword}
+                                    type="button"
+                                    onClick={() => {
+                                        const nextVal = isSelected ? '' : keyword;
+                                        setSearchTerm(nextVal);
+                                        if (onSearchChange) onSearchChange(nextVal);
+                                        if (onSearchSubmit) onSearchSubmit(nextVal);
+                                    }}
+                                    className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                                        isSelected
+                                            ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/30'
+                                            : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-700 shadow-2xs'
+                                    }`}
+                                >
+                                    {keyword}
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
