@@ -2,14 +2,11 @@ import React, { useState } from 'react';
 import {
     Info,
     Image as ImageIcon,
-    BookOpen,
-    GraduationCap,
-    CheckCircle2
+    BookOpen
 } from 'lucide-react';
 import TabAbout from './TabAbout';
 import TabGallery from './TabGallery';
 import TabCourses from './TabCourses';
-import ConsultationBanner from './ConsultationBanner';
 
 export default function UniversityTabs({
     university = {
@@ -29,13 +26,6 @@ export default function UniversityTabs({
             'https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=800&q=80',
             'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80',
             'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80',
-        ],
-        admissionReqs: [
-            'High School Diploma / A-Levels (AAA or equivalent) for Undergraduate',
-            'Bachelor\'s Degree with First Class / 2:1 Honours for Postgraduate',
-            'IELTS Academic 7.0 (no band below 6.5) or TOEFL iBT 100',
-            'Statement of Purpose (SOP) & 2 Academic Reference Letters',
-            'Valid Passport copy & financial proof for UKVI Tier-4 Student Visa'
         ]
     }
 }) {
@@ -45,7 +35,6 @@ export default function UniversityTabs({
         { id: 'about', label: 'About', icon: Info },
         { id: 'gallery', label: 'Gallery', icon: ImageIcon },
         { id: 'courses', label: 'Courses', icon: BookOpen },
-        { id: 'admission', label: 'Admission', icon: GraduationCap },
     ];
 
     return (
@@ -91,29 +80,6 @@ export default function UniversityTabs({
                     {activeTab === 'courses' && (
                         <TabCourses courses={university.courses} />
                     )}
-
-                    {/* TAB 4: ADMISSION */}
-                    {activeTab === 'admission' && (
-                        <div className="space-y-6 animate-in fade-in duration-200">
-                            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                Entry & Admission Requirements
-                            </h3>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm">
-                                Standard entry criteria for international applicants applying for Fall & Spring intakes.
-                            </p>
-                            <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/60 space-y-4">
-                                {university.admissionReqs.map((req, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300 font-medium">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                        <span>{req}</span>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <ConsultationBanner className="mt-6" />
-                        </div>
-                    )}
-
                 </div>
 
             </div>

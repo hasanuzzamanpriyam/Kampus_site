@@ -29,13 +29,6 @@ export default function UniversityDetails({ university = null, slug = 'universit
             gallery: [
                 { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Historic Quadrangle & Radcliffe Camera' },
                 { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', caption: 'Bodleian Library Study Halls' },
-            ],
-            admissionReqs: [
-                'High School Diploma / A-Levels (AAA or equivalent) for Undergraduate',
-                'Bachelor\'s Degree with First Class / 2:1 Honours for Postgraduate',
-                'IELTS Academic 7.0 (no band below 6.5) or TOEFL iBT 100',
-                'Statement of Purpose (SOP) & 2 Academic Reference Letters',
-                'Valid Passport copy & financial proof for UKVI Tier-4 Student Visa'
             ]
         },
     };
@@ -65,11 +58,6 @@ export default function UniversityDetails({ university = null, slug = 'universit
         gallery: [
             { url: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80', caption: 'Historic Campus Grounds' },
             { url: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&q=80', caption: 'Library & Research Halls' },
-        ],
-        admissionReqs: [
-            'High School / Undergraduate Transcripts',
-            'IELTS 6.5 or equivalent English test',
-            'Statement of Purpose & References'
         ]
     } : (universitiesMap[slug] || universitiesMap['university-of-oxford']);
 
