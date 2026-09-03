@@ -1,9 +1,9 @@
 import React from 'react';
 import LegalPage from './LegalPage';
 
-export default function TermsOfService() {
+export default function TermsOfService({ page = null }) {
     return (
-        <LegalPage title="Terms of Service" lastUpdated="August 2026">
+        <LegalPage title="Terms of Service" lastUpdated="August 2026" page={page}>
             <p>
                 Welcome to <strong>Kampus Educational Consultancy Ltd</strong>. By accessing our website or using our counseling, university placement, and visa advisory services, you agree to comply with and be bound by the following Terms of Service.
             </p>

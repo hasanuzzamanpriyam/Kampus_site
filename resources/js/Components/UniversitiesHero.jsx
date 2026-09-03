@@ -13,8 +13,12 @@ export default function UniversitiesHero({
     searchTerm = '',
     destination = 'All',
     onSearchChange,
-    onDestinationChange
+    onDestinationChange,
+    content = {}
 }) {
+    const heading = content?.hero_heading || content?.hero?.title;
+    const subtitle = content?.hero_subtitle || content?.hero?.subtitle;
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
 
@@ -43,25 +47,31 @@ export default function UniversitiesHero({
             {/* Ambient Background Blur Graphics */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[480px] pointer-events-none overflow-hidden">
                 <div className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[650px] h-[360px] bg-blue-500/15 dark:bg-blue-600/20 rounded-full blur-[140px]" />
-                <div className="absolute top-[120px] left-[10%] w-80 h-80 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[120px]" />
+                <div className="absolute top-[120px] right-[12%] w-80 h-80 bg-indigo-500/10 dark:bg-indigo-600/15 rounded-full blur-[120px]" />
             </div>
 
-            {/* Subtle Dot Grid Overlay */}
+            {/* Subtle Dot Pattern Backdrop */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808010_1px,transparent_1px),linear-gradient(to_bottom,#80808010_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
 
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-6">
 
                 {/* 1. Main Heading */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                    Find your dream <br className="hidden sm:inline" />
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                        university
-                    </span>
+                    {heading ? (
+                        heading
+                    ) : (
+                        <>
+                            Find your dream <br className="hidden sm:inline" />
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                university
+                            </span>
+                        </>
+                    )}
                 </h1>
 
                 {/* 2. Centered Paragraph */}
                 <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-3xl mx-auto">
-                    Explore our verified network of partner institutions. Filter by destination country to find the perfect match for your academic ambition.
+                    {subtitle || 'Explore our verified network of partner institutions. Filter by destination country to find the perfect match for your academic ambition.'}
                 </p>
 
                 {/* 3. INSTANT LIVE SEARCH & CUSTOM COMPACT SCROLLABLE DROPDOWN */}

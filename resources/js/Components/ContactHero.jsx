@@ -1,7 +1,10 @@
 import React from 'react';
 import { Mail, MessageSquare, Sparkles } from 'lucide-react';
 
-export default function ContactHero() {
+export default function ContactHero({ content = {} }) {
+    const heading = content?.hero_heading || content?.hero?.title;
+    const subtitle = content?.hero_subtitle || content?.hero?.subtitle;
+
     return (
         <section className="relative overflow-hidden py-16 lg:py-20 bg-gradient-to-b from-blue-50/80 via-indigo-50/40 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
             
@@ -18,15 +21,21 @@ export default function ContactHero() {
 
                 {/* 2. MAIN HEADING */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15] max-w-4xl mx-auto">
-                    Get in touch with{' '}
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                        our experts
-                    </span>
+                    {heading ? (
+                        heading
+                    ) : (
+                        <>
+                            Get in touch with{' '}
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                our experts
+                            </span>
+                        </>
+                    )}
                 </h1>
 
                 {/* 3. SUBTITLE PARAGRAPH */}
                 <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
-                    Whether you have a question about studying abroad, universities, visas, or anything else, our team is ready to answer all your questions.
+                    {subtitle || 'Whether you have a question about studying abroad, universities, visas, or anything else, our team is ready to answer all your questions.'}
                 </p>
 
             </div>

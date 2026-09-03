@@ -60,9 +60,15 @@ class PublicBlogController extends Controller
             ->pluck('category')
             ->values();
 
+        $page = \App\Models\Page::where('slug', 'blog')->first();
+        if ($page && !$page->is_active && !auth()->check()) {
+            abort(404);
+        }
+
         return Inertia::render('Public/Blogs/Index', [
             'blogs' => $blogs,
             'categories' => $categories,
+            'page' => $page,
             'filters' => [
                 'search' => $request->input('search', ''),
                 'category' => $request->input('category', 'All'),

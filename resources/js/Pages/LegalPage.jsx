@@ -2,11 +2,22 @@ import React from 'react';
 import { Head } from '@inertiajs/react';
 import Layout from '../Layouts/Layout';
 import { ShieldCheck, Calendar } from 'lucide-react';
+import DynamicPageSections from '../Components/DynamicPageSections';
 
-export default function LegalPage({ title, lastUpdated, children }) {
+export default function LegalPage({ title, lastUpdated, page = null, children }) {
+    const displayTitle = page?.meta_title || `${page?.name || title} — Kampus EduConsult`;
+    const metaDescription = page?.meta_description || 'Official compliance, terms, and legal documentation for Kampus Educational Consultancy Ltd.';
+    const metaKeywords = page?.meta_keywords || 'privacy policy, terms of service, kampus compliance';
+
     return (
         <Layout>
-            <Head title={`${title} — Kampus EduConsult`} />
+            <Head>
+                <title>{displayTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={displayTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             <div className="w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors py-12 lg:py-20 border-b border-slate-200/60 dark:border-slate-800">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +30,7 @@ export default function LegalPage({ title, lastUpdated, children }) {
                         </div>
 
                         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                            {title}
+                            {page?.name || title}
                         </h1>
 
                         {lastUpdated && (
@@ -32,10 +43,24 @@ export default function LegalPage({ title, lastUpdated, children }) {
 
                     {/* MAIN READABLE CONTENT AREA WITH FULL DARK MODE SUPPORT */}
                     <div className="space-y-6 text-slate-700 dark:text-slate-300 text-base leading-relaxed">
-                        {children}
+                        {page?.content?.body ? (
+                            <div
+                                className="prose prose-slate dark:prose-invert max-w-none whitespace-pre-line"
+                                dangerouslySetInnerHTML={{ __html: page.content.body }}
+                            />
+                        ) : (
+                            children
+                        )}
                     </div>
 
                 </div>
+
+                {/* DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <div className="mt-12">
+                        <DynamicPageSections sections={page.content.sections} />
+                    </div>
+                )}
             </div>
         </Layout>
     );

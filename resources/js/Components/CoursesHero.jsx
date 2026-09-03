@@ -11,8 +11,12 @@ export default function CoursesHero({
     initialSearch = '',
     popularSearches = [],
     onSearchChange,
-    onSearchSubmit
+    onSearchSubmit,
+    content = {}
 }) {
+    const heading = content?.hero_heading || content?.hero?.title;
+    const subtitle = content?.hero_subtitle || content?.hero?.subtitle;
+
     const [searchTerm, setSearchTerm] = useState(initialSearch);
 
     useEffect(() => {
@@ -51,14 +55,20 @@ export default function CoursesHero({
                 {/* 1. TYPOGRAPHY & HEADER */}
                 <div className="text-center max-w-3xl mx-auto space-y-4">
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                        Find the right course for{' '}
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                            your future
-                        </span>
+                        {heading ? (
+                            heading
+                        ) : (
+                            <>
+                                Find the right course for{' '}
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                    your future
+                                </span>
+                            </>
+                        )}
                     </h1>
 
                     <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
-                        Browse thousands of undergraduate and postgraduate degrees across top universities in the UK, USA, Finland, and Dubai.
+                        {subtitle || 'Browse thousands of undergraduate and postgraduate degrees across top universities in the UK, USA, Finland, and Dubai.'}
                     </p>
                 </div>
 

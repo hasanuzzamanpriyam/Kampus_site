@@ -7,7 +7,10 @@ import {
     Award
 } from 'lucide-react';
 
-export default function ServicesHero() {
+export default function ServicesHero({ content = {} }) {
+    const heading = content?.hero_heading || content?.hero?.title;
+    const subtitle = content?.hero_subtitle || content?.hero?.subtitle;
+
     return (
         <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors text-center">
             
@@ -24,15 +27,21 @@ export default function ServicesHero() {
 
                 {/* 2. Main Heading */}
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                    End-to-end support, <br className="hidden sm:inline" />
-                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                        every step of the way
-                    </span>
+                    {heading ? (
+                        heading
+                    ) : (
+                        <>
+                            End-to-end support, <br className="hidden sm:inline" />
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                every step of the way
+                            </span>
+                        </>
+                    )}
                 </h1>
 
                 {/* 3. Centered Paragraph */}
                 <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-3xl mx-auto">
-                    From choosing the right university to arriving safely at your destination, we provide expert, personalised assistance. Our British Council certified experts ensure your journey from dreams to degrees is seamless and completely free.
+                    {subtitle || 'From choosing the right university to arriving safely at your destination, we provide expert, personalised assistance. Our British Council certified experts ensure your journey from dreams to degrees is seamless and completely free.'}
                 </p>
 
                 {/* 4. Feature Trust Micro-Badges */}

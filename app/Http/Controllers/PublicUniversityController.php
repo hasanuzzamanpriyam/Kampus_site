@@ -65,10 +65,16 @@ class PublicUniversityController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'country_code']);
 
+        $page = \App\Models\Page::where('slug', 'universities')->first();
+        if ($page && !$page->is_active && !auth()->check()) {
+            abort(404);
+        }
+
         return Inertia::render('Universities', [
             'universities' => $universities,
             'destinations' => $destinations,
             'quickFilterDestinations' => $quickFilterDestinations,
+            'page' => $page,
             'filters' => $request->only(['search', 'country']),
         ]);
     }

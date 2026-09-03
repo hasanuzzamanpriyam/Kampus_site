@@ -18,8 +18,17 @@ import {
     Calendar,
     Briefcase
 } from 'lucide-react';
+import DynamicPageSections from '../Components/DynamicPageSections';
 
-export default function VisaGuide() {
+export default function VisaGuide({ page = null }) {
+    const metaTitle = page?.meta_title || 'Student Visa Guide & Requirements — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Comprehensive requirements, checklists, and processing timelines for UK Student Visas, US F-1, and European Study Permits.';
+    const metaKeywords = page?.meta_keywords || 'student visa guide, UKVI requirements, CAS deposit, US F1 visa checklist';
+
+    const heroHeading = page?.content?.hero_heading || page?.content?.hero?.title;
+    const heroSubtitle = page?.content?.hero_subtitle || page?.content?.hero?.subtitle;
+    const heroBadge = page?.content?.badge_text || page?.content?.hero?.badge;
+
     const [activeTab, setActiveTab] = useState('UK');
     const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
@@ -141,7 +150,13 @@ export default function VisaGuide() {
 
     return (
         <Layout>
-            <Head title="Student Visa Guide — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
                 
@@ -156,19 +171,25 @@ export default function VisaGuide() {
                         <div>
                             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest border border-blue-200/80 dark:border-blue-800 shadow-2xs backdrop-blur-md">
                                 <Plane className="w-3.5 h-3.5" />
-                                <span>STUDENT VISA GUIDANCE</span>
+                                <span>{heroBadge || 'STUDENT VISA GUIDANCE'}</span>
                             </span>
                         </div>
 
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto">
-                            Stress-free{' '}
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
-                                visa processing
-                            </span>
+                            {heroHeading ? (
+                                heroHeading
+                            ) : (
+                                <>
+                                    Stress-free{' '}
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+                                        visa processing
+                                    </span>
+                                </>
+                            )}
                         </h1>
 
                         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto font-normal">
-                            Step-by-step guidance for your UKVI, US F-1, and other student visas with our certified immigration experts.
+                            {heroSubtitle || 'Step-by-step guidance for your UKVI, US F-1, and other student visas with our certified immigration experts.'}
                         </p>
                     </div>
                 </section>
@@ -298,7 +319,12 @@ export default function VisaGuide() {
                     </div>
                 </section>
 
-                {/* 3. DYNAMIC VISA FREQUENTLY ASKED QUESTIONS */}
+                {/* 3. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
+
+                {/* 4. DYNAMIC VISA FREQUENTLY ASKED QUESTIONS */}
                 <FaqSection
                     badge="VISA GUIDANCE & FAQS"
                     title="Frequently Asked Visa & Admission Questions"

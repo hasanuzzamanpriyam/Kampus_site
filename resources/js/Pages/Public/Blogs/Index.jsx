@@ -13,11 +13,22 @@ import {
     Clock
 } from 'lucide-react';
 
-export default function BlogIndex() {
-    const { blogs = {}, categories = [], filters = {} } = usePage().props;
+import DynamicPageSections from '../../../Components/DynamicPageSections';
 
-    const [search, setSearch] = useState(filters.search || '');
-    const [selectedCategory, setSelectedCategory] = useState(filters.category || 'All');
+export default function BlogIndex() {
+    const { blogs = {}, categories = [], filters = {}, page = null } = usePage().props;
+
+    const metaTitle = page?.meta_title || 'Latest Insights & Success Stories — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Read expert study abroad guides, university admissions tips, and inspiring stories from international students.';
+    const metaKeywords = page?.meta_keywords || 'study abroad blog, student guides, UK visa advice, success stories';
+
+    const heroHeading = page?.content?.hero_heading || page?.content?.hero?.title;
+    const heroSubtitle = page?.content?.hero_subtitle || page?.content?.hero?.subtitle;
+
+    const filtersData = (filters && typeof filters === 'object' && !Array.isArray(filters)) ? filters : {};
+
+    const [search, setSearch] = useState(typeof filtersData.search === 'string' ? filtersData.search : '');
+    const [selectedCategory, setSelectedCategory] = useState(typeof filtersData.category === 'string' ? filtersData.category : 'All');
     const isFirstMount = useRef(true);
 
     const blogList = Array.isArray(blogs) ? blogs : (blogs?.data || []);
@@ -65,7 +76,13 @@ export default function BlogIndex() {
 
     return (
         <Layout>
-            <Head title="Latest Insights & Success Stories — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             {/* MAIN BLOG PAGE CONTAINER */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
@@ -81,14 +98,20 @@ export default function BlogIndex() {
 
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-6">
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                            Our Latest Insights &{' '}
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                                Success Stories
-                            </span>
+                            {heroHeading ? (
+                                heroHeading
+                            ) : (
+                                <>
+                                    Our Latest Insights &{' '}
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                        Success Stories
+                                    </span>
+                                </>
+                            )}
                         </h1>
 
                         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-2xl mx-auto">
-                            Read expert study abroad guides, visa tips, and inspiring journeys of students accepted into top global universities.
+                            {heroSubtitle || 'Read expert study abroad guides, visa tips, and inspiring journeys of students accepted into top global universities.'}
                         </p>
 
                         {/* Search & Filter Bar */}
@@ -308,6 +331,11 @@ export default function BlogIndex() {
 
                     </div>
                 </section>
+
+                {/* 2. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
 
             </div>
         </Layout>

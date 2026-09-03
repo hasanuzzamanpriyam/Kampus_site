@@ -17,7 +17,17 @@ import {
     Filter
 } from 'lucide-react';
 
-export default function Scholarships() {
+import DynamicPageSections from '../Components/DynamicPageSections';
+
+export default function Scholarships({ page = null }) {
+    const metaTitle = page?.meta_title || 'International Scholarships Finder — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Explore merit-based, need-based, and government-funded scholarships to study in the UK, USA, Canada, and Europe.';
+    const metaKeywords = page?.meta_keywords || 'study abroad scholarships, UK great scholarship, Fulbright, tuition waiver';
+
+    const heroHeading = page?.content?.hero_heading || page?.content?.hero?.title;
+    const heroSubtitle = page?.content?.hero_subtitle || page?.content?.hero?.subtitle;
+    const heroBadge = page?.content?.badge_text || page?.content?.hero?.badge;
+
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedType, setSelectedType] = useState('All');
     const [selectedCountry, setSelectedCountry] = useState('All');
@@ -115,13 +125,21 @@ export default function Scholarships() {
 
     return (
         <Layout>
-            <Head title="Scholarships & Financial Aid — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
-            <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+            {/* MAIN SCHOLARSHIPS PAGE CONTAINER WITH MODERN SPACING */}
+            <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
                 
                 {/* 1. HERO SECTION */}
-                <section className="relative overflow-hidden py-16 lg:py-24 bg-gradient-to-b from-blue-50/70 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
-                    {/* Background Ambient Glow */}
+                <section className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24 bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
+                    
+                    {/* Ambient Light Orbs */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[400px] pointer-events-none overflow-hidden">
                         <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-500/15 dark:bg-blue-600/20 rounded-full blur-[130px]" />
                     </div>
@@ -130,19 +148,25 @@ export default function Scholarships() {
                         <div>
                             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-100/90 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest border border-blue-200/80 dark:border-blue-800 shadow-2xs backdrop-blur-md">
                                 <Award className="w-3.5 h-3.5" />
-                                <span>SCHOLARSHIP FINDER</span>
+                                <span>{heroBadge || 'SCHOLARSHIP FINDER'}</span>
                             </span>
                         </div>
 
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight max-w-4xl mx-auto">
-                            Fund your{' '}
-                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
-                                global future
-                            </span>
+                            {heroHeading ? (
+                                heroHeading
+                            ) : (
+                                <>
+                                    Fund your{' '}
+                                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
+                                        global future
+                                    </span>
+                                </>
+                            )}
                         </h1>
 
                         <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto font-normal">
-                            Explore merit-based, need-based, and country-specific scholarships to make your study abroad journey affordable.
+                            {heroSubtitle || 'Explore merit-based, need-based, and country-specific scholarships to make your study abroad journey affordable.'}
                         </p>
 
                         {/* FILTER BAR */}
@@ -303,7 +327,12 @@ export default function Scholarships() {
                     </div>
                 </section>
 
-                {/* 5. FAQ SECTION */}
+                {/* 5. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
+
+                {/* 6. FAQ SECTION */}
                 <FaqSection />
 
             </div>

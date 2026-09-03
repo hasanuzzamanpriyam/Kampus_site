@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import LegalPage from './LegalPage';
 import { Cookie, Check, ShieldCheck } from 'lucide-react';
 
-export default function CookiePreferences() {
+export default function CookiePreferences({ page = null }) {
     const [preferences, setPreferences] = useState({
         necessary: true, // Always true & locked
         analytics: true,
@@ -40,7 +40,7 @@ export default function CookiePreferences() {
     };
 
     return (
-        <LegalPage title="Cookie Preferences" lastUpdated="August 2026">
+        <LegalPage title="Cookie Preferences" lastUpdated="August 2026" page={page}>
             <p>
                 Kampus EduConsult uses cookies and similar tracking technologies to enhance your browsing experience, analyze site traffic, and deliver personalized university recommendations.
             </p>

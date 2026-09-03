@@ -140,18 +140,19 @@ class PublicCourseController extends Controller
             ->values()
             ->all();
 
+        $page = \App\Models\Page::where('slug', 'courses')->first();
+        if ($page && !$page->is_active && !auth()->check()) {
+            abort(404);
+        }
+
         return Inertia::render('Courses', [
             'courses' => $courses,
             'destinations' => $destinations,
             'levels' => $levels,
             'universities' => $universities,
             'popularSearches' => $popularSearches,
-            'filters' => [
-                'search' => $request->input('search', ''),
-                'level' => $request->input('level', ''),
-                'country' => $request->input('country', $request->input('destination', 'All')),
-                'sort' => $sort,
-            ],
+            'page' => $page,
+            'filters' => (object) array_filter($request->only(['search', 'level', 'country', 'sort']), fn ($v) => !is_null($v)),
         ]);
     }
 }

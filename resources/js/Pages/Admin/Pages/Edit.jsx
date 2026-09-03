@@ -8,10 +8,39 @@ import {
     Globe,
     FileText,
     Sliders,
-    Sparkles
+    Sparkles,
+    Lock,
+    HelpCircle,
+    LayoutTemplate,
+    ExternalLink,
+    CheckCircle2
 } from 'lucide-react';
 
 export default function Edit({ page }) {
+    const coreSlugs = [
+        '/',
+        'home',
+        'about',
+        'services',
+        'universities',
+        'courses',
+        'blog',
+        'contact',
+        'partner-with-us',
+        'partner',
+        'scholarships',
+        'visa-guide',
+        'privacy-policy',
+        'terms-of-service',
+        'terms',
+        'cookie-preferences',
+        'accreditation'
+    ];
+
+    const isCore = coreSlugs.includes(String(page.slug).toLowerCase());
+    const isPolicyPage = ['privacy-policy', 'terms-of-service', 'terms', 'cookie-preferences', 'accreditation'].includes(String(page.slug).toLowerCase());
+    const routePath = page.slug === 'home' ? '/' : `/${page.slug}`;
+
     const { data, setData, processing, errors } = useForm({
         name: page.name || '',
         slug: page.slug || '',
@@ -23,6 +52,25 @@ export default function Edit({ page }) {
         show_in_footer: Boolean(page.show_in_footer),
         content: page.content || {},
     });
+
+    const handleContentFieldChange = (field, val) => {
+        const nextContent = {
+            ...(data.content || {}),
+            [field]: val,
+        };
+
+        // Keep content.hero synchronized as well
+        if (field === 'hero_heading' || field === 'hero_subtitle' || field === 'badge_text') {
+            nextContent.hero = {
+                ...(nextContent.hero || {}),
+                title: field === 'hero_heading' ? val : (nextContent.hero?.title || nextContent.hero_heading || ''),
+                subtitle: field === 'hero_subtitle' ? val : (nextContent.hero?.subtitle || nextContent.hero_subtitle || ''),
+                badge: field === 'badge_text' ? val : (nextContent.hero?.badge || nextContent.badge_text || ''),
+            };
+        }
+
+        setData('content', nextContent);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -42,24 +90,33 @@ export default function Edit({ page }) {
     };
 
     return (
-        <AdminLayout title={`Edit Page & Layout: ${page.name}`}>
-            <Head title={`Edit ${page.name} — Kampus CMS`} />
+        <AdminLayout title={`Customize Page: ${page.name}`}>
+            <Head title={`Customize ${page.name} — Kampus CMS`} />
 
             <div className="max-w-5xl mx-auto space-y-8">
                 
-                {/* HEADER ROW WITH BACK BUTTON & SUBMIT ACTION */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
-                    <div className="flex items-center gap-3">
+                {/* 1. HEADER ROW WITH BACK BUTTON & SUBMIT ACTION */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 sm:p-7 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+                    <div className="flex items-center gap-3.5">
                         <Link
                             href="/admin/pages"
-                            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 transition-colors"
+                            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
                         >
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                         <div>
-                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider mb-1">
-                                <Sparkles className="w-3 h-3" />
-                                <span>VISUAL PAGE BUILDER</span>
+                            <div className="flex items-center gap-2 mb-1">
+                                {isCore ? (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-[10px] font-extrabold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">
+                                        <Globe className="w-3 h-3" />
+                                        <span>SYSTEM CORE PAGE</span>
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 text-[10px] font-extrabold uppercase tracking-wider border border-purple-200 dark:border-purple-800">
+                                        <Sparkles className="w-3 h-3" />
+                                        <span>CUSTOM DYNAMIC PAGE</span>
+                                    </span>
+                                )}
                             </div>
                             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
                                 Customize Page: {page.name}
@@ -69,12 +126,12 @@ export default function Edit({ page }) {
 
                     <div className="flex items-center gap-3">
                         <a
-                            href={page.slug === 'home' ? '/' : `/${page.slug}`}
+                            href={routePath}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                         >
-                            <Globe className="w-4 h-4 text-blue-500" />
+                            <ExternalLink className="w-4 h-4 text-blue-500" />
                             <span>Preview Live Page</span>
                         </a>
 
@@ -84,14 +141,29 @@ export default function Edit({ page }) {
                             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/30 hover:scale-[1.01] transition-all cursor-pointer"
                         >
                             <Save className="w-4 h-4" />
-                            <span>{processing ? 'Saving Changes...' : 'Save Page & SEO'}</span>
+                            <span>{processing ? 'Saving...' : 'Save & Publish'}</span>
                         </button>
                     </div>
                 </div>
 
+                {/* SYSTEM CORE NOTICE BANNER */}
+                {isCore && (
+                    <div className="p-5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/80 flex items-start gap-3.5">
+                        <Globe className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                        <div className="space-y-1 text-xs sm:text-sm">
+                            <div className="font-extrabold text-indigo-950 dark:text-indigo-200">
+                                System Core Page Routing Active: <span className="font-mono underline">{routePath}</span>
+                            </div>
+                            <p className="text-indigo-700 dark:text-indigo-300 leading-relaxed font-normal">
+                                This page is deeply integrated into the Kampus system. You can freely customize its <strong>Display Name</strong>, <strong>SEO Meta Title & Description</strong>, <strong>Hero Headings</strong>, <strong>Custom Body Content</strong>, and append <strong>Dynamic Visual Sections</strong> below.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <form onSubmit={handleSubmit} className="space-y-8">
                     
-                    {/* SECTION 1: SEARCH ENGINE OPTIMIZATION (SEO) SETTINGS & NAVIGATION TOGGLES */}
+                    {/* SECTION 1: SEARCH ENGINE OPTIMIZATION (SEO) SETTINGS & NAVIGATION */}
                     <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
                         <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-3">
@@ -103,7 +175,7 @@ export default function Edit({ page }) {
                                         SEO & Navigation Settings
                                     </h3>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                                        Configure page name, slug, search tags, and menu placement
+                                        Configure page name, slug, search meta tags, and menu visibility
                                     </p>
                                 </div>
                             </div>
@@ -164,15 +236,26 @@ export default function Edit({ page }) {
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
-                                    Route URL Slug
+                                <label className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    <span>Route URL Slug</span>
+                                    {isCore && (
+                                        <span className="inline-flex items-center gap-1 text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold normal-case">
+                                            <Lock className="w-3 h-3" />
+                                            <span>Core Route Protected</span>
+                                        </span>
+                                    )}
                                 </label>
                                 <input
                                     type="text"
                                     required
+                                    readOnly={isCore}
                                     value={data.slug}
-                                    onChange={(e) => setData('slug', e.target.value)}
-                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    onChange={(e) => !isCore && setData('slug', e.target.value)}
+                                    className={`w-full px-4 py-3 rounded-2xl border text-sm font-mono focus:outline-none ${
+                                        isCore
+                                            ? 'bg-slate-100 dark:bg-slate-850 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-800 cursor-not-allowed'
+                                            : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500'
+                                    }`}
                                 />
                             </div>
                         </div>
@@ -206,13 +289,121 @@ export default function Edit({ page }) {
                             />
                             {errors.meta_description && <span className="text-xs text-rose-500 font-semibold">{errors.meta_description}</span>}
                         </div>
+
+                        {/* Meta Keywords */}
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                Meta Keywords <span className="text-slate-400 font-normal">(Comma-separated)</span>
+                            </label>
+                            <input
+                                type="text"
+                                value={data.meta_keywords}
+                                onChange={(e) => setData('meta_keywords', e.target.value)}
+                                placeholder="e.g. study abroad, UK universities, scholarship assistance"
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            />
+                        </div>
                     </div>
 
-                    {/* SECTION 2: DYNAMIC VISUAL PAGE BUILDER & SECTIONS */}
-                    <PageBuilder
-                        content={data.content}
-                        onChange={(newContent) => setData('content', newContent)}
-                    />
+                    {/* SECTION 2: HERO & CORE CONTENT CUSTOMIZATION */}
+                    <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-6">
+                        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+                            <div className="p-2.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400">
+                                <LayoutTemplate className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-extrabold text-slate-900 dark:text-white">
+                                    Hero & Page Header Content
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    Customize the hero banner texts displayed at the top of this page
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-5">
+                            {/* Hero Badge Tagline */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Hero Tagline / Badge
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.content?.badge_text || data.content?.hero?.badge || ''}
+                                    onChange={(e) => handleContentFieldChange('badge_text', e.target.value)}
+                                    placeholder="e.g. 24 YEARS OF EXCELLENCE"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            {/* Hero Main Heading */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Hero Main Heading / Title
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.content?.hero_heading || data.content?.hero?.title || ''}
+                                    onChange={(e) => handleContentFieldChange('hero_heading', e.target.value)}
+                                    placeholder="e.g. Empowering your global education journey"
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none font-bold"
+                                />
+                            </div>
+
+                            {/* Hero Subtitle */}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+                                    Hero Subtitle / Descriptive Text
+                                </label>
+                                <textarea
+                                    rows={3}
+                                    value={data.content?.hero_subtitle || data.content?.hero?.subtitle || ''}
+                                    onChange={(e) => handleContentFieldChange('hero_subtitle', e.target.value)}
+                                    placeholder="Provide compelling paragraph text for the page hero section..."
+                                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                />
+                            </div>
+
+                            {/* For Policy / Terms pages: Custom Document Body */}
+                            {isPolicyPage && (
+                                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                                    <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">
+                                        Custom Document Content / Body (HTML & Paragraphs)
+                                    </label>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+                                        You can override the default text of this policy page by entering custom HTML or formatted paragraphs here.
+                                    </p>
+                                    <textarea
+                                        rows={8}
+                                        value={data.content?.body || ''}
+                                        onChange={(e) => handleContentFieldChange('body', e.target.value)}
+                                        placeholder="Enter custom policy terms, clauses, or HTML paragraphs..."
+                                        className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* SECTION 3: VISUAL PAGE BUILDER (DYNAMIC SECTIONS) */}
+                    <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Sparkles className="w-5 h-5 text-blue-600" />
+                                <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
+                                    Dynamic Page Sections Builder
+                                </h3>
+                            </div>
+                            <span className="text-xs text-slate-400 font-medium">
+                                Add modular blocks (Image + Text, Photo Gallery, Feature Cards, Article, CTA Banner)
+                            </span>
+                        </div>
+
+                        <PageBuilder
+                            content={data.content}
+                            onChange={(newContent) => setData('content', newContent)}
+                        />
+                    </div>
 
                     {/* SUBMIT BUTTON AT BOTTOM */}
                     <div className="pt-2 flex justify-end">
@@ -222,7 +413,7 @@ export default function Edit({ page }) {
                             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-lg shadow-blue-600/30 hover:scale-[1.01] transition-transform cursor-pointer"
                         >
                             <Save className="w-4 h-4" />
-                            <span>{processing ? 'Saving Changes...' : 'Save Page & Publish'}</span>
+                            <span>{processing ? 'Saving...' : 'Save & Publish Page'}</span>
                         </button>
                     </div>
 

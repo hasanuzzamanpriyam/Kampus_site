@@ -6,12 +6,19 @@ import UniversitiesGrid from '../Components/UniversitiesGrid';
 import UniversityStatsBanner from '../Components/UniversityStatsBanner';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
+import DynamicPageSections from '../Components/DynamicPageSections';
 
 export default function Universities() {
-    const { universities = {}, destinations = [], quickFilterDestinations = [], filters = {} } = usePage().props;
+    const { universities = {}, destinations = [], quickFilterDestinations = [], filters = {}, page = null } = usePage().props;
 
-    const [search, setSearch] = useState(filters.search || '');
-    const [country, setCountry] = useState(filters.country || 'All');
+    const metaTitle = page?.meta_title || 'Partner Universities — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Browse leading higher education institutions across the UK, USA, Canada, Australia, and Europe with official Kampus representation.';
+    const metaKeywords = page?.meta_keywords || 'universities, study abroad partner universities, UK university rankings';
+
+    const filtersData = (filters && typeof filters === 'object' && !Array.isArray(filters)) ? filters : {};
+
+    const [search, setSearch] = useState(typeof filtersData.search === 'string' ? filtersData.search : '');
+    const [country, setCountry] = useState(typeof filtersData.country === 'string' ? filtersData.country : 'All');
     const isFirstMount = useRef(true);
 
     // Inertia SPA visit handler with preserveState and preserveScroll
@@ -57,7 +64,13 @@ export default function Universities() {
 
     return (
         <Layout>
-            <Head title="Partner Universities — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             {/* MAIN UNIVERSITIES PAGE CONTAINER */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
@@ -69,6 +82,7 @@ export default function Universities() {
                     destination={country}
                     onSearchChange={setSearch}
                     onDestinationChange={handleCountryChange}
+                    content={page?.content || {}}
                 />
 
                 {/* 2. DYNAMIC PAGINATED UNIVERSITIES GRID (INERTIA SPA) */}
@@ -79,13 +93,18 @@ export default function Universities() {
                     onResetFilters={handleResetFilters}
                 />
 
-                {/* 3. DARK SLATE GLOBAL NETWORK STATS BANNER */}
+                {/* 3. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
+
+                {/* 4. DARK SLATE GLOBAL NETWORK STATS BANNER */}
                 <UniversityStatsBanner />
 
-                {/* 4. ADMISSION ROADMAP */}
+                {/* 5. ADMISSION ROADMAP */}
                 <JourneyProcess />
 
-                {/* 5. FAQ ACCORDION */}
+                {/* 6. FAQ ACCORDION */}
                 <FaqSection />
             </div>
         </Layout>

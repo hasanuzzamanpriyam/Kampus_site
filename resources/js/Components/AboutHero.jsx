@@ -10,7 +10,10 @@ import {
     Sparkles
 } from 'lucide-react';
 
-export default function AboutHero() {
+export default function AboutHero({ content = {} }) {
+    const heading = content?.hero_heading || content?.hero?.title;
+    const subtitle = content?.hero_subtitle || content?.hero?.subtitle;
+
     const stats = [
         {
             number: '24',
@@ -65,15 +68,21 @@ export default function AboutHero() {
 
                     {/* Main Heading */}
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
-                        UK's trusted international <br className="hidden sm:inline" />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
-                            student advisors.
-                        </span>
+                        {heading ? (
+                            heading
+                        ) : (
+                            <>
+                                UK's trusted international <br className="hidden sm:inline" />
+                                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-500">
+                                    student advisors.
+                                </span>
+                            </>
+                        )}
                     </h1>
 
                     {/* Main Paragraph */}
                     <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed font-normal max-w-3xl">
-                        Kampus Group Ltd is a London-headquartered international student recruitment agency with 24 years of experience and a strong global presence across South Asia, Africa and Europe. We help ambitious students access world-class education — securing placements across law, economics, medicine, engineering and business.
+                        {subtitle || 'Kampus Group Ltd is a London-headquartered international student recruitment agency with 24 years of experience and a strong global presence across South Asia, Africa and Europe. We help ambitious students access world-class education — securing placements across law, economics, medicine, engineering and business.'}
                     </p>
 
                     {/* Trust Badges Bar */}

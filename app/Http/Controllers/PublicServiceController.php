@@ -22,9 +22,15 @@ class PublicServiceController extends Controller
             ->orderBy('sort_order', 'asc')
             ->get();
 
+        $page = \App\Models\Page::where('slug', 'services')->first();
+        if ($page && !$page->is_active && !auth()->check()) {
+            abort(404);
+        }
+
         return Inertia::render('Services', [
             'services' => $services,
             'faqs' => $faqs,
+            'page' => $page,
         ]);
     }
 }

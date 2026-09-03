@@ -6,16 +6,27 @@ import ContactContent from '../Components/ContactContent';
 import ContactBranches from '../Components/ContactBranches';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
+import DynamicPageSections from '../Components/DynamicPageSections';
 
-export default function Contact() {
+export default function Contact({ page = null }) {
+    const metaTitle = page?.meta_title || 'Contact Us — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Reach our London global headquarters or connect with local branch offices across South Asia, Africa, and Europe.';
+    const metaKeywords = page?.meta_keywords || 'contact kampus, education consultants London, student advisory branch';
+
     return (
         <Layout>
-            <Head title="Contact Us — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             {/* MAIN CONTACT PAGE CONTAINER WITH TAILWIND SECTION SPACING */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
                 {/* 1. CONTACT HERO SECTION */}
-                <ContactHero />
+                <ContactHero content={page?.content || {}} />
 
                 {/* 2. CONTACT FORM & INFO TWO-COLUMN SECTION */}
                 <ContactContent />
@@ -23,10 +34,15 @@ export default function Contact() {
                 {/* 3. GLOBAL BRANCHES NETWORK GRID */}
                 <ContactBranches />
 
-                {/* 4. 5-STEP ADMISSION ROADMAP */}
+                {/* 4. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
+
+                {/* 5. 5-STEP ADMISSION ROADMAP */}
                 <JourneyProcess />
 
-                {/* 5. FAQ ACCORDION SECTION */}
+                {/* 6. FAQ ACCORDION SECTION */}
                 <FaqSection />
             </div>
         </Layout>

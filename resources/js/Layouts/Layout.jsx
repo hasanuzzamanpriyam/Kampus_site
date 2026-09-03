@@ -109,7 +109,8 @@ export default function Layout({ children }) {
         { name: 'Student Visa Guide', href: '/visa-guide' },
     ];
 
-    // Combine static footer links with dynamic footer pages enabled by Admin
+    // Combine static footer links with dynamic footer pages enabled by Admin (excluding legal/policy pages which belong in bottom copyright bar)
+    const legalPages = ['privacy-policy', 'terms-of-service', 'terms', 'cookie-preferences', 'accreditation'];
     const dynamicFooterLinks = (footer_pages || []).map(p => ({
         name: p.name,
         href: p.slug === 'home' || p.slug === '/' ? '/' : `/${p.slug.replace(/^\//, '')}`
@@ -117,7 +118,12 @@ export default function Layout({ children }) {
 
     const quickLinks = [
         ...staticQuickLinks,
-        ...dynamicFooterLinks.filter(d => !staticQuickLinks.some(s => s.href.toLowerCase() === d.href.toLowerCase()))
+        ...dynamicFooterLinks.filter(d => {
+            const cleanHref = d.href.replace(/^\//, '').toLowerCase();
+            const isStatic = staticQuickLinks.some(s => s.href.toLowerCase() === d.href.toLowerCase());
+            const isLegal = legalPages.includes(cleanHref);
+            return !isStatic && !isLegal;
+        })
     ];
 
 

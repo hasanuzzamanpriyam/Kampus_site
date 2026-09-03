@@ -88,6 +88,16 @@ class PageController extends Controller
             'content' => 'nullable|array',
         ]);
 
+        $coreSlugs = [
+            '/', 'home', 'about', 'services', 'universities', 'courses', 'blog', 'contact',
+            'partner-with-us', 'partner', 'scholarships', 'visa-guide', 'privacy-policy',
+            'terms-of-service', 'terms', 'cookie-preferences', 'accreditation'
+        ];
+
+        if (in_array(strtolower($page->slug), $coreSlugs)) {
+            $validated['slug'] = $page->slug;
+        }
+
         $validated['is_active'] = $request->boolean('is_active');
         $validated['show_in_navbar'] = $request->boolean('show_in_navbar');
         $validated['show_in_footer'] = $request->boolean('show_in_footer');

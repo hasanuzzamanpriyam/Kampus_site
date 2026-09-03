@@ -6,17 +6,24 @@ import CourseFilters from '../Components/CourseFilters';
 import CourseList from '../Components/CourseList';
 import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
+import DynamicPageSections from '../Components/DynamicPageSections';
 import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
 
 export default function Courses() {
-    const { courses = {}, destinations = [], levels = [], popularSearches = [], filters = {} } = usePage().props;
+    const { courses = {}, destinations = [], levels = [], popularSearches = [], filters = {}, page = null } = usePage().props;
 
-    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+    const metaTitle = page?.meta_title || 'Find Degree Courses & Programmes — Kampus EduConsult';
+    const metaDescription = page?.meta_description || 'Browse thousands of undergraduate, postgraduate, and foundation degrees with scholarships across top global universities.';
+    const metaKeywords = page?.meta_keywords || 'degrees, university courses, MBA abroad, computer science degree UK';
+
+    const filtersData = (filters && typeof filters === 'object' && !Array.isArray(filters)) ? filters : {};
+
+    const [searchQuery, setSearchQuery] = useState(typeof filtersData.search === 'string' ? filtersData.search : '');
     const [selectedLevels, setSelectedLevels] = useState(
-        filters.level ? (Array.isArray(filters.level) ? filters.level : filters.level.split(',')) : []
+        filtersData.level ? (Array.isArray(filtersData.level) ? filtersData.level : String(filtersData.level).split(',')) : []
     );
-    const [selectedDestination, setSelectedDestination] = useState(filters.country || 'All');
-    const [sortBy, setSortBy] = useState(filters.sort || 'popularity');
+    const [selectedDestination, setSelectedDestination] = useState(typeof filtersData.country === 'string' ? filtersData.country : 'All');
+    const [sortBy, setSortBy] = useState(typeof filtersData.sort === 'string' ? filtersData.sort : 'popularity');
     const isFirstMount = useRef(true);
 
     // Inertia SPA visit handler with preserveState and preserveScroll
@@ -82,7 +89,13 @@ export default function Courses() {
 
     return (
         <Layout>
-            <Head title="Find Degree Courses & Programmes — Kampus EduConsult" />
+            <Head>
+                <title>{metaTitle}</title>
+                <meta name="description" content={metaDescription} />
+                <meta name="keywords" content={metaKeywords} />
+                <meta property="og:title" content={metaTitle} />
+                <meta property="og:description" content={metaDescription} />
+            </Head>
 
             {/* MAIN COURSES PAGE CONTAINER WITH TAILWIND SECTION SPACING */}
             <div className="w-full flex flex-col space-y-0 selection:bg-blue-600 selection:text-white">
@@ -96,6 +109,7 @@ export default function Courses() {
                         setSearchQuery(val);
                         fetchResults(val, selectedLevels, selectedDestination, sortBy);
                     }}
+                    content={page?.content || {}}
                 />
 
                 {/* 2. PAGE LAYOUT STRUCTURE: RESPONSIVE FLEX CONTAINER (FILTERS LEFT, COURSE LIST RIGHT) */}
@@ -161,7 +175,12 @@ export default function Courses() {
                 {/* 3. 5-STEP ADMISSION ROADMAP */}
                 <JourneyProcess />
 
-                {/* 4. FAQ ACCORDION SECTION */}
+                {/* 4. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {page?.content?.sections && (
+                    <DynamicPageSections sections={page.content.sections} />
+                )}
+
+                {/* 5. FAQ ACCORDION SECTION */}
                 <FaqSection />
 
             </div>

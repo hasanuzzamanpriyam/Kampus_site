@@ -7,6 +7,7 @@ import Destinations from '../Components/Destinations';
 import JourneyProcess from '../Components/JourneyProcess';
 import SuccessStories from '../Components/SuccessStories';
 import FaqSection from '../Components/FaqSection';
+import DynamicPageSections from '../Components/DynamicPageSections';
 
 export default function Home({ page = null, universities = [], courses = [], countries = [], totalUniversitiesCount = 0, totalCountriesCount = 0, successStories = [], faqs = [] }) {
     // Dynamic SEO values from database with sensible defaults
@@ -72,7 +73,12 @@ export default function Home({ page = null, universities = [], courses = [], cou
                 {/* 5. STUDENT SUCCESS STORIES MARQUEE SECTION */}
                 <SuccessStories stories={successStories} />
 
-                {/* 6. FAQ ACCORDION SECTION */}
+                {/* 6. DYNAMIC PAGE BUILDER SECTIONS (IF CONFIGURED IN CMS) */}
+                {contentData?.sections && (
+                    <DynamicPageSections sections={contentData.sections} />
+                )}
+
+                {/* 7. FAQ ACCORDION SECTION */}
                 <FaqSection faqs={faqs} />
 
             </div>

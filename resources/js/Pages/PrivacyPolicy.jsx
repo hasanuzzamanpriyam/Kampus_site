@@ -1,9 +1,9 @@
 import React from 'react';
 import LegalPage from './LegalPage';
 
-export default function PrivacyPolicy() {
+export default function PrivacyPolicy({ page = null }) {
     return (
-        <LegalPage title="Privacy Policy" lastUpdated="August 2026">
+        <LegalPage title="Privacy Policy" lastUpdated="August 2026" page={page}>
             <p>
                 At <strong>Kampus Educational Consultancy Ltd</strong> ("Kampus EduConsult", "we", "us", or "our"), we respect your privacy and are committed to protecting the personal data of our prospective students, partner institutions, and site visitors.
             </p>

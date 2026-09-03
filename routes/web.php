@@ -30,8 +30,12 @@ use App\Http\Controllers\Admin\UserController;
 Route::get('/', HomeController::class)->name('home');
 
 Route::get('/about', function () {
-    return Inertia::render('About'); 
-});
+    $page = \App\Models\Page::where('slug', 'about')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('About', ['page' => $page]); 
+})->name('about');
 
 Route::get('/services', [PublicServiceController::class, 'index'])->name('services.index');
 
@@ -44,46 +48,78 @@ Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.show');
 
 Route::get('/contact', function () {
-    return Inertia::render('Contact'); 
-});
+    $page = \App\Models\Page::where('slug', 'contact')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('Contact', ['page' => $page]); 
+})->name('contact');
 
 Route::get('/courses', [PublicCourseController::class, 'index'])->name('courses.index');
 
 Route::get('/partner', function () {
-    return Inertia::render('PartnerWithUs'); 
+    return redirect()->route('partner-with-us');
 });
 
 Route::get('/partner-with-us', function () {
-    return Inertia::render('PartnerWithUs'); 
-});
+    $page = \App\Models\Page::where('slug', 'partner-with-us')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('PartnerWithUs', ['page' => $page]); 
+})->name('partner-with-us');
 
 Route::get('/scholarships', function () {
-    return Inertia::render('Scholarships'); 
-});
+    $page = \App\Models\Page::where('slug', 'scholarships')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('Scholarships', ['page' => $page]); 
+})->name('scholarships');
 
 Route::get('/visa-guide', function () {
-    return Inertia::render('VisaGuide'); 
-});
+    $page = \App\Models\Page::where('slug', 'visa-guide')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('VisaGuide', ['page' => $page]); 
+})->name('visa-guide');
 
 Route::get('/privacy-policy', function () {
-    return Inertia::render('PrivacyPolicy'); 
-});
+    $page = \App\Models\Page::where('slug', 'privacy-policy')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('PrivacyPolicy', ['page' => $page]); 
+})->name('privacy-policy');
 
 Route::get('/terms-of-service', function () {
-    return Inertia::render('TermsOfService'); 
-});
+    $page = \App\Models\Page::where('slug', 'terms-of-service')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('TermsOfService', ['page' => $page]); 
+})->name('terms-of-service');
 
 Route::get('/terms', function () {
-    return Inertia::render('TermsOfService'); 
+    return redirect()->route('terms-of-service');
 });
 
 Route::get('/cookie-preferences', function () {
-    return Inertia::render('CookiePreferences'); 
-});
+    $page = \App\Models\Page::where('slug', 'cookie-preferences')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('CookiePreferences', ['page' => $page]); 
+})->name('cookie-preferences');
 
 Route::get('/accreditation', function () {
-    return Inertia::render('Accreditation'); 
-});
+    $page = \App\Models\Page::where('slug', 'accreditation')->first();
+    if ($page && !$page->is_active && !auth()->check()) {
+        abort(404);
+    }
+    return Inertia::render('Accreditation', ['page' => $page]); 
+})->name('accreditation');
 
 // Public Partner Application, Contact & Call Booking Submission Routes
 Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');

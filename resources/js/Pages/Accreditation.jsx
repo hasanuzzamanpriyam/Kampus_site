@@ -2,7 +2,7 @@ import React from 'react';
 import LegalPage from './LegalPage';
 import { Award, ShieldCheck, CheckCircle2, Globe, Building2, BookOpen } from 'lucide-react';
 
-export default function Accreditation() {
+export default function Accreditation({ page = null }) {
     const accreditations = [
         {
             title: 'British Council Certified Agency',
@@ -35,7 +35,7 @@ export default function Accreditation() {
     ];
 
     return (
-        <LegalPage title="Accreditation & Partner Credentials" lastUpdated="August 2026">
+        <LegalPage title="Accreditation & Partner Credentials" lastUpdated="August 2026" page={page}>
             <p>
                 Kampus Educational Consultancy Ltd is proud to hold official accreditations and certifications from top global education bodies, British government councils, and international agent standards organizations.
             </p>
