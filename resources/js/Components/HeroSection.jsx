@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     Sparkles,
     ArrowRight,
@@ -16,8 +16,96 @@ import {
     Check
 } from 'lucide-react';
 
-export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = {}, countries = [] }) {
+/**
+ * AnimatedCounter: smoothly animates numbers up from 0 to target when visible in viewport.
+ */
+function AnimatedCounter({ value, duration = 1600 }) {
+    const [display, setDisplay] = useState(() => {
+        const str = String(value || '').trim();
+        const match = str.match(/^([^0-9]*)([\d,.]+)(.*)$/);
+        if (match) {
+            return `${match[1] || ''}0${match[3] || ''}`;
+        }
+        return str;
+    });
+
+    const ref = useRef(null);
+    const animatedRef = useRef(false);
+
+    useEffect(() => {
+        const str = String(value || '').trim();
+        const match = str.match(/^([^0-9]*)([\d,.]+)(.*)$/);
+        if (!match) {
+            setDisplay(str);
+            return;
+        }
+
+        const prefix = match[1] || '';
+        const targetNum = parseFloat(match[2].replace(/,/g, '')) || 0;
+        const suffix = match[3] || '';
+        const isMillionOrDecimal = suffix.toUpperCase().includes('M') || match[2].includes('.');
+
+        animatedRef.current = false;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && !animatedRef.current) {
+                    animatedRef.current = true;
+                    const startTime = performance.now();
+
+                    const animate = (now) => {
+                        const elapsed = now - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        // Out-cubic easing for smooth deceleration
+                        const ease = 1 - Math.pow(1 - progress, 3);
+                        const current = ease * targetNum;
+
+                        if (progress < 1) {
+                            let formatted;
+                            if (isMillionOrDecimal && targetNum <= 20) {
+                                formatted = current.toFixed(1);
+                            } else {
+                                formatted = Math.floor(current).toLocaleString();
+                            }
+                            setDisplay(`${prefix}${formatted}${suffix}`);
+                            requestAnimationFrame(animate);
+                        } else {
+                            setDisplay(`${prefix}${targetNum.toLocaleString()}${suffix}`);
+                        }
+                    };
+
+                    requestAnimationFrame(animate);
+                }
+            },
+            { threshold: 0.15 }
+        );
+
+        if (ref.current) {
+            observer.observe(ref.current);
+        }
+
+        return () => observer.disconnect();
+    }, [value, duration]);
+
+    return <span ref={ref}>{display}</span>;
+}
+
+export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = {}, countries = [], totalCountriesCount = 0, totalUniversitiesCount = 0 }) {
+    const { props } = usePage();
     const [assessmentModalOpen, setAssessmentModalOpen] = useState(false);
+
+    // 100% Dynamic database counts: directly updates whenever admin adds/removes countries or universities
+    const dynamicCountriesCount = totalCountriesCount
+        || props?.totalCountriesCount
+        || props?.globalCountriesCount
+        || props?.globalCountries?.length
+        || countries?.length
+        || 15;
+
+    const dynamicUniversitiesCount = totalUniversitiesCount
+        || props?.totalUniversitiesCount
+        || props?.globalUniversitiesCount
+        || 38;
 
     const heading = content?.hero_heading || 'Building global futures, from dreams to degrees.';
     const subtitle = content?.hero_subtitle || 'Expert, unbiased guidance to top universities across the UK, USA, Finland and Dubai, completely free.';
@@ -25,20 +113,20 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
 
     const stats = [
         {
-            value: content?.stat_universities || '500+',
+            value: `${dynamicCountriesCount}+`,
+            unit: 'Destinations',
+            label: content?.stat_countries_label || 'countries',
+            icon: Globe,
+            color: 'from-emerald-500 to-teal-600',
+            textColor: 'text-emerald-600 dark:text-emerald-400'
+        },
+        {
+            value: `${dynamicUniversitiesCount}+`,
             unit: 'Partners',
             label: 'global universities',
             icon: Award,
             color: 'from-blue-500 to-indigo-600',
             textColor: 'text-blue-600 dark:text-blue-400'
-        },
-        {
-            value: content?.stat_acceptance || '98%',
-            unit: 'Visa Success',
-            label: 'approval rate',
-            icon: Users,
-            color: 'from-indigo-500 to-purple-600',
-            textColor: 'text-indigo-600 dark:text-indigo-400'
         },
         {
             value: content?.stat_scholarships || '$5M+',
@@ -49,12 +137,12 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
             textColor: 'text-amber-500 dark:text-amber-400'
         },
         {
-            value: '100%',
-            unit: 'Free',
-            label: 'counseling services',
-            icon: CheckCircle2,
-            color: 'from-emerald-500 to-teal-600',
-            textColor: 'text-emerald-600 dark:text-emerald-400'
+            value: content?.stat_acceptance || '98%',
+            unit: 'Visa Success',
+            label: 'approval rate',
+            icon: Users,
+            color: 'from-indigo-500 to-purple-600',
+            textColor: 'text-indigo-600 dark:text-indigo-400'
         }
     ];
 
@@ -214,14 +302,14 @@ export default function HeroSection({ onOpenAiSearch, onOpenBookCall, content = 
                         return (
                             <div
                                 key={i}
-                                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 shadow-xs flex items-center gap-4"
+                                className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 shadow-xs flex items-center gap-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all group"
                             >
-                                <div className={`p-3 rounded-xl bg-gradient-to-br ${st.color} text-white shrink-0 shadow-sm`}>
+                                <div className={`p-3 rounded-xl bg-gradient-to-br ${st.color} text-white shrink-0 shadow-sm group-hover:scale-105 transition-transform`}>
                                     <IconComp className="w-5 h-5" />
                                 </div>
                                 <div>
                                     <div className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                        {st.value}
+                                        <AnimatedCounter value={st.value} />
                                     </div>
                                     <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                                         {st.label}

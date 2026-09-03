@@ -300,8 +300,10 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'page' => $page,
             'universities' => $universities,
+            'totalUniversitiesCount' => University::count(),
             'courses' => $courses,
             'countries' => $countries,
+            'totalCountriesCount' => Country::count(),
             'successStories' => $successStories,
             'faqs' => $faqs,
         ]);

@@ -59,6 +59,8 @@ class HandleInertiaRequests extends Middleware
             'globalCountries' => fn () => \App\Models\Country::orderBy('name', 'asc')
                 ->select('id', 'name', 'slug', 'country_code', 'is_featured')
                 ->get(),
+            'globalCountriesCount' => fn () => \App\Models\Country::count(),
+            'globalUniversitiesCount' => fn () => \App\Models\University::count(),
             'globalSettings' => fn () => Setting::pluck('value', 'key')->toArray(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
