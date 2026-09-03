@@ -4,11 +4,13 @@ import {
     MapPin,
     ChevronDown,
     Check,
-    X
+    X,
+    TrendingUp
 } from 'lucide-react';
 
 export default function UniversitiesHero({
     destinations = [],
+    quickFilters = [],
     searchTerm = '',
     destination = 'All',
     onSearchChange,
@@ -159,9 +161,11 @@ export default function UniversitiesHero({
                     </div>
                 </div>
 
-                {/* 4. DYNAMIC QUICK FILTER TAGS (INSTANT 0MS TOGGLE) */}
+                {/* 4. DYNAMIC QUICK FILTER TAGS (MOST SEARCHED, MAX 10) */}
                 <div className="pt-2 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                    <span className="font-semibold text-slate-700 dark:text-slate-300">Quick Filters:</span>
+                    <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                        Quick Filters:
+                    </span>
                     
                     <button
                         type="button"
@@ -175,7 +179,7 @@ export default function UniversitiesHero({
                         All
                     </button>
 
-                    {destinations.map((d) => {
+                    {(quickFilters && quickFilters.length > 0 ? quickFilters : destinations).slice(0, 10).map((d) => {
                         const isSelected = destination.toLowerCase() === d.name.toLowerCase();
                         return (
                             <button

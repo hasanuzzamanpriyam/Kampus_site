@@ -32,12 +32,34 @@ class PublicUniversityController extends Controller
                       ->orWhere('slug', $country)
                       ->orWhere('name', $country);
                 });
+
+                // Track and increment search popularity for this country
+                Country::where('country_code', $country)
+                    ->orWhere('slug', $country)
+                    ->orWhere('name', $country)
+                    ->increment('search_count');
             })
             ->latest()
             ->paginate(12)
             ->withQueryString(); // Crucial for keeping filters during pagination
 
-        // Fetch dynamic destination countries from the database
+        // If a free-text search was conducted, track matching country if applicable
+        if ($request->filled('search')) {
+            $searchKeyword = trim($request->input('search'));
+            Country::where('name', 'like', "%{$searchKeyword}%")
+                ->orWhere('slug', 'like', "%{$searchKeyword}%")
+                ->increment('search_count');
+        }
+
+        // Top 10 most searched destination countries for Quick Filters
+        $quickFilterDestinations = Country::whereHas('universities')
+            ->orderByDesc('search_count')
+            ->orderByDesc('is_featured')
+            ->orderBy('name')
+            ->take(10)
+            ->get(['id', 'name', 'slug', 'country_code', 'search_count']);
+
+        // Fetch dynamic destination countries from the database for the search dropdown
         $destinations = Country::whereHas('universities')
             ->withCount('universities')
             ->orderBy('name')
@@ -46,6 +68,7 @@ class PublicUniversityController extends Controller
         return Inertia::render('Universities', [
             'universities' => $universities,
             'destinations' => $destinations,
+            'quickFilterDestinations' => $quickFilterDestinations,
             'filters' => $request->only(['search', 'country']),
         ]);
     }

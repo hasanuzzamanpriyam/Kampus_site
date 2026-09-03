@@ -8,7 +8,7 @@ import JourneyProcess from '../Components/JourneyProcess';
 import FaqSection from '../Components/FaqSection';
 
 export default function Universities() {
-    const { universities = {}, destinations = [], filters = {} } = usePage().props;
+    const { universities = {}, destinations = [], quickFilterDestinations = [], filters = {} } = usePage().props;
 
     const [search, setSearch] = useState(filters.search || '');
     const [country, setCountry] = useState(filters.country || 'All');
@@ -64,6 +64,7 @@ export default function Universities() {
                 {/* 1. UNIVERSITIES HERO WITH CONTROLLED SEARCH & DYNAMIC COUNTRY DROPDOWN */}
                 <UniversitiesHero
                     destinations={destinations}
+                    quickFilters={quickFilterDestinations}
                     searchTerm={search}
                     destination={country}
                     onSearchChange={setSearch}
