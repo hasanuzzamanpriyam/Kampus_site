@@ -16,7 +16,7 @@ class PublicBlogController extends Controller
     {
         $query = Blog::where('is_published', true);
 
-        // Optional search filter
+        // Optional search filter & search popularity tracking
         if ($request->filled('search')) {
             $search = trim($request->input('search'));
             $query->where(function ($q) use ($search) {
@@ -25,19 +25,38 @@ class PublicBlogController extends Controller
                   ->orWhere('category', 'like', "%{$search}%")
                   ->orWhere('content', 'like', "%{$search}%");
             });
+
+            if (strlen($search) >= 2) {
+                Blog::where('title', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->increment('search_count');
+
+                \DB::table('blog_searches')->updateOrInsert(
+                    ['keyword' => $search],
+                    ['search_count' => \DB::raw('search_count + 1'), 'updated_at' => now(), 'created_at' => now()]
+                );
+            }
         }
 
-        // Optional category filter
+        // Optional category filter & category popularity tracking
         if ($request->filled('category') && $request->input('category') !== 'All') {
-            $query->where('category', $request->input('category'));
+            $cat = trim($request->input('category'));
+            $query->where('category', $cat);
+
+            Blog::where('category', $cat)->increment('search_count');
         }
 
         $blogs = $query->latest()->paginate(9)->withQueryString();
 
+        // Most recent and most searched categories (max 10)
         $categories = Blog::where('is_published', true)
-            ->distinct()
             ->whereNotNull('category')
             ->where('category', '!=', '')
+            ->select('category', \DB::raw('SUM(search_count) as total_searches'), \DB::raw('MAX(created_at) as latest_created'))
+            ->groupBy('category')
+            ->orderByDesc('total_searches')
+            ->orderByDesc('latest_created')
+            ->take(10)
             ->pluck('category')
             ->values();
 

@@ -129,7 +129,7 @@ export default function BlogIndex() {
                                     >
                                         All Stories
                                     </button>
-                                    {categories.map((cat) => (
+                                    {categories.slice(0, 10).map((cat) => (
                                         <button
                                             key={cat}
                                             type="button"
