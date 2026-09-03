@@ -28,6 +28,8 @@ export default function CourseList({
     const [viewMode, setViewMode] = useState('grid'); // Default to grid view
     const [selectedCourseModal, setSelectedCourseModal] = useState(null);
     const [applicationSent, setApplicationSent] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', notes: '' });
 
     const courseList = Array.isArray(courses) ? courses : (courses?.data || []);
@@ -35,14 +37,53 @@ export default function CourseList({
 
     const hasFilters = Boolean(searchQuery.trim()) || selectedLevels.length > 0 || selectedDestination !== 'All';
 
-    const handleApplySubmit = (e) => {
+    const handleApplySubmit = async (e) => {
         e.preventDefault();
-        setApplicationSent(true);
-        setTimeout(() => {
-            setApplicationSent(false);
-            setSelectedCourseModal(null);
-            setFormData({ name: '', email: '', phone: '', notes: '' });
-        }, 2200);
+        setIsSubmitting(true);
+        setErrorMessage('');
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const response = await fetch('/course-enquiry', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || '',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    notes: formData.notes,
+                    course_id: selectedCourseModal?.id,
+                    course_title: selectedCourseModal?.title,
+                    university_name: selectedCourseModal?.university?.name,
+                    level: selectedCourseModal?.level,
+                    duration: selectedCourseModal?.duration,
+                    intake: selectedCourseModal?.intake,
+                    tuition_fee: selectedCourseModal?.tuition_fee,
+                })
+            });
+
+            const resData = await response.json();
+            if (!response.ok || !resData.success) {
+                throw new Error(resData.message || 'Failed to submit enquiry. Please verify your details.');
+            }
+
+            setApplicationSent(true);
+            setTimeout(() => {
+                setApplicationSent(false);
+                setSelectedCourseModal(null);
+                setFormData({ name: '', email: '', phone: '', notes: '' });
+            }, 3000);
+        } catch (err) {
+            console.error(err);
+            setErrorMessage(err.message || 'Network error occurred. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -309,6 +350,12 @@ export default function CourseList({
                                 </div>
 
                                 <form onSubmit={handleApplySubmit} className="space-y-4">
+                                    {errorMessage && (
+                                        <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 text-xs font-semibold">
+                                            {errorMessage}
+                                        </div>
+                                    )}
+
                                     <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 space-y-1 text-xs font-medium border border-slate-200/60 dark:border-slate-700/60">
                                         <div className="flex justify-between">
                                             <span className="text-slate-500">Duration:</span>
@@ -362,9 +409,17 @@ export default function CourseList({
 
                                     <button
                                         type="submit"
-                                        className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/25 transition-all cursor-pointer"
+                                        disabled={isSubmitting}
+                                        className="w-full py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white font-extrabold text-xs shadow-md shadow-blue-600/25 transition-all cursor-pointer flex items-center justify-center gap-2"
                                     >
-                                        Submit Direct Application
+                                        {isSubmitting ? (
+                                            <>
+                                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                                <span>Submitting Application...</span>
+                                            </>
+                                        ) : (
+                                            <span>Submit Direct Application</span>
+                                        )}
                                     </button>
                                 </form>
                             </>

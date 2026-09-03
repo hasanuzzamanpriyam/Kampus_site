@@ -125,6 +125,7 @@ Route::get('/accreditation', function () {
 Route::post('/partner/apply', [PartnerController::class, 'store'])->name('partner.apply');
 Route::post('/contact/submit', [InquiryController::class, 'store'])->name('contact.submit');
 Route::post('/book-call', [FrontendController::class, 'bookCall'])->name('book-call.submit');
+Route::post('/course-enquiry', [FrontendController::class, 'enquireCourse'])->name('course.enquiry');
 
 // AI Course Matcher API Routes
 Route::post('/api/course-matcher', [FrontendController::class, 'matchCourses'])->name('api.course-matcher');

@@ -167,4 +167,59 @@ class FrontendController extends Controller
             'message' => 'Your shortlist has been recorded! Our admissions team will email you the full course brochures shortly.',
         ]);
     }
+
+    /**
+     * Store course inquiry / direct application as ContactMessage.
+     */
+    public function enquireCourse(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:255',
+            'course_id' => 'nullable|integer',
+            'course_title' => 'required|string|max:255',
+            'university_name' => 'nullable|string|max:255',
+            'level' => 'nullable|string|max:255',
+            'duration' => 'nullable|string|max:255',
+            'intake' => 'nullable|string|max:255',
+            'tuition_fee' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:2000',
+        ]);
+
+        $details = [];
+        $details[] = "Course: " . $validated['course_title'] . ($request->filled('level') ? " (" . $request->input('level') . ")" : "");
+        if ($request->filled('university_name')) {
+            $details[] = "University: " . $request->input('university_name');
+        }
+        if ($request->filled('duration')) {
+            $details[] = "Duration: " . $request->input('duration');
+        }
+        if ($request->filled('intake')) {
+            $details[] = "Intake: " . $request->input('intake');
+        }
+        if ($request->filled('tuition_fee')) {
+            $details[] = "Annual Tuition: " . $request->input('tuition_fee');
+        }
+        if ($request->filled('notes')) {
+            $details[] = "Applicant Note: " . $request->input('notes');
+        }
+
+        $messageContent = "Direct Course Application / Enquiry:\n\n• " . implode("\n• ", $details) . "\n\n[Captured via Courses Directory]";
+
+        $inquiry = ContactMessage::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => !empty($validated['phone']) ? $validated['phone'] : 'Not provided',
+            'topic' => 'Course Enquiry: ' . $validated['course_title'],
+            'message' => $messageContent,
+            'is_read' => false,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your course enquiry has been submitted successfully! An admissions advisor will contact you shortly.',
+            'inquiry' => $inquiry,
+        ]);
+    }
 }
