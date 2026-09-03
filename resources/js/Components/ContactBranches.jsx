@@ -42,33 +42,33 @@ export default function ContactBranches() {
                     </p>
                 </div>
 
-                {/* DYNAMIC GRID OF CLICKABLE BRANCH CARDS (image_30f12a.png style) */}
+                {/* DYNAMIC GRID OF CLICKABLE BRANCH CARDS */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     {branches.map((branch) => (
                         <div
                             key={branch.id || branch.country_code}
                             onClick={() => setSelectedBranch(branch)}
-                            className="bg-slate-800 rounded-2xl p-4 flex items-center justify-between group hover:bg-slate-700 transition cursor-pointer shadow-md border border-slate-700/60"
+                            className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 flex items-center justify-between group hover:border-blue-500/40 dark:hover:border-blue-500/40 hover:shadow-md transition-all duration-200 cursor-pointer border border-slate-200/80 dark:border-slate-800 shadow-xs"
                         >
                             <div className="flex items-center gap-3.5 min-w-0">
                                 {/* Square Country Code Badge */}
-                                <div className="w-12 h-12 rounded-xl bg-slate-700 font-extrabold text-white flex items-center justify-center text-sm shrink-0 border border-slate-600 group-hover:scale-105 transition-transform">
+                                <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 font-extrabold text-slate-800 dark:text-slate-100 flex items-center justify-center text-sm shrink-0 border border-slate-200 dark:border-slate-700 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/50 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:border-blue-200 dark:group-hover:border-blue-900/50 group-hover:scale-105 transition-all">
                                     {branch.country_code}
                                 </div>
 
                                 <div className="space-y-0.5 min-w-0">
-                                    <h3 className="font-extrabold text-white group-hover:text-blue-400 transition-colors text-base truncate">
+                                    <h3 className="font-extrabold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-base truncate">
                                         {branch.country_name}
                                     </h3>
-                                    <p className="text-xs text-slate-400 font-medium flex items-center gap-1 truncate">
-                                        <MapPin className="w-3 h-3 text-blue-400 shrink-0" />
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium flex items-center gap-1.5 truncate">
+                                        <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                                         <span className="truncate">{branch.cities}</span>
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Right Arrow Icon */}
-                            <div className="w-8 h-8 rounded-full bg-slate-700/60 text-slate-300 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center transition-all shrink-0 ml-3">
+                            {/* Right Arrow Action Icon */}
+                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 dark:group-hover:bg-blue-600 dark:group-hover:text-white dark:group-hover:border-blue-600 flex items-center justify-center transition-all shrink-0 ml-3 shadow-2xs">
                                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                             </div>
                         </div>
