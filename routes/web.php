@@ -214,6 +214,9 @@ Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class]
         'update' => 'admin.courses.update',
         'destroy' => 'admin.courses.destroy',
     ]);
+    Route::patch('/courses/{course}/toggle-fee', [CourseController::class, 'toggleTuitionFee'])
+        ->middleware('can:manage-courses')
+        ->name('admin.courses.toggle-fee');
 
     // Blog Posts CRUD Routes
     Route::middleware('can:manage-blogs')->group(function () {

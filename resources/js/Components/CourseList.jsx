@@ -63,7 +63,9 @@ export default function CourseList({
                     level: selectedCourseModal?.level,
                     duration: selectedCourseModal?.duration,
                     intake: selectedCourseModal?.intake,
-                    tuition_fee: selectedCourseModal?.tuition_fee,
+                    tuition_fee: selectedCourseModal?.show_tuition_fee !== false
+                        ? selectedCourseModal?.tuition_fee
+                        : 'Tuition on Request',
                 })
             });
 
@@ -259,7 +261,13 @@ export default function CourseList({
                                     <div className={viewMode === 'grid' ? 'text-left' : 'text-left lg:text-right'}>
                                         <div className="text-[10px] font-bold uppercase text-slate-400">Annual Tuition</div>
                                         <div className="text-lg font-extrabold text-slate-900 dark:text-white">
-                                            {course.tuition_fee || 'Contact for Fee'}
+                                            {course.show_tuition_fee !== false ? (
+                                                course.tuition_fee || 'Contact for Fee'
+                                            ) : (
+                                                <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                                                    Tuition on Request
+                                                </span>
+                                            )}
                                         </div>
                                     </div>
 
@@ -365,9 +373,13 @@ export default function CourseList({
                                             <span className="text-slate-500">Intake:</span>
                                             <span className="font-bold text-slate-900 dark:text-white">{selectedCourseModal.intake || 'Multiple'}</span>
                                         </div>
-                                        <div className="flex justify-between">
+                                        <div className="flex justify-between items-center">
                                             <span className="text-slate-500">Annual Tuition:</span>
-                                            <span className="font-bold text-blue-600 dark:text-blue-400">{selectedCourseModal.tuition_fee || 'Contact for Fee'}</span>
+                                            <span className="font-bold text-blue-600 dark:text-blue-400">
+                                                {selectedCourseModal.show_tuition_fee !== false
+                                                    ? (selectedCourseModal.tuition_fee || 'Contact for Fee')
+                                                    : 'Tuition on Request'}
+                                            </span>
                                         </div>
                                     </div>
 
