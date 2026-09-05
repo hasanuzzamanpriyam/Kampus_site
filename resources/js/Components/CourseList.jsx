@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import {
     MapPin,
     Clock,
@@ -25,12 +25,31 @@ export default function CourseList({
     onSortChange,
     onResetFilters
 }) {
+    const { props } = usePage();
+    const currentUser = props?.auth?.user;
+
     const [viewMode, setViewMode] = useState('grid'); // Default to grid view
     const [selectedCourseModal, setSelectedCourseModal] = useState(null);
     const [applicationSent, setApplicationSent] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
-    const [formData, setFormData] = useState({ name: '', email: '', phone: '', notes: '' });
+    const [formData, setFormData] = useState({
+        name: currentUser?.name || '',
+        email: currentUser?.email || '',
+        phone: '',
+        notes: ''
+    });
+
+    const handleOpenCourseModal = (course) => {
+        setSelectedCourseModal(course);
+        if (currentUser) {
+            setFormData(prev => ({
+                ...prev,
+                name: prev.name || currentUser.name || '',
+                email: prev.email || currentUser.email || '',
+            }));
+        }
+    };
 
     const courseList = Array.isArray(courses) ? courses : (courses?.data || []);
     const totalCount = courses?.total ?? courseList.length;
@@ -273,7 +292,7 @@ export default function CourseList({
 
                                     <button
                                         type="button"
-                                        onClick={() => setSelectedCourseModal(course)}
+                                        onClick={() => handleOpenCourseModal(course)}
                                         className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md shadow-blue-600/20 hover:scale-105 transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0"
                                     >
                                         <span>Enquire</span>
