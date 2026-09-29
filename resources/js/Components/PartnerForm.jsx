@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import {
     Send,
     Handshake,
@@ -26,24 +27,41 @@ export default function PartnerForm({ content = {} }) {
     });
 
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsSubmitted(true);
-        setTimeout(() => {
-            alert('Thank you for applying! Our Partner Relations Team will review your application and contact you within 48 hours.');
-            setFormData({
-                companyName: '',
-                contactPerson: '',
-                email: '',
-                phone: '',
-                country: '',
-                website: '',
-                yearsInBusiness: '1-3 years',
-                message: ''
-            });
-            setIsSubmitted(false);
-        }, 600);
+        setIsSuccess(false);
+
+        router.post('/partner/apply', {
+            company_name: formData.companyName,
+            contact_person: formData.contactPerson,
+            email: formData.email,
+            phone: formData.phone,
+            country: formData.country,
+            website: formData.website,
+            years_in_business: formData.yearsInBusiness,
+            message: formData.message,
+        }, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setIsSuccess(true);
+                setFormData({
+                    companyName: '',
+                    contactPerson: '',
+                    email: '',
+                    phone: '',
+                    country: '',
+                    website: '',
+                    yearsInBusiness: '1-3 years',
+                    message: ''
+                });
+            },
+            onFinish: () => {
+                setIsSubmitted(false);
+            }
+        });
     };
 
     const handleChange = (e) => {
@@ -75,6 +93,14 @@ export default function PartnerForm({ content = {} }) {
 
                     {/* FORM FIELDS WITH FULL DARK MODE SUPPORT & FOCUS RINGS */}
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {isSuccess && (
+                            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 flex items-center gap-3 animate-in fade-in duration-200">
+                                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                <div className="text-sm font-semibold">
+                                    Thank you for applying! Our Partner Relations Team will review your application and contact you within 48 hours.
+                                </div>
+                            </div>
+                        )}
                         
                         {/* ROW 1 (2 COLUMNS): COMPANY NAME & CONTACT PERSON */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

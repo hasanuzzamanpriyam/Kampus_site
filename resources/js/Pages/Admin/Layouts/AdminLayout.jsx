@@ -32,9 +32,11 @@ import {
     BellOff,
     CheckCheck,
     Sliders,
-    Award
+    Award,
+    FileCheck
 } from 'lucide-react';
 import axios from 'axios';
+import UserAvatar from '@/Components/UserAvatar';
 
 export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const { url, props } = usePage();
@@ -116,8 +118,19 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     const userPermissions = currentUser?.permissions || [];
     const primaryRole = currentUser?.roles?.[0] || (isSuperAdmin ? 'Super Admin' : 'Staff');
 
+    const isPartner = currentUser?.is_partner || currentUser?.roles?.includes('Partner');
+    const isStudent = currentUser?.is_student;
+
+    if (isStudent) {
+        if (typeof window !== 'undefined') {
+            window.location.href = '/student/dashboard';
+        }
+        return null;
+    }
+
     const sidebarLinks = [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+        { name: 'Company Documents', href: '/admin/partner/documents', icon: FileCheck, partnerOnly: true },
         { name: 'Global Settings', href: '/admin/settings', icon: Settings, permission: 'manage-settings' },
         { name: 'Environment (.env)', href: '/admin/settings/env', icon: Sliders, permission: 'manage-settings' },
         { name: 'Hero Slideshow', href: '/admin/slideshow', icon: Layers, permission: 'manage-settings' },
@@ -145,6 +158,9 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
     ];
 
     const visibleSidebarLinks = sidebarLinks.filter(link => {
+        if (link.partnerOnly) {
+            return isPartner;
+        }
         if (!link.permission) return true;
         return isSuperAdmin || userPermissions.includes(link.permission);
     });
@@ -496,9 +512,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 aria-expanded={isUserMenuOpen}
                                 aria-haspopup="true"
                             >
-                                <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 font-bold flex items-center justify-center border border-blue-200 dark:border-blue-800 shrink-0">
-                                    <UserCircle className="w-5 h-5" />
-                                </div>
+                                <UserAvatar user={currentUser} size="sm" className="shrink-0" />
                                 <div className="hidden sm:flex flex-col text-left">
                                     <div className="flex items-center gap-2">
                                         <span className="text-xs font-extrabold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -517,15 +531,32 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
 
                             {/* Floating Profile Dropdown Menu: Appears only when hitting the user name */}
                             {isUserMenuOpen && (
-                                <div className="absolute right-0 mt-2 w-40 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                                <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                                    <div className="px-2 py-2 mb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2.5">
+                                        <UserAvatar user={currentUser} size="sm" />
+                                        <div className="min-w-0 flex-1">
+                                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{adminName}</p>
+                                            <p className="text-[10px] text-slate-400 truncate">{adminEmail}</p>
+                                        </div>
+                                    </div>
                                     <Link
                                         href="/profile"
                                         onClick={() => setIsUserMenuOpen(false)}
                                         className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                                     >
                                         <Settings className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                                        <span>Profile</span>
+                                        <span>My Profile & Avatar</span>
                                     </Link>
+                                    {isPartner && (
+                                        <Link
+                                            href="/admin/partner/documents"
+                                            onClick={() => setIsUserMenuOpen(false)}
+                                            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                        >
+                                            <FileCheck className="w-4 h-4 text-blue-500" />
+                                            <span>Company Documents</span>
+                                        </Link>
+                                    )}
                                 </div>
                             )}
                         </div>

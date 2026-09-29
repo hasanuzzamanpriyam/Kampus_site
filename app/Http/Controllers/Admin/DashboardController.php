@@ -21,7 +21,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         if ($request->user()->isStudent()) {
-            return redirect()->route('student.dashboard');
+            abort(403, 'Unauthorized access: Students do not have permission to access the administration panels.');
         }
 
         $now = Carbon::now();
@@ -53,6 +53,11 @@ class DashboardController extends Controller
             'inquiries' => [
                 'total' => ContactMessage::count(),
                 'today' => ContactMessage::where('created_at', '>=', $startOfDay)->count(),
+            ],
+            'partner_documents' => [
+                'total' => \App\Models\PartnerDocument::where('user_id', $request->user()->id)->count(),
+                'verified' => \App\Models\PartnerDocument::where('user_id', $request->user()->id)->where('status', 'verified')->count(),
+                'pending' => \App\Models\PartnerDocument::where('user_id', $request->user()->id)->where('status', 'submitted')->count(),
             ],
         ];
 

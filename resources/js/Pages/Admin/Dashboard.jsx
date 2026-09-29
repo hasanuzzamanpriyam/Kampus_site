@@ -15,7 +15,9 @@ import {
     Settings,
     ShieldCheck,
     CheckCircle2,
-    Compass
+    Compass,
+    FileCheck,
+    AlertCircle
 } from 'lucide-react';
 
 export default function Dashboard({ stats }) {
@@ -30,12 +32,15 @@ export default function Dashboard({ stats }) {
         courses: { total: 0, this_month: 0 },
         applications: { total: 0, pending: 0 },
         inquiries: { total: 0, today: 0 },
+        partner_documents: { total: 0, verified: 0, pending: 0 },
     };
+
+    const partnerDocStats = dynamicStats.partner_documents || { total: 0, verified: 0, pending: 0 };
 
     const partnerStats = [
         { title: 'Participating Universities', value: dynamicStats.universities?.total ?? 0, change: 'Global Network', icon: Building, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-100 dark:bg-blue-950' },
         { title: 'Available Courses', value: dynamicStats.courses?.total ?? 0, change: 'Updated Weekly', icon: BookOpen, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-950' },
-        { title: 'Partnership Status', value: 'Active', change: 'Official Partner', icon: CheckCircle2, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950' },
+        { title: 'Verified Documents', value: `${partnerDocStats.verified} / ${partnerDocStats.total}`, change: partnerDocStats.pending > 0 ? `${partnerDocStats.pending} Under Review` : (partnerDocStats.total === 0 ? 'Upload Required' : 'Verified'), icon: FileCheck, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-950' },
         { title: 'Directory Access', value: 'Full Access', change: 'Institutions & Courses', icon: ShieldCheck, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-950' },
     ];
 
@@ -172,10 +177,10 @@ export default function Dashboard({ stats }) {
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {(isPartner ? [
+                                { name: 'Company Documents', desc: 'Upload license, tax certificate & compliance credentials', href: '/admin/partner/documents', icon: FileCheck },
                                 { name: 'Universities Directory', desc: 'Browse institutions, locations & requirements', href: '/admin/universities', icon: Building2 },
                                 { name: 'Course Catalog', desc: 'Tuition fees, intakes, degrees & eligibility', href: '/admin/courses', icon: BookOpen },
-                                { name: 'My Profile & Credentials', desc: 'Change password and account details', href: '/profile', icon: Settings },
-                                { name: 'Study Destinations', desc: 'Explore partner countries and campuses', href: '/admin/universities', icon: Compass },
+                                { name: 'My Profile & Avatar', desc: 'Personalize image, password & account details', href: '/profile', icon: Settings },
                             ] : [
                                 { name: 'Edit Global Site Settings', desc: 'Logos, phone numbers & footers', href: '/admin/settings', icon: Settings },
                                 { name: 'Manage SEO & Pages', desc: 'Hero titles, meta tags & content', href: '/admin/pages', icon: FileText },

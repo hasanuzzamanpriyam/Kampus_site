@@ -22,12 +22,34 @@ class PartnerController extends Controller
      */
     public function index()
     {
-        $applications = PartnerApplication::orderBy('id', 'desc')->get();
+        $applications = PartnerApplication::with([
+            'user.partnerDocuments.verifier:id,name',
+            'documents.verifier:id,name'
+        ])
+        ->orderBy('id', 'desc')
+        ->get();
+
+        // Attach merged documents to applications for streamlined display
+        foreach ($applications as $app) {
+            $userDocs = $app->user?->partnerDocuments ?? collect();
+            $appDocs = $app->documents ?? collect();
+            $allDocs = $userDocs->merge($appDocs)->unique('id')->values();
+            $app->setAttribute('partner_documents', $allDocs);
+        }
+
+        $documentStats = [
+            'total' => \App\Models\PartnerDocument::count(),
+            'verified' => \App\Models\PartnerDocument::where('status', 'verified')->count(),
+            'pending' => \App\Models\PartnerDocument::where('status', 'submitted')->count(),
+            'rejected' => \App\Models\PartnerDocument::where('status', 'rejected')->count(),
+        ];
+
         $partnerModalParagraph = Setting::where('key', 'partner_modal_paragraph')->value('value') 
             ?? 'Join our global higher education network. Register your agency below to collaborate with top universities worldwide and streamline student admissions.';
 
         return Inertia::render('Admin/Partners/Index', [
             'applications' => $applications,
+            'documentStats' => $documentStats,
             'partnerModalParagraph' => $partnerModalParagraph,
         ]);
     }
@@ -85,6 +107,9 @@ class PartnerController extends Controller
                 $partnerRole->syncPermissions(['manage-universities', 'manage-courses']);
             }
 
+            // Ensure application is linked to user account
+            $application->update(['user_id' => $user->id]);
+
             // Assign Partner role if not already assigned
             if (! $user->hasRole('Partner') && ! $user->hasRole('Super Admin')) {
                 $user->assignRole($partnerRole);
@@ -120,6 +145,28 @@ class PartnerController extends Controller
         }
 
         return back()->with('success', $feedbackMessage);
+    }
+
+    /**
+     * Verify or update status of a partner compliance document.
+     */
+    public function verifyDocument(Request $request, $id)
+    {
+        $document = \App\Models\PartnerDocument::findOrFail($id);
+
+        $validated = $request->validate([
+            'status' => 'required|string|in:submitted,verified,rejected',
+            'counselor_remarks' => 'nullable|string|max:1000',
+        ]);
+
+        $document->update([
+            'status' => $validated['status'],
+            'counselor_remarks' => $validated['counselor_remarks'] ?? $document->counselor_remarks,
+            'verified_at' => $validated['status'] === 'verified' ? now() : null,
+            'verified_by' => $validated['status'] === 'verified' ? auth()->id() : null,
+        ]);
+
+        return back()->with('success', "Partner document \"{$document->title}\" status updated to " . ucfirst($validated['status']) . ".");
     }
 
     /**

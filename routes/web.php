@@ -206,8 +206,20 @@ Route::middleware(['auth'])->prefix('student')->group(function () {
     Route::delete('/achievements/{id}', [\App\Http\Controllers\Student\StudentProfileController::class, 'destroyAchievement'])->name('student.achievements.destroy');
 });
 
-// SECURED ADMIN CMS ROUTES (Protected by 'auth' and 'EnsurePartnerPasswordSet' middleware)
-Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class])->prefix('admin')->group(function () {
+// Partner Portal & Compliance Documents Routes
+Route::middleware(['auth'])->prefix('partner')->group(function () {
+    Route::get('/documents', [\App\Http\Controllers\Partner\PartnerDocumentController::class, 'index'])->name('partner.documents.index');
+    Route::post('/documents', [\App\Http\Controllers\Partner\PartnerDocumentController::class, 'store'])->name('partner.documents.store');
+    Route::post('/documents/{id}', [\App\Http\Controllers\Partner\PartnerDocumentController::class, 'update'])->name('partner.documents.update');
+    Route::delete('/documents/{id}', [\App\Http\Controllers\Partner\PartnerDocumentController::class, 'destroy'])->name('partner.documents.destroy');
+});
+
+// SECURED ADMIN CMS ROUTES (Protected by 'auth', 'EnsureNotStudent', and 'EnsurePartnerPasswordSet' middleware)
+Route::get('/admin', function () {
+    return redirect()->route('admin.dashboard');
+})->middleware(['auth', \App\Http\Middleware\EnsureNotStudent::class]);
+
+Route::middleware(['auth', \App\Http\Middleware\EnsureNotStudent::class, \App\Http\Middleware\EnsurePartnerPasswordSet::class])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::post('/notifications/mark-read', [AdminDashboardController::class, 'markNotificationsRead'])->name('admin.notifications.mark-read');
 
@@ -380,12 +392,16 @@ Route::middleware(['auth', \App\Http\Middleware\EnsurePartnerPasswordSet::class]
     // Partner Applications Routes (admin management)
     Route::middleware('can:manage-partners')->group(function () {
         Route::post('/partners/popup-paragraph', [PartnerController::class, 'updatePopupParagraph'])->name('admin.partners.update-popup-paragraph');
+        Route::patch('/partners/documents/{id}/verify', [PartnerController::class, 'verifyDocument'])->name('admin.partners.documents.verify');
         Route::resource('partners', PartnerController::class)->only(['index', 'update', 'destroy'])->names([
             'index' => 'admin.partners.index',
             'update' => 'admin.partners.update',
             'destroy' => 'admin.partners.destroy',
         ]);
     });
+
+    // Partner Document Management Alias (inside Admin)
+    Route::get('/partner/documents', [\App\Http\Controllers\Partner\PartnerDocumentController::class, 'index'])->name('admin.partner.documents.index');
 
     // Inquiries & Contact Messages Routes (admin management)
     Route::resource('inquiries', InquiryController::class)->middleware('can:manage-inquiries')->only(['index', 'update', 'destroy'])->names([

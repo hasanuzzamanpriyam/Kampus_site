@@ -30,6 +30,7 @@ import {
     RotateCcw
 } from 'lucide-react';
 import StudentPortfolioSection from './Partials/StudentPortfolioSection';
+import UserAvatar from '@/Components/UserAvatar';
 
 export default function Dashboard({
     student,
@@ -328,11 +329,9 @@ export default function Dashboard({
 
                             {/* Profile Info */}
                             <div className="flex items-center gap-4 sm:gap-6">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-purple-500 to-indigo-500 p-0.5 shadow-xl shrink-0">
-                                    <div className="w-full h-full rounded-[14px] bg-[#1E1B3A] flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-white uppercase tracking-wider">
-                                        {student.name ? student.name.charAt(0) : 'S'}
-                                    </div>
-                                </div>
+                                <Link href="/profile" title="Edit Avatar & Profile" className="group block shrink-0">
+                                    <UserAvatar user={student} size="2xl" className="shadow-xl ring-4 ring-purple-500/30 group-hover:scale-105 transition-transform" />
+                                </Link>
                                 <div className="space-y-1">
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/30 text-xs font-bold uppercase tracking-wider">
@@ -952,9 +951,7 @@ export default function Dashboard({
                                                             </div>
 
                                                             {isMe && (
-                                                                <div className="w-8 h-8 rounded-xl bg-purple-600 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs mt-1">
-                                                                    {student?.name ? student.name.charAt(0).toUpperCase() : 'S'}
-                                                                </div>
+                                                                <UserAvatar user={student} size="sm" className="mt-1 shrink-0" />
                                                             )}
                                                         </div>
                                                     );

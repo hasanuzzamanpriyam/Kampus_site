@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Phone, Handshake, X, Send, GraduationCap, LogIn, UserPlus, LogOut, ChevronDown, LayoutDashboard, FileText, MessageSquare } from 'lucide-react';
+import { Phone, Handshake, X, Send, GraduationCap, LogIn, UserPlus, LogOut, ChevronDown, LayoutDashboard, FileText, MessageSquare, CheckCircle2, ShieldCheck, User as UserIcon } from 'lucide-react';
 import TopbarSearch from './TopbarSearch';
+import UserAvatar from './UserAvatar';
 
 export default function TopBar({ onSearch }) {
     const { props } = usePage();
+    const user = props?.auth?.user;
+    const isPartner = !!(user && (user.is_partner || user.roles?.includes('Partner')));
+    const isAdmin = !!(user && !isPartner && (user.is_super_admin || user.is_admin || user.roles?.some(r => ['Super Admin', 'Admin', 'Editor'].includes(r))));
+    const isStudent = !!(user && !isPartner && !isAdmin);
+
     const bdHotline = props?.globalSettings?.contact_bd_hotline || '+880 1812713814';
     const ukHotline = props?.globalSettings?.contact_uk_hotline || '+44 20 7946 0912';
     const partnerModalParagraph = props?.globalSettings?.partner_modal_paragraph
@@ -13,6 +19,8 @@ export default function TopBar({ onSearch }) {
     const [isStudentDropdownOpen, setIsStudentDropdownOpen] = useState(false);
     const [isIntroDismissed, setIsIntroDismissed] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [toastMessage, setToastMessage] = useState(null);
+    const [formError, setFormError] = useState(null);
     const [formData, setFormData] = useState({
         companyName: '',
         contactPerson: '',
@@ -26,6 +34,7 @@ export default function TopBar({ onSearch }) {
     const handleFormSubmit = (e) => {
         e.preventDefault();
         setIsSubmitted(true);
+        setFormError(null);
 
         router.post('/partner/apply', {
             company_name: formData.companyName,
@@ -38,7 +47,6 @@ export default function TopBar({ onSearch }) {
         }, {
             preserveScroll: true,
             onSuccess: () => {
-                alert('Thank you! Your agency partnership application has been submitted successfully. Our team will contact you shortly.');
                 setFormData({
                     companyName: '',
                     contactPerson: '',
@@ -49,9 +57,14 @@ export default function TopBar({ onSearch }) {
                     message: ''
                 });
                 setIsPartnerModalOpen(false);
+                setToastMessage('Thank you! Your agency partnership application has been submitted successfully. Our team will contact you shortly.');
+                setTimeout(() => {
+                    setToastMessage(null);
+                }, 5000);
             },
-            onError: () => {
-                alert('There was an error submitting your application. Please check your details and try again.');
+            onError: (errors) => {
+                const firstError = Object.values(errors || {})[0] || 'There was an error submitting your application. Please check your details and try again.';
+                setFormError(firstError);
             },
             onFinish: () => {
                 setIsSubmitted(false);
@@ -107,18 +120,36 @@ export default function TopBar({ onSearch }) {
                         {/* Vertical Divider Line */}
                         <div className="hidden sm:block border-l border-slate-700 h-5" />
 
-                        {/* Partner Button: OPENS DIALOGUE POPUP MODAL */}
-                        <button
-                            onClick={() => setIsPartnerModalOpen(true)}
-                            className="bg-white hover:bg-slate-100 text-slate-900 dark:bg-slate-100 dark:hover:bg-white font-extrabold text-xs px-3.5 sm:px-4 py-2.5 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-                        >
-                            <Handshake className="w-3.5 h-3.5 text-purple-700" />
-                            <span>Become a Partner</span>
-                        </button>
+                        {/* Partner / Admin / Student Shortcut Button */}
+                        {isPartner ? (
+                            <Link
+                                href="/partner/documents"
+                                className="bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-400/40 font-extrabold text-xs px-3.5 sm:px-4 py-2.5 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-1.5 shrink-0"
+                            >
+                                <FileText className="w-3.5 h-3.5 text-purple-300" />
+                                <span>Partner Portal</span>
+                            </Link>
+                        ) : isAdmin ? (
+                            <Link
+                                href="/admin/dashboard"
+                                className="bg-blue-600/30 hover:bg-blue-600/50 text-blue-200 border border-blue-400/40 font-extrabold text-xs px-3.5 sm:px-4 py-2.5 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-1.5 shrink-0"
+                            >
+                                <LayoutDashboard className="w-3.5 h-3.5 text-blue-300" />
+                                <span>Admin Panel</span>
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={() => setIsPartnerModalOpen(true)}
+                                className="bg-white hover:bg-slate-100 text-slate-900 dark:bg-slate-100 dark:hover:bg-white font-extrabold text-xs px-3.5 sm:px-4 py-2.5 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                            >
+                                <Handshake className="w-3.5 h-3.5 text-purple-700" />
+                                <span>Become a Partner</span>
+                            </button>
+                        )}
 
-                        {/* STUDENT PORTAL & AUTH DROPDOWN */}
+                        {/* USER ACCOUNT DROPDOWN */}
                         <div className="relative shrink-0">
-                            {!props?.auth?.user ? (
+                            {!user ? (
                                 <div>
                                     <button
                                         type="button"
@@ -168,16 +199,16 @@ export default function TopBar({ onSearch }) {
                                     <button
                                         type="button"
                                         onClick={() => setIsStudentDropdownOpen(!isStudentDropdownOpen)}
-                                        className="bg-slate-800/90 hover:bg-slate-700 text-white font-extrabold text-xs px-3 sm:px-4 py-2 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border border-purple-500/40 relative"
+                                        className={`bg-slate-800/90 hover:bg-slate-700 text-white font-extrabold text-xs px-3 sm:px-4 py-2 rounded-full shadow-sm hover:scale-105 transition-all flex items-center gap-2 cursor-pointer border ${isPartner ? 'border-purple-500/60' : isAdmin ? 'border-blue-500/60' : 'border-indigo-500/40'} relative`}
                                     >
-                                        <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center text-[10px] text-white font-bold uppercase relative">
-                                            {props.auth.user.name ? props.auth.user.name.charAt(0) : 'S'}
-                                            {props.unread_student_messages_count > 0 && (
+                                        <div className="relative flex items-center justify-center">
+                                            <UserAvatar user={user} size="xs" className="w-5 h-5 text-[10px]" />
+                                            {isStudent && props.unread_student_messages_count > 0 && (
                                                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-slate-900 animate-ping" />
                                             )}
                                         </div>
                                         <span className="max-w-[80px] sm:max-w-[110px] truncate">
-                                            {props.auth.user.name.split(' ')[0]}
+                                            {user.name ? user.name.split(' ')[0] : 'Account'}
                                         </span>
                                         <ChevronDown className={`w-3 h-3 text-purple-300 transition-transform duration-200 ${isStudentDropdownOpen ? 'rotate-180' : ''}`} />
                                     </button>
@@ -188,12 +219,99 @@ export default function TopBar({ onSearch }) {
                                                 className="fixed inset-0 z-40"
                                                 onClick={() => setIsStudentDropdownOpen(false)}
                                             />
-                                            <div className="absolute right-0 mt-2 w-60 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-slate-800 dark:text-slate-100">
+                                            <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-slate-800 dark:text-slate-100">
                                                 <div className="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-1">
-                                                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{props.auth.user.name}</p>
-                                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{props.auth.user.email}</p>
+                                                    <div className="flex items-center gap-2.5 mb-1.5">
+                                                        <UserAvatar user={user} size="sm" />
+                                                        <div className="overflow-hidden">
+                                                            <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{user.name}</p>
+                                                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        {isPartner && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200/50 dark:border-purple-800/50">
+                                                                <Handshake className="w-3 h-3" />
+                                                                <span>Agency Partner</span>
+                                                            </span>
+                                                        )}
+                                                        {isAdmin && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/50">
+                                                                <ShieldCheck className="w-3 h-3" />
+                                                                <span>{user.is_super_admin ? 'Super Admin' : 'Admin Staff'}</span>
+                                                            </span>
+                                                        )}
+                                                        {isStudent && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300 border border-indigo-200/50 dark:border-indigo-800/50">
+                                                                <GraduationCap className="w-3 h-3" />
+                                                                <span>Student Account</span>
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                                {props.auth.user.roles?.includes('Student') || !props.auth.user.is_super_admin ? (
+
+                                                {/* PARTNER MENU LINKS */}
+                                                {isPartner && (
+                                                    <>
+                                                        <Link
+                                                            href="/partner/documents"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/50 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                            <span>Company Documents</span>
+                                                        </Link>
+                                                        <Link
+                                                            href="/admin/dashboard"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/50 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                                        >
+                                                            <LayoutDashboard className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                            <span>Partner Dashboard</span>
+                                                        </Link>
+                                                        <Link
+                                                            href="/profile"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/50 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                                        >
+                                                            <UserIcon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                            <span>My Profile & Avatar</span>
+                                                        </Link>
+                                                    </>
+                                                )}
+
+                                                {/* ADMIN MENU LINKS */}
+                                                {isAdmin && (
+                                                    <>
+                                                        <Link
+                                                            href="/admin/dashboard"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                        >
+                                                            <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                                                            <span>Admin Panel</span>
+                                                        </Link>
+                                                        <Link
+                                                            href="/admin/partners"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                        >
+                                                            <FileText className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                                                            <span>Audit Partner Docs</span>
+                                                        </Link>
+                                                        <Link
+                                                            href="/profile"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                                        >
+                                                            <UserIcon className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+                                                            <span>My Profile & Avatar</span>
+                                                        </Link>
+                                                    </>
+                                                )}
+
+                                                {/* STUDENT MENU LINKS */}
+                                                {isStudent && (
                                                     <>
                                                         <Link
                                                             href="/student/dashboard"
@@ -234,17 +352,17 @@ export default function TopBar({ onSearch }) {
                                                             <FileText className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
                                                             <span>Queries & Replies</span>
                                                         </Link>
+                                                        <Link
+                                                            href="/profile"
+                                                            onClick={() => setIsStudentDropdownOpen(false)}
+                                                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-purple-50 dark:hover:bg-purple-950/50 text-slate-700 dark:text-slate-200 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                                        >
+                                                            <UserIcon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                                            <span>My Profile & Avatar</span>
+                                                        </Link>
                                                     </>
-                                                ) : (
-                                                    <Link
-                                                        href="/admin/dashboard"
-                                                        onClick={() => setIsStudentDropdownOpen(false)}
-                                                        className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-blue-50 dark:hover:bg-blue-950/50 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                                    >
-                                                        <LayoutDashboard className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                                                        <span>Admin Panel</span>
-                                                    </Link>
                                                 )}
+
                                                 <div className="border-t border-slate-100 dark:border-slate-800 my-1" />
                                                 <button
                                                     type="button"
@@ -316,6 +434,11 @@ export default function TopBar({ onSearch }) {
 
                         {/* PARTNER REGISTRATION FORM */}
                         <form onSubmit={handleFormSubmit} className="space-y-4">
+                            {formError && (
+                                <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-xs text-rose-600 dark:text-rose-400 font-semibold animate-in fade-in">
+                                    {formError}
+                                </div>
+                            )}
 
                             {/* Agency Name */}
                             <div>
@@ -436,6 +559,26 @@ export default function TopBar({ onSearch }) {
                         </form>
 
                     </div>
+                </div>
+            )}
+
+            {/* SLEEK SUCCESS TOAST NOTIFICATION (REPLACES BROWSER ALERT POPUP) */}
+            {toastMessage && (
+                <div className="fixed top-5 right-5 z-[99999] flex items-center gap-3 bg-slate-900/95 dark:bg-slate-800/95 text-white px-5 py-4 rounded-2xl shadow-2xl border border-emerald-500/40 backdrop-blur-md animate-in fade-in slide-in-from-top-4 duration-300 max-w-md">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5" />
+                    </div>
+                    <div className="text-xs sm:text-sm font-medium leading-snug">
+                        {toastMessage}
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setToastMessage(null)}
+                        className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
+                        aria-label="Close notification"
+                    >
+                        <X className="w-4 h-4" />
+                    </button>
                 </div>
             )}
         </>

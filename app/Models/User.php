@@ -11,12 +11,19 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'password_set_at'])]
+#[Fillable(['name', 'email', 'avatar', 'password', 'password_set_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array<int, string>
+     */
+    protected $appends = ['initials'];
 
     /**
      * Get the attributes that should be cast.
@@ -73,6 +80,40 @@ class User extends Authenticatable
     }
 
     /**
+     * Partner compliance and agency verification documents.
+     */
+    public function partnerDocuments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PartnerDocument::class, 'user_id')->orderBy('id', 'desc');
+    }
+
+    /**
+     * Associated partner application.
+     */
+    public function partnerApplication(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(PartnerApplication::class, 'user_id');
+    }
+
+    /**
+     * Generate the first letters / initials from the user's name.
+     */
+    public function getInitialsAttribute(): string
+    {
+        $name = trim($this->name ?? '');
+        if (empty($name)) {
+            return 'U';
+        }
+
+        $parts = preg_split('/\s+/', $name);
+        if (count($parts) === 1) {
+            return mb_strtoupper(mb_substr($parts[0], 0, min(2, mb_strlen($parts[0]))));
+        }
+
+        return mb_strtoupper(mb_substr($parts[0], 0, 1) . mb_substr(end($parts), 0, 1));
+    }
+
+    /**
      * Determine if the user is an administrator or staff member.
      */
     public function isAdmin(): bool
@@ -93,10 +134,10 @@ class User extends Authenticatable
      */
     public function isStudent(): bool
     {
-        if ($this->hasRole('Student')) {
-            return true;
+        if ($this->isAdmin() || $this->isPartner()) {
+            return false;
         }
 
-        return ! ($this->isAdmin() || $this->isPartner());
+        return true;
     }
 }

@@ -96,4 +96,71 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_user_can_upload_avatar(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $user = User::factory()->create();
+
+        $file = \Illuminate\Http\UploadedFile::fake()->image('avatar.jpg', 200, 200);
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar' => $file,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+        $this->assertNotNull($user->avatar);
+        $this->assertStringStartsWith('/storage/avatars/', $user->avatar);
+
+        $relativePath = str_replace('/storage/', '', $user->avatar);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertExists($relativePath);
+    }
+
+    public function test_user_can_remove_avatar(): void
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+        $user = User::factory()->create([
+            'avatar' => '/storage/avatars/fake_avatar.jpg',
+        ]);
+        \Illuminate\Support\Facades\Storage::disk('public')->put('avatars/fake_avatar.jpg', 'content');
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name' => $user->name,
+                'email' => $user->email,
+                'remove_avatar' => true,
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect('/profile');
+
+        $user->refresh();
+        $this->assertNull($user->avatar);
+        \Illuminate\Support\Facades\Storage::disk('public')->assertMissing('avatars/fake_avatar.jpg');
+    }
+
+    public function test_user_has_correct_initials_attribute(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'John Doe',
+        ]);
+
+        $this->assertSame('JD', $user->initials);
+
+        $singleNameUser = User::factory()->create([
+            'name' => 'Madonna',
+        ]);
+
+        $this->assertSame('MA', $singleNameUser->initials);
+    }
 }

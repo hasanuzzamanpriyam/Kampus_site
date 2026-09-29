@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use Illuminate\Support\Facades\Storage;
+
 class ProfileController extends Controller
 {
     /**
@@ -29,15 +31,41 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validated = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        $user->fill([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Handle Avatar Removal
+        if ($request->boolean('remove_avatar')) {
+            if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $user->avatar);
+                Storage::disk('public')->delete($oldPath);
+            }
+            $user->avatar = null;
+        }
 
-        return Redirect::route('profile.edit');
+        // Handle Avatar File Upload
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar && str_starts_with($user->avatar, '/storage/')) {
+                $oldPath = str_replace('/storage/', '', $user->avatar);
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $storedPath = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = '/storage/' . $storedPath;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('success', 'Profile updated successfully!');
     }
 
     /**
