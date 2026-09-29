@@ -69,7 +69,13 @@ export default function TopbarSearch({ onSearch }) {
         if (onSearch) {
             onSearch(trimmed);
         } else {
-            router.visit(`/universities?search=${encodeURIComponent(trimmed)}`);
+            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/courses')) {
+                router.visit(`/courses?search=${encodeURIComponent(trimmed)}`);
+            } else if (results.courses?.length > 0 && (!results.universities || results.universities.length === 0)) {
+                router.visit(`/courses?search=${encodeURIComponent(trimmed)}`);
+            } else {
+                router.visit(`/universities?search=${encodeURIComponent(trimmed)}`);
+            }
         }
     };
 
@@ -195,7 +201,7 @@ export default function TopbarSearch({ onSearch }) {
                                     {results.courses.map((course) => (
                                         <Link
                                             key={course.id}
-                                            href={course.university?.slug ? `/universities/${course.university.slug}` : `/courses?search=${encodeURIComponent(course.title)}`}
+                                            href={`/courses?search=${encodeURIComponent(course.title)}`}
                                             onClick={() => setIsOpen(false)}
                                             className="px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800/80 transition-colors flex items-center justify-between group cursor-pointer"
                                         >

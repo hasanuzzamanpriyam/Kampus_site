@@ -20,6 +20,16 @@ export default function Universities() {
     const [search, setSearch] = useState(typeof filtersData.search === 'string' ? filtersData.search : '');
     const [country, setCountry] = useState(typeof filtersData.country === 'string' ? filtersData.country : 'All');
     const isFirstMount = useRef(true);
+    const lastSearchedRef = useRef(typeof filtersData.search === 'string' ? filtersData.search : '');
+
+    // Sync search state when filters prop changes via URL navigation (e.g. from topbar search)
+    useEffect(() => {
+        const incoming = typeof filtersData.search === 'string' ? filtersData.search : '';
+        if (incoming !== lastSearchedRef.current) {
+            lastSearchedRef.current = incoming;
+            setSearch(incoming);
+        }
+    }, [filtersData.search]);
 
     // Inertia SPA visit handler with preserveState and preserveScroll
     const fetchResults = (searchQuery, countryCode) => {
@@ -42,7 +52,12 @@ export default function Universities() {
             return;
         }
 
+        if (search === lastSearchedRef.current) {
+            return;
+        }
+
         const timer = setTimeout(() => {
+            lastSearchedRef.current = search;
             fetchResults(search, country);
         }, 300);
 

@@ -25,6 +25,7 @@ export default function Courses() {
     const [selectedDestination, setSelectedDestination] = useState(typeof filtersData.country === 'string' ? filtersData.country : 'All');
     const [sortBy, setSortBy] = useState(typeof filtersData.sort === 'string' ? filtersData.sort : 'popularity');
     const isFirstMount = useRef(true);
+    const lastSearchedRef = useRef(typeof filtersData.search === 'string' ? filtersData.search : '');
 
     // Inertia SPA visit handler with preserveState and preserveScroll
     const fetchResults = (search, lvls, dest, srt) => {
@@ -41,6 +42,15 @@ export default function Courses() {
         });
     };
 
+    // Sync search state when filters prop changes via URL navigation (e.g. from topbar search)
+    useEffect(() => {
+        const incoming = typeof filtersData.search === 'string' ? filtersData.search : '';
+        if (incoming !== lastSearchedRef.current) {
+            lastSearchedRef.current = incoming;
+            setSearchQuery(incoming);
+        }
+    }, [filtersData.search]);
+
     // 300ms Search Debouncer
     useEffect(() => {
         if (isFirstMount.current) {
@@ -48,7 +58,12 @@ export default function Courses() {
             return;
         }
 
+        if (searchQuery === lastSearchedRef.current) {
+            return;
+        }
+
         const timer = setTimeout(() => {
+            lastSearchedRef.current = searchQuery;
             fetchResults(searchQuery, selectedLevels, selectedDestination, sortBy);
         }, 300);
 
